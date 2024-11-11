@@ -11,7 +11,7 @@ class UI(QMainWindow):
 
     # define widgets
     self.open_button = self.findChild(QPushButton, "open_file_button")
-    self.text_editor = self.findChild(QTextEdit, "print_file_name")
+    self.text_editor = self.findChild(QTextEdit, "print_file")
     self.execute_button = self.findChild(QPushButton, "execute_button")
 
     # call widget functions
