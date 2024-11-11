@@ -2,6 +2,10 @@
 
 LOLCode Interpreter
 
+## Guidelines
+1. Install dependencies using the `pip install -r requirements.txt` or `pip install -r requirements` command.
+2. Run the application `python main.py`.
+
 <!-- to be deleted before final submission -->
 
 # references I used:
