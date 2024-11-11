@@ -52,7 +52,7 @@
 "^IF U SAY SO$", "Function Delimiter"
 "^I IZ$", "Function Call Delimiter"
 "^MKAY$", "Function Call Delimiter"
-"^[a-zA-Z][a-zA-Z0-9_]*$", "Variable identifier"
+"^[a-zA-Z][a-zA-Z0-9_]*$", "Identifier"
 "^\-?[0-9]+$", "NUMBR Literal"
 "^\-?[0-9]+\.[0-9]+$", "NUMBAR Literal"
 "^\”([^\”]|:\”)*\”$", "YARN Literal"
