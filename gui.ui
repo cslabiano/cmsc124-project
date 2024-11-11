@@ -14,7 +14,7 @@
    <string>LOL Code Interpreter</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background: rgb(217, 217, 217)</string>
+   <string notr="true">background: #5f6995</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="execute_button">
@@ -25,6 +25,17 @@
       <width>1371</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>System</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: #573c2d;
+color: #eceaeb</string>
     </property>
     <property name="text">
      <string>EXECUTE</string>
@@ -38,6 +49,17 @@
       <width>571</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>System</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: #573c2d;
+color: #eceaeb</string>
     </property>
     <property name="text">
      <string>Open File</string>
@@ -65,7 +87,7 @@
      <bool>false</bool>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: white</string>
+     <string notr="true">background: #eceaeb</string>
     </property>
    </widget>
    <widget class="QLabel" name="console">
@@ -78,23 +100,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: white</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="display_lexemes">
-    <property name="geometry">
-     <rect>
-      <x>590</x>
-      <y>50</y>
-      <width>391</width>
-      <height>461</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background: white</string>
+     <string notr="true">background: #eceaeb</string>
     </property>
     <property name="text">
      <string/>
@@ -110,7 +116,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: white</string>
+     <string notr="true">background: #eceaeb</string>
     </property>
     <property name="text">
      <string/>
@@ -125,14 +131,26 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>System</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
     <property name="styleSheet">
-     <string notr="true"/>
+     <string notr="true">background: #eceaeb;
+color: #573c2d;
+font-weight: bold;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::StyledPanel</enum>
     </property>
     <property name="text">
      <string>LEXEMES</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::PlainText</enum>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -147,8 +165,17 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>System</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
     <property name="styleSheet">
-     <string notr="true"/>
+     <string notr="true">background: #eceaeb;
+color: #573c2d;
+font-weight: bold;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::StyledPanel</enum>
@@ -159,6 +186,72 @@
     <property name="alignment">
      <set>Qt::AlignCenter</set>
     </property>
+   </widget>
+   <widget class="QTableWidget" name="lexeme_table">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>50</y>
+      <width>391</width>
+      <height>461</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>391</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: #eceaeb</string>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="gridStyle">
+     <enum>Qt::SolidLine</enum>
+    </property>
+    <property name="columnCount">
+     <number>2</number>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="horizontalHeaderCascadingSectionResizes">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>194</number>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <column>
+     <property name="text">
+      <string>Lexeme</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignCenter</set>
+     </property>
+     <property name="background">
+      <color>
+       <red>236</red>
+       <green>234</green>
+       <blue>235</blue>
+      </color>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Classification</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignCenter</set>
+     </property>
+    </column>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
