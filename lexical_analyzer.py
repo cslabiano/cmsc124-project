@@ -20,10 +20,15 @@ def analyze_lexemes(content):
   for line in lines:
     parts = line.strip().split(", ")
     #remove "" of the regex
-    pattern = parts[0].strip('"')
+    pattern = parts[0]
     type = parts[1].strip('"')
+    if type != "YARN Literal":
+      pattern = pattern.strip('"')
     #use re.compile() to treat it as r"pattern"
     pattern_dict[re.compile(pattern)] = type
+
+  for regex, type in pattern_dict.items():
+    print(f"Loaded pattern: {regex} -> {type}")
 
   #find matches per line of the content
   for line in content.splitlines():
@@ -36,14 +41,21 @@ def analyze_lexemes(content):
           if match:
             #takes the whole match
             lexeme = match.group(0)
-            print(type)
             if type == "Comment Delimiter":
-              print("There is a comment")
               lexemes.append((lexeme, type))
               line = line.replace(lexeme, "", 1).strip()
               if line:
                 lexemes.append((line, 'Comment'))
                 line = ""
+            elif type == "YARN Literal":
+                # Add opening String Delimiter
+                lexemes.append(('"', 'String Delimiter'))
+                # Add content inside quotes as YARN Literal
+                lexemes.append((lexeme[1:-1], type))
+                # Add closing String Delimiter
+                lexemes.append(('"', 'String Delimiter'))
+                # Remove the matched text from line
+                line = line.replace(lexeme, "", 1).strip()
             else: 
               lexemes.append((lexeme, type))
               #removes the match in the current line ensuring that it won't repeat
