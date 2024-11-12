@@ -27,9 +27,21 @@ def analyze_lexemes(content):
 
   #find matches per line of the content
   for line in content.splitlines():
-    for regex, type in pattern_dict.items():
-      matches = regex.findall(line)
-      for match in matches:
-        lexemes.append((match, type))
+    #continues until the line is empty
+    while line:
+      matched = False
+      for regex, type in pattern_dict.items():
+          match = regex.search(line)
+          if match:
+            #takes the whole match
+            lexeme = match.group(0)
+            lexemes.append((lexeme, type))
+            #removes the match in the current line ensuring that it won't repeat
+            line = line.replace(lexeme, "", 1).strip()
+            matched = True
+            break
+      #in case nothing matches
+      if not matched:
+          break 
   
   return lexemes
