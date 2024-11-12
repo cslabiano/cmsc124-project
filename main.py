@@ -11,10 +11,18 @@ class UI(QMainWindow):
     uic.loadUi("gui.ui", self)
 
     # define widgets
+    #buttons
     self.open_button = self.findChild(QPushButton, "open_file_button")
-    self.text_editor = self.findChild(QTextEdit, "print_file")
     self.execute_button = self.findChild(QPushButton, "execute_button")
+
+    # label
+    self.label_filename = self.findChild(QLabel, "label_filename")
+
+    # tables
     self.lexeme_table = self.findChild(QTableWidget, "lexeme_table")
+
+    # text editor
+    self.text_editor = self.findChild(QTextEdit, "print_file")
 
     # call widget functions
     self.open_button.clicked.connect(self.open_file)
@@ -30,6 +38,8 @@ class UI(QMainWindow):
     # self.label.setText("You clicked the button!")
     fname = QFileDialog.getOpenFileName(self, "Select File", "", "LOLCode Files (*.lol)")
     self.file_path = fname[0]
+
+    self.label_filename.setText(self.file_path)
 
     with open(self.file_path, "r") as f:
       content = f.read()  # read the entire file content

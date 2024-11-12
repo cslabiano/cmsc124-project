@@ -14,15 +14,15 @@
    <string>LOL Code Interpreter</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background: #5f6995</string>
+   <string notr="true">background: #181818</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="execute_button">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>520</y>
-      <width>1371</width>
+      <x>20</x>
+      <y>760</y>
+      <width>491</width>
       <height>31</height>
      </rect>
     </property>
@@ -34,7 +34,7 @@
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: #573c2d;
+     <string notr="true">background: #3a5375;
 color: #eceaeb</string>
     </property>
     <property name="text">
@@ -44,9 +44,9 @@ color: #eceaeb</string>
    <widget class="QPushButton" name="open_file_button">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>571</width>
+      <x>20</x>
+      <y>20</y>
+      <width>101</width>
       <height>31</height>
      </rect>
     </property>
@@ -58,7 +58,7 @@ color: #eceaeb</string>
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: #573c2d;
+     <string notr="true">background: #3a5375;
 color: #eceaeb</string>
     </property>
     <property name="text">
@@ -77,46 +77,47 @@ color: #eceaeb</string>
    <widget class="QTextEdit" name="print_file">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>50</y>
-      <width>571</width>
-      <height>461</height>
+      <x>20</x>
+      <y>60</y>
+      <width>491</width>
+      <height>691</height>
      </rect>
     </property>
     <property name="autoFillBackground">
      <bool>false</bool>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: #eceaeb</string>
+     <string notr="true">background: #1f1f1f;
+color: white;</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
     </property>
    </widget>
    <widget class="QLabel" name="console">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>560</y>
-      <width>1371</width>
-      <height>231</height>
+      <x>520</x>
+      <y>570</y>
+      <width>851</width>
+      <height>221</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: #eceaeb</string>
+     <string notr="true">background: #1f1f1f;
+color: white;</string>
     </property>
-    <property name="text">
-     <string/>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
     </property>
-   </widget>
-   <widget class="QLabel" name="display_symbols">
-    <property name="geometry">
-     <rect>
-      <x>990</x>
-      <y>50</y>
-      <width>391</width>
-      <height>461</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background: #eceaeb</string>
+    <property name="lineWidth">
+     <number>1</number>
     </property>
     <property name="text">
      <string/>
@@ -125,9 +126,9 @@ color: #eceaeb</string>
    <widget class="QLabel" name="label_lexemes">
     <property name="geometry">
      <rect>
-      <x>590</x>
-      <y>10</y>
-      <width>391</width>
+      <x>520</x>
+      <y>20</y>
+      <width>421</width>
       <height>31</height>
      </rect>
     </property>
@@ -140,7 +141,7 @@ color: #eceaeb</string>
     </property>
     <property name="styleSheet">
      <string notr="true">background: #eceaeb;
-color: #573c2d;
+color: #181818;
 font-weight: bold;</string>
     </property>
     <property name="frameShape">
@@ -159,9 +160,9 @@ font-weight: bold;</string>
    <widget class="QLabel" name="label_symbols">
     <property name="geometry">
      <rect>
-      <x>990</x>
-      <y>10</y>
-      <width>391</width>
+      <x>950</x>
+      <y>20</y>
+      <width>421</width>
       <height>31</height>
      </rect>
     </property>
@@ -174,7 +175,7 @@ font-weight: bold;</string>
     </property>
     <property name="styleSheet">
      <string notr="true">background: #eceaeb;
-color: #573c2d;
+color: #181818;
 font-weight: bold;</string>
     </property>
     <property name="frameShape">
@@ -190,66 +191,149 @@ font-weight: bold;</string>
    <widget class="QTableWidget" name="lexeme_table">
     <property name="geometry">
      <rect>
-      <x>590</x>
-      <y>50</y>
-      <width>391</width>
+      <x>520</x>
+      <y>60</y>
+      <width>421</width>
       <height>461</height>
      </rect>
     </property>
-    <property name="maximumSize">
-     <size>
-      <width>391</width>
-      <height>16777215</height>
-     </size>
-    </property>
     <property name="styleSheet">
-     <string notr="true">background: #eceaeb</string>
+     <string notr="true">background: #1f1f1f;
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
     </property>
     <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
+     <enum>QFrame::Plain</enum>
     </property>
     <property name="lineWidth">
-     <number>0</number>
+     <number>1</number>
     </property>
-    <property name="gridStyle">
-     <enum>Qt::SolidLine</enum>
-    </property>
-    <property name="columnCount">
-     <number>2</number>
-    </property>
-    <attribute name="horizontalHeaderVisible">
-     <bool>true</bool>
-    </attribute>
     <attribute name="horizontalHeaderCascadingSectionResizes">
      <bool>false</bool>
     </attribute>
-    <attribute name="horizontalHeaderDefaultSectionSize">
-     <number>194</number>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>49</number>
     </attribute>
-    <attribute name="verticalHeaderVisible">
-     <bool>false</bool>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>198</number>
+    </attribute>
+    <attribute name="horizontalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="horizontalHeaderStretchLastSection">
+     <bool>true</bool>
     </attribute>
     <column>
      <property name="text">
       <string>Lexeme</string>
-     </property>
-     <property name="textAlignment">
-      <set>AlignCenter</set>
-     </property>
-     <property name="background">
-      <color>
-       <red>236</red>
-       <green>234</green>
-       <blue>235</blue>
-      </color>
      </property>
     </column>
     <column>
      <property name="text">
       <string>Classification</string>
      </property>
-     <property name="textAlignment">
-      <set>AlignCenter</set>
+    </column>
+   </widget>
+   <widget class="QLabel" name="label_console">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>530</y>
+      <width>851</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>System</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: #eceaeb;
+color: #181818;
+font-weight: bold;</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="text">
+     <string>CONSOLE</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::PlainText</enum>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_filename">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>20</y>
+      <width>381</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: #eceaeb;
+color: #181818;</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="symbol_table">
+    <property name="geometry">
+     <rect>
+      <x>950</x>
+      <y>60</y>
+      <width>421</width>
+      <height>461</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: #1f1f1f;</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <attribute name="horizontalHeaderCascadingSectionResizes">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>49</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>203</number>
+    </attribute>
+    <attribute name="horizontalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="horizontalHeaderStretchLastSection">
+     <bool>true</bool>
+    </attribute>
+    <column>
+     <property name="text">
+      <string>Identifier</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Value</string>
      </property>
     </column>
    </widget>
