@@ -10,7 +10,7 @@ class UI(QMainWindow):
     # load the ui file
     uic.loadUi("gui.ui", self)
 
-    # define widgets
+    
     #buttons
     self.open_button = self.findChild(QPushButton, "open_file_button")
     self.execute_button = self.findChild(QPushButton, "execute_button")
@@ -20,6 +20,7 @@ class UI(QMainWindow):
 
     # tables
     self.lexeme_table = self.findChild(QTableWidget, "lexeme_table")
+    self.symbol_table = self.findChild(QTableWidget, "symbol_table")
 
     # text editor
     self.text_editor = self.findChild(QTextEdit, "print_file")

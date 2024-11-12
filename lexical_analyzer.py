@@ -7,6 +7,7 @@ def analyze_lexemes(content):
 
   #read the patterns.txt file
   patterns = open("patterns.txt", "r")
+  print(patterns)
 
   if not patterns:
     print("Error in patterns.txt")
