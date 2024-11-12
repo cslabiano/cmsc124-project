@@ -7,6 +7,11 @@ HOW IZ I POWERTWO YR NUM
       YA RLY
          FOUND YR 1
    OIC
+   OBTW 
+      this is a comment
+      No it’s a two line comment
+      Oops no.. it has many lines here
+   TLDR
   
    BTW CALCULATE 2 TO POWER OF NUM
    I HAS A INDEX ITZ 0

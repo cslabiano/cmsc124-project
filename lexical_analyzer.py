@@ -27,15 +27,23 @@ def analyze_lexemes(content):
     #use re.compile() to treat it as r"pattern"
     pattern_dict[re.compile(pattern)] = type
 
-  for regex, type in pattern_dict.items():
-    print(f"Loaded pattern: {regex} -> {type}")
-
-  #find matches per line of the content
+  insideMultilineComment = False
   for line in content.splitlines():
+    line = line.lstrip()
+    print(line)
+    # If inside multiline comment, make each line a comment until TLDR
+    if insideMultilineComment:
+        # TODO: Change this logic to something not hardcoded
+        if line == "TLDR":
+          insideMultilineComment = False
+          lexemes.append((line, 'Multiline Comment Delimiter'))
+        else:
+          lexemes.append((line, 'Comment'))
+        continue
+
     #continues until the line is empty
     while line:
       matched = False
-      isComment = False
       for regex, type in pattern_dict.items():
           match = regex.search(line)
           if match:
@@ -47,14 +55,14 @@ def analyze_lexemes(content):
               if line:
                 lexemes.append((line, 'Comment'))
                 line = ""
+            elif type == "Multiline Comment Delimiter":
+                lexemes.append((lexeme, type))
+                insideMultilineComment = not insideMultilineComment
+                line = line.replace(lexeme, "", 1).strip()
             elif type == "YARN Literal":
-                # Add opening String Delimiter
                 lexemes.append(('"', 'String Delimiter'))
-                # Add content inside quotes as YARN Literal
                 lexemes.append((lexeme[1:-1], type))
-                # Add closing String Delimiter
                 lexemes.append(('"', 'String Delimiter'))
-                # Remove the matched text from line
                 line = line.replace(lexeme, "", 1).strip()
             else: 
               lexemes.append((lexeme, type))
