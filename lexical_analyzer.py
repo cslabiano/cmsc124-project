@@ -6,13 +6,15 @@ def analyze_lexemes(content):
   pattern_dict = {}
 
   #read the patterns.txt file
-  patterns = open("patterns.txt", "r")
-  print(patterns)
+  # patterns = open("patterns.txt", "r")
 
-  if not patterns:
-    print("Error in patterns.txt")
+  # if not patterns:
+  #   print("Error in patterns.txt")
 
-  lines = patterns.readlines()
+  # lines = patterns.readlines()
+
+  with open("patterns.txt", "r", encoding="utf-8") as patterns:
+    lines = patterns.readlines()
 
   #place patterns to a dictionary
   for line in lines:
