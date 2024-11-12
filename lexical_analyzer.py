@@ -21,7 +21,7 @@ def analyze_lexemes(content):
     parts = line.strip().split(", ")
     #remove "" of the regex
     pattern = parts[0].strip('"')
-    type = parts[1]
+    type = parts[1].strip('"')
     #use re.compile() to treat it as r"pattern"
     pattern_dict[re.compile(pattern)] = type
 
@@ -30,15 +30,25 @@ def analyze_lexemes(content):
     #continues until the line is empty
     while line:
       matched = False
+      isComment = False
       for regex, type in pattern_dict.items():
           match = regex.search(line)
           if match:
             #takes the whole match
             lexeme = match.group(0)
-            lexemes.append((lexeme, type))
-            #removes the match in the current line ensuring that it won't repeat
-            line = line.replace(lexeme, "", 1).strip()
-            matched = True
+            print(type)
+            if type == "Comment Delimiter":
+              print("There is a comment")
+              lexemes.append((lexeme, type))
+              line = line.replace(lexeme, "", 1).strip()
+              if line:
+                lexemes.append((line, 'Comment'))
+                line = ""
+            else: 
+              lexemes.append((lexeme, type))
+              #removes the match in the current line ensuring that it won't repeat
+              line = line.replace(lexeme, "", 1).strip()
+              matched = True
             break
       #in case nothing matches
       if not matched:
