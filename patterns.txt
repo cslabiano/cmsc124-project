@@ -30,7 +30,7 @@
 "\bIS NOW A\b", "Typecast Keyword"
 "\bVISIBLE\b", "Output Keyword"
 "\bGIMMEH\b", "Input Keyword"
-"O RLY\?", "Control Flow Delimiter"
+"\bO RLY\?\b", "Control Flow Delimiter"
 "\bYA RLY\b", "If Keyword"
 "\bMEBBE\b", "Else-if Keyword"
 "\bNO WAI\b", "Else Keyword"
