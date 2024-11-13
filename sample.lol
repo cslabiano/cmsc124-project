@@ -1,12 +1,13 @@
 HAI
-I HAS A string ITZ "Yarn test"
-HOW IZ I POWERTWO YR NUM
+I HAS A STRING ITZ 5
+HOW IZY I POWERTWO YR NUM
    BTW RETURN 1 IF 2 TO POWER OF 0
    BOTH SAEM NUM AN 0
       O RLY?
-      YA RLY
+      YA RLY YA RLY
          FOUND YR 1
    OIC
+ASDF
    OBTW 
       this is a comment
       No it's a two line comment
