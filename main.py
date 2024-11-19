@@ -11,13 +11,13 @@ class UI(QMainWindow):
     # load the ui file
     uic.loadUi("gui.ui", self)
 
-    
     #buttons
     self.open_button = self.findChild(QPushButton, "open_file_button")
     self.execute_button = self.findChild(QPushButton, "execute_button")
 
     # label
     self.label_filename = self.findChild(QLabel, "label_filename")
+    self.label_console = self.findChild(QLabel, "console")
 
     # tables
     self.lexeme_table = self.findChild(QTableWidget, "lexeme_table")
@@ -54,19 +54,30 @@ class UI(QMainWindow):
     # if file is not empty, perform lexeme analysis
     if content:
       lexemes = lexical_analyzer.analyze_lexemes(content)
-      self.lexeme_table.clearContents()   # clear previous contents of the table
+      if lexemes[0] == ("error", "error"):
+        self.label_console.setText("Error in pattern matching")
+      else:
+        self.label_console.setText("")  # clear any previous error messages
+        self.populate_table(lexemes)
 
-      self.lexeme_table.setRowCount(len(lexemes))   # get the length of the lexemes and set it as the number of rows of the table widget
-
-      # populate the table
-      for row, (lexeme, classification) in enumerate(lexemes):
-        self.lexeme_table.setItem(row, 0, QTableWidgetItem(lexeme))
-        self.lexeme_table.setItem(row, 1, QTableWidgetItem(classification))
+      # valid = syntax_analyzer.syntax_analyzer(lexemes)
 
       # changes made in the text editor will be saved in the original file
       if self.file_path:
         with open(self.file_path, "w") as f:
           f.write(content)
+
+  def populate_table(self, lexemes):
+    self.lexeme_table.clearContents()   # clear previous contents of the table
+    self.lexeme_table.setRowCount(len(lexemes))   # get the length of the lexemes and set it as the number of rows of the table widget
+      
+    if lexemes[1] == "error":
+      self.label_console.setText("Error")
+    else:
+      # populate the table
+      for row, (lexeme, classification) in enumerate(lexemes):
+        self.lexeme_table.setItem(row, 0, QTableWidgetItem(lexeme))
+        self.lexeme_table.setItem(row, 1, QTableWidgetItem(classification))
 
 # initialize the app
 app = QApplication(sys.argv)

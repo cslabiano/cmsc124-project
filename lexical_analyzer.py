@@ -72,6 +72,6 @@ def analyze_lexemes(content):
             break
       #in case nothing matches
       if not matched:
-          return False
+          return [("error", "error")]
   
   return lexemes
