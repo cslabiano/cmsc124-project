@@ -67,7 +67,12 @@ lexemes = [
     ('KTHXBYE', 'Code Delimiter', 28)
 ]
 
-
+# ALGO:
+# Go through each token, if a delimiter is found,
+# collect tokens for that specific expression, 
+# then call function to check if tokens are in order and are valid
+# EXAMPLE: 
+# Code Delimiter (HAI) is checked, collect all tokens until the next Code Delimiter (KTHXBYE), then pass tokens to code_statements to check validity of each statament
 def syntax_analyzer(lexemes):
     currentToken = 0
     total_tokens = len(lexemes)
