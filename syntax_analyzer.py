@@ -73,7 +73,12 @@ def statement(lines, current):
 
         current += 1
         #if it reaches the end of the code, end the loop
-        if re.search(r"^KTHXBYE\b", lines[current]) != None:
+        if: re.search()
+        elif: 
+            re.search(r"^KTHXBYE\b", lines[current]) != None:
             not_end = False
 
     return 
+
+
+def var()

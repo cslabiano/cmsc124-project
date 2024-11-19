@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QTextEdit, Q
 from PyQt5 import uic
 import sys
 import lexical_analyzer
-import syntax_analyzer
+
 
 class UI(QMainWindow):
   def __init__(self):
@@ -59,7 +59,7 @@ class UI(QMainWindow):
       self.lexeme_table.setRowCount(len(lexemes))   # get the length of the lexemes and set it as the number of rows of the table widget
 
       # populate the table
-      for row, (lexeme, classification) in enumerate(lexemes):
+      for row, (lexeme, classification, lineNumber) in enumerate(lexemes):
         self.lexeme_table.setItem(row, 0, QTableWidgetItem(lexeme))
         self.lexeme_table.setItem(row, 1, QTableWidgetItem(classification))
 
