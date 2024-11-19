@@ -37,8 +37,9 @@ class UI(QMainWindow):
     self.show()
   
   def open_file(self):
-    # self.label.setText("You clicked the button!")
     fname = QFileDialog.getOpenFileName(self, "Select File", "", "LOLCode Files (*.lol)")
+    if not fname[0]:  # check if a file was selected
+        return
     self.file_path = fname[0]
 
     self.label_filename.setText(self.file_path)
@@ -53,9 +54,9 @@ class UI(QMainWindow):
 
     # if file is not empty, perform lexeme analysis
     if content:
-      lexemes = lexical_analyzer.analyze_lexemes(content)
-      if lexemes[0] == ("error", "error"):
-        self.label_console.setText("Error in pattern matching")
+      lexemes, error_msg = lexical_analyzer.analyze_lexemes(content)
+      if error_msg:
+        self.label_console.setText(error_msg)
       else:
         self.label_console.setText("")  # clear any previous error messages
         self.populate_table(lexemes)
