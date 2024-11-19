@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QTextEdit, Q
 from PyQt5 import uic
 import sys
 import lexical_analyzer
+import syntax_analyzer
 
 class UI(QMainWindow):
   def __init__(self):
