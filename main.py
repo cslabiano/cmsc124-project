@@ -58,8 +58,12 @@ class UI(QMainWindow):
       if error_msg:
         self.label_console.setText(error_msg)
       else:
-        self.label_console.setText("")  # clear any previous error messages
-        self.populate_table(lexemes)
+        syntax_valid, syntax_error = syntax_analyzer.syntax_analyzer(lexemes)
+        if syntax_error:
+          self.label_console.setText("\n".join(syntax_error))
+        else:
+          self.label_console.setText("Syntax is valid.")
+          self.populate_table(lexemes)
 
       # valid = syntax_analyzer.syntax_analyzer(lexemes)
 
