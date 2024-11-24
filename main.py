@@ -1,14 +1,14 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QTextEdit, QFileDialog, QLabel, QTableWidget, QTableWidgetItem
 from PyQt5 import uic
 import sys
-import lexical_analyzer
-import syntax_analyzer
+import lexical_analyzer as lexical_analyzer
+from syntax_analyzer import Syntax_Analyzer
 
 class UI(QMainWindow):
   def __init__(self):
     super(UI, self).__init__()
 
-    # load the ui file
+    # load the ui filez
     uic.loadUi("gui.ui", self)
 
     #buttons
@@ -58,14 +58,16 @@ class UI(QMainWindow):
       if error_msg:
         self.label_console.setText(error_msg)
       else:
-        syntax_valid, syntax_error = syntax_analyzer.syntax_analyzer(lexemes)
-        if syntax_error:
-          self.label_console.setText("\n".join(syntax_error))
-        else:
-          self.label_console.setText("Syntax is valid.")
-          self.populate_table(lexemes)
-
-      # valid = syntax_analyzer.syntax_analyzer(lexemes)
+        try:
+          parser = Syntax_Analyzer(lexemes)
+          parse_tree = parser.analyze()
+          if isinstance(parse_tree, str):
+            self.label_console.setText(parse_tree)
+          else:
+            self.label_console.setText("Syntax is valid.\n")
+            self.populate_table(lexemes)
+        except SyntaxError as e:
+          self.label_console.setText(str(e))
 
       # changes made in the text editor will be saved in the original file
       if self.file_path:

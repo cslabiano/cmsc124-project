@@ -1,10 +1,14 @@
 import re
+from pathlib import Path 
 
 def analyze_lexemes(content):
   lexemes = []
   pattern_dict = {}
 
-  with open("patterns.txt", "r", encoding="utf-8") as patterns:
+  # get the path to patterns.txt
+  patterns_path = Path(__file__).parent / "patterns.txt"
+
+  with patterns_path.open("r", encoding="utf-8") as patterns:
     lines = patterns.readlines()
 
   # place patterns into a dictionary
@@ -27,7 +31,7 @@ def analyze_lexemes(content):
       # TODO: Change this logic to something not hardcoded
       if line == "TLDR":
         insideMultilineComment = False
-        lexemes.append((line, 'Multiline Comment Delimiter'))
+        lexemes.append((line, 'Multiline Comment End'))
       else:
         lexemes.append((line, 'Comment'))
       continue
@@ -49,7 +53,7 @@ def analyze_lexemes(content):
               lexemes.append((line, 'Comment'))
               line = ""
           # if the type match is a Multiline Comment Delimiter
-          elif type == "Multiline Comment Delimiter":
+          elif type == "Multiline Comment Start":
             lexemes.append((lexeme, type))
             insideMultilineComment = not insideMultilineComment
             line = line.replace(lexeme, "", 1).strip()
@@ -72,6 +76,6 @@ def analyze_lexemes(content):
       # in case nothing matches
       if not matched:
         # return an error message with line number for the gui to display
-        return None, f"Lexical error on line {line_num}: '{line}' could not be matched."
+        return [], f"Lexical error on line {line_num}: '{line}' could not be matched."
 
   return lexemes, None

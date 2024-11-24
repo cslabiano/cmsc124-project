@@ -1,79 +1,69 @@
-import re
+from node import Node
 
-def syntax_analyzer(content):
+# lexeme = lexemes[0][0] | current_lexeme[0]
+# classification = lexemes[0][1] | current_lexeme[1]
 
-    lines = content.readlines()
-    current = 0         # array counter to keep track which line is being read
+class Syntax_Analyzer:
 
-    err_status, err_msg = program(lines, current)
-    
-    return err_status, err_msg
+  def __init__(self, lexemes):
+    self.lexemes = lexemes
+    self.current_lexeme = lexemes[0]
 
-# program abstraction
-def program(lines, current):
-    
-    hai = re.search(r"^HAI\b", lines[current])      # check if HAI is correct, same format for the others
-    if hai == None:
-        err_msg = "Program must start with HAI"
-        return True, err_msg
-    current += 1        # increment current to get to the next line
-    
-    err_status, err_msg, current = data_section(lines, current)    # call data section abstraction and return these values
+  # --------------------------------------------------------------------------------------------------
+  # starts the syntax analyzer and returns the parse tree
+  # --------------------------------------------------------------------------------------------------
+  def analyze(self):
+    try:
+      parse_tree = self.program()  # Start the program parsing
+      return parse_tree
+    except SyntaxError as e:
+      return str(e)
 
-    if err_status == True:      # if it got an error in the data section part
-        return True, err_msg
-    
-    err_status, err_msg, current = statement(lines, current)
+  # --------------------------------------------------------------------------------------------------
+  # pops lexeme from the list 
+  # --------------------------------------------------------------------------------------------------
+  def remove(self, type):
+    if type == self.current_lexeme[1]:
+        self.lexemes.pop(0)
+        if self.lexemes:
+            self.current_lexeme = self.lexemes[0]
+    else:
+        raise SyntaxError(f'Syntax Error: Expected {type}, but found {self.current_lexeme[1]}')
 
-    if err_status == True:
-        return True, err_msg
-
-    kthxbye = re.search(r"^KTHXBYE\b", lines[current])
-    if kthxbye == None:
-        err_msg = "Program must end with KTHXBYE"
-        return True, err_msg
-
-    return False
-
-# data section abstraction
-def data_section(lines, current):
-
-    wazzup = re.search(r"^WAZZUP\b", lines[current])
-    if wazzup == None:
-        err_msg = "Data section must start with WAZZUP"
-        return True, err_msg, current
-    current += 1
-
-    err_status, err_msg, current = statement(lines, current)
-
-    if err_status == True:
-        return True, err_msg
-
-    buhbye = re.search(r"^BUHBYE\b", lines[current])
-    if buhbye == None:
-        err_msg = "Data section must end with BUHBYE"
-        return True, err_msg
-    current += 1
-    
-    return False, "", current
-
-# var abstraction
-def var(lines, current):
-    return
-
-# statement abstraction
-def statement(lines, current):
-
-    not_end = True
-
-    while no_err:
-
-        # TODO: Can create if-else statements for each possible statement in our syntax
+  # ==============================================================
+  # dito kayo magdagdag ng other methods (production rules)
+  # ==============================================================
 
 
-        current += 1
-        #if it reaches the end of the code, end the loop
-        if re.search(r"^KTHXBYE\b", lines[current]) != None:
-            not_end = False
 
-    return 
+
+  # --------------------------------------------------------------------------------------------------
+  # <program> ::== HAI <linebreak> <start_statement> <linebreak> KTHXBYE
+  # --------------------------------------------------------------------------------------------------
+  def program(self):
+    children = []
+
+    # check if there are comments before HAI
+    if self.current_lexeme[1] == "Multiline Comment Start":
+      children.append(self.multiline_comment())
+    elif self.current_lexeme[1] == "Comment Delimiter":
+      children.append(self.comment())
+
+    # program must start with HAI
+    self.remove("Program Start")
+    children.append(Node("Program Start"))
+
+    # linebreak?
+
+    # calls start_statement abstraction
+    if self.current_lexeme[1] != "Program End":
+      pass
+      # children.append(self.start_statement([]))
+
+    # linebreak?
+
+    # program must end with KTHXBYE
+    self.remove("Program End")
+    children.append(Node("Program End"))
+
+    return Node(None, "Program", children = children)
