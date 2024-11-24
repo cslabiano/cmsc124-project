@@ -3,6 +3,8 @@ from node import Node
 # lexeme = lexemes[0][0] | current_lexeme[0]
 # classification = lexemes[0][1] | current_lexeme[1]
 
+line = 0
+
 class Syntax_Analyzer:
 
   def __init__(self, lexemes):
@@ -13,6 +15,8 @@ class Syntax_Analyzer:
   # starts the syntax analyzer and returns the parse tree
   # --------------------------------------------------------------------------------------------------
   def analyze(self):
+    global line
+    line = 0
     try:
       parse_tree = self.program()  # Start the program parsing
       return parse_tree
@@ -23,12 +27,14 @@ class Syntax_Analyzer:
   # pops lexeme from the list 
   # --------------------------------------------------------------------------------------------------
   def remove(self, type):
+    global line
+    line += 1
     if type == self.current_lexeme[1]:
         self.lexemes.pop(0)
         if self.lexemes:
             self.current_lexeme = self.lexemes[0]
     else:
-        raise SyntaxError(f'Syntax Error: Expected {type}, but found {self.current_lexeme[1]}')
+        raise SyntaxError(f'Syntax Error on line {line}: Expected {type}, but found {self.current_lexeme[1]}')
 
   # ==============================================================
   # dito kayo magdagdag ng other methods (production rules)
