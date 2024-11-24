@@ -1,14 +1,14 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QTextEdit, QFileDialog, QLabel, QTableWidget, QTableWidgetItem
 from PyQt5 import uic
 import sys
-import lexical_analyzer as lexical_analyzer
+import lexical_analyzer
 from syntax_analyzer import Syntax_Analyzer
 
 class UI(QMainWindow):
   def __init__(self):
     super(UI, self).__init__()
 
-    # load the ui filez
+    # load the ui file
     uic.loadUi("gui.ui", self)
 
     #buttons
@@ -59,13 +59,14 @@ class UI(QMainWindow):
         self.label_console.setText(error_msg)
       else:
         try:
+          lexemes_copy = lexemes.copy()
           parser = Syntax_Analyzer(lexemes)
           parse_tree = parser.analyze()
           if isinstance(parse_tree, str):
             self.label_console.setText(parse_tree)
           else:
             self.label_console.setText("Syntax is valid.\n")
-            self.populate_table(lexemes)
+            self.populate_table(lexemes_copy)
         except SyntaxError as e:
           self.label_console.setText(str(e))
 
@@ -78,13 +79,10 @@ class UI(QMainWindow):
     self.lexeme_table.clearContents()   # clear previous contents of the table
     self.lexeme_table.setRowCount(len(lexemes))   # get the length of the lexemes and set it as the number of rows of the table widget
       
-    if lexemes[1] == "error":
-      self.label_console.setText("Error")
-    else:
-      # populate the table
-      for row, (lexeme, classification) in enumerate(lexemes):
-        self.lexeme_table.setItem(row, 0, QTableWidgetItem(lexeme))
-        self.lexeme_table.setItem(row, 1, QTableWidgetItem(classification))
+    # populate the table
+    for row, (lexeme, classification) in enumerate(lexemes):
+      self.lexeme_table.setItem(row, 0, QTableWidgetItem(lexeme))
+      self.lexeme_table.setItem(row, 1, QTableWidgetItem(classification))
 
 # initialize the app
 app = QApplication(sys.argv)

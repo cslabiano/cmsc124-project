@@ -1,14 +1,10 @@
 import re
-from pathlib import Path 
 
 def analyze_lexemes(content):
   lexemes = []
   pattern_dict = {}
 
-  # get the path to patterns.txt
-  patterns_path = Path(__file__).parent / "patterns.txt"
-
-  with patterns_path.open("r", encoding="utf-8") as patterns:
+  with open("patterns.txt", "r", encoding="utf-8") as patterns:
     lines = patterns.readlines()
 
   # place patterns into a dictionary
@@ -76,6 +72,6 @@ def analyze_lexemes(content):
       # in case nothing matches
       if not matched:
         # return an error message with line number for the gui to display
-        return [], f"Lexical error on line {line_num}: '{line}' could not be matched."
+        return None, f"Lexical error on line {line_num}: '{line}' could not be matched."
 
   return lexemes, None
