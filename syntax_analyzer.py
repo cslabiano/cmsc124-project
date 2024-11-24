@@ -26,7 +26,7 @@ class Syntax_Analyzer:
   # --------------------------------------------------------------------------------------------------
   # pops lexeme from the list 
   # --------------------------------------------------------------------------------------------------
-  def remove(self, type):
+  def check(self, type):
     global line
     line += 1
     if type == self.current_lexeme[1]:
@@ -56,7 +56,7 @@ class Syntax_Analyzer:
       children.append(self.comment())
 
     # program must start with HAI
-    self.remove("Program Start")
+    self.check("Program Start")
     children.append(Node("Program Start"))
 
     # linebreak?
@@ -69,7 +69,7 @@ class Syntax_Analyzer:
     # linebreak?
 
     # program must end with KTHXBYE
-    self.remove("Program End")
+    self.check("Program End")
     children.append(Node("Program End"))
 
     return Node(None, "Program", children = children)
