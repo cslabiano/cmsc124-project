@@ -12,7 +12,7 @@
 "^DIFF OF\b", "Subtraction"
 "^PRODUKT OF\b", "Multiplication"
 "^QUOSHUNT OF\b", "Division"
-"^MOD OF\b", "Modulo
+"^MOD OF\b", "Modulo"
 "^BIGGR OF\b", "Max"
 "^SMALLR OF\b", "Min"
 "^BOTH OF\b", "And"
