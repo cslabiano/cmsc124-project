@@ -59,7 +59,8 @@ class Syntax_Analyzer:
         self.check("Identifier")
 
     # TODO: Handle expressions here
-
+    else: 
+      raise SyntaxError(f'Syntax Error: Expected Operation argument, but found {self.current_lexeme[1]}')
     return Node(None, "Op Argument", children=children)
 
   # ======================================================================
@@ -79,8 +80,11 @@ class Syntax_Analyzer:
     elif self.current_lexeme[1] == "Identifier":
         children.append(Node("Identifier"))
         self.check("Identifier")
-    
+
     #TODO: Handle infinite expressions here
+
+    else: 
+      raise SyntaxError(f'Syntax Error: Expected Operation argument, but found {self.current_lexeme[1]}')
 
     return Node(None, "Infinite Op Argument", children=children)
 
