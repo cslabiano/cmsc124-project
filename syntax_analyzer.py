@@ -6,7 +6,6 @@ from node import Node
 line = 0
 
 class Syntax_Analyzer:
-
   def __init__(self, lexemes):
     self.lexemes = lexemes
     self.current_lexeme = lexemes[0]
@@ -31,7 +30,7 @@ class Syntax_Analyzer:
     global line
     line += 1
       
-    # print("lexeme: ", self.current_lexeme[0], "expected: ", type, "current: ", self.current_lexeme[1])
+    print("\n\nlexeme: ", self.current_lexeme[0], "\nexpected: ", type, "\ncurrent: ", self.current_lexeme[1])
     if type == self.current_lexeme[1]:
       self.lexemes.pop(0)
       if self.lexemes:
@@ -77,7 +76,8 @@ class Syntax_Analyzer:
     children = []
 
     # Statement
-    children.append(self.statement())
+    if self.current_lexeme[1] != "Program End":
+      children.append(self.statement())
 
     return Node(None, 'Start Statement', children=children)
 
@@ -90,6 +90,8 @@ class Syntax_Analyzer:
     # expression
     if 'Expression' in self.current_lexeme[1]:
       children.append(self.expression())
+    
+    return children
 
   def expression(self):
     children = []
@@ -361,7 +363,10 @@ class Syntax_Analyzer:
 
     # calls start_statement abstraction
     if self.current_lexeme[1] != "Program End":
-      children.append(self.start_statement())
+      print("Not yet Program End")
+      start = self.start_statement()
+      children.append(start)
+      print(start)
 
     # program must end with KTHXBYE
     self.check("Program End")
