@@ -31,7 +31,7 @@ class Syntax_Analyzer:
     global line
     line += 1
       
-    print("expected: ", type, "current: ", self.current_lexeme[1])
+    # print("lexeme: ", self.current_lexeme[0], "expected: ", type, "current: ", self.current_lexeme[1])
     if type == self.current_lexeme[1]:
       self.lexemes.pop(0)
       if self.lexemes:
@@ -39,6 +39,7 @@ class Syntax_Analyzer:
       return children
     elif self.current_lexeme[1] == "Multiline Comment Start" or self.current_lexeme[1] == "Comment Delimiter":
       self.comment()
+      self.check(type)
     else:
       raise SyntaxError(f'Syntax Error on line {line}: Expected {type}, but found {self.current_lexeme[1]}')
     
