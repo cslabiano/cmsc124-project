@@ -59,14 +59,10 @@ class Syntax_Analyzer:
     self.check("Program Start")
     children.append(Node("Program Start"))
 
-    # linebreak?
-
     # calls start_statement abstraction
     if self.current_lexeme[1] != "Program End":
       pass
       # children.append(self.start_statement([]))
-
-    # linebreak?
 
     # program must end with KTHXBYE
     self.check("Program End")
