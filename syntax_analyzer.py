@@ -50,14 +50,16 @@ class Syntax_Analyzer:
     children.append(self.statement())
 
     return Node(None, 'Start Statement', children=children)
-  
+
+  # ======================================================================
+  # <statement> ::= 
+  # ======================================================================
   def statement(self):
     children = []
 
     # expression
     if 'Expression' in self.current_lexeme[1]:
       children.append(self.expression())
-
 
   def expression(self):
     children = []
@@ -77,7 +79,6 @@ class Syntax_Analyzer:
   # ======================================================================
   # <op_argument> ::= <literal> | <variable>
   # An operation argument can either be a literal, variable, or expression
-  # TODO: Expressions are not yet supported
   # ======================================================================
   def op_argument(self):
     children = []
@@ -93,6 +94,9 @@ class Syntax_Analyzer:
         self.check("Identifier")
 
     # TODO: Handle expressions here
+    elif 'Expression' in self.current_lexeme[1]:
+      children.append(self.expression())
+
     else: 
       raise SyntaxError(f'Syntax Error: Expected Operation argument, but found {self.current_lexeme[1]}')
     return Node(None, "Op Argument", children=children)
