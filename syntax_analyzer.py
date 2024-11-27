@@ -183,7 +183,76 @@ class Syntax_Analyzer:
 
     return Node(None, "Infinite Boolean", children=children)
   
+    # ======================================================================
   
+  # <relational_operator ::= BIGGR OF <op_argument> AN <op_argument>
+  #                          | DIFFRINT OF <op_argument> AN <op_argument> 
+  # can either be a max or a min
+  def relational_operator(self):
+    children = []
+
+    if self.current_lexeme[1] == 'Max':
+      self.check('Max')
+      children.append(Node('Max'))
+
+      children.append(self.op_argument())
+
+      self.check('Operation Delimiter')
+      children.append(Node('Operation Delimiter'))
+
+      children.append(self.op_argument())
+    elif self.current_lexeme[1] == 'Min': 
+      self.check('Min')
+      children.append(Node('Min'))
+
+      children.append(self.op_argument())
+
+      self.check('Operation Delimiter')
+      children.append(Node('Operation Delimiter'))
+
+      children.append(self.op_argument())
+
+    return Node(None, 'Relational Operator', children=children)
+  
+  # <comparison> ::= BOTH SAEM <op_argument> AN <op_argument>
+  # | DIFFRINT <op_argument> AN <op_argument>
+  # | BOTH SAEM <op_argument> AN <relational_operator>
+  # | DIFFRINT <op_argument> AN <relational_operator>
+  # comparison can either end in an argument or a relational operator
+  # ======================================================================
+  def comparison(self):
+    children = []
+    
+    if self.current_lexeme[1] == 'Equality Operator':
+      self.check('Equality Operator')
+      children.append(Node('Equality Operator'))
+       
+      children.append(self.op_argument())
+      
+      self.check('Operation Delimiter')
+      children.append(Node('Operation Delimiter'))
+
+      if self.current_lexeme[1] in {'Max', 'Min'}:
+        print('RELATIONAL HERE')
+        children.append(self.relational_operator())
+      else:
+        children.append(self.op_argument())
+
+    elif self.current_lexeme[1] == 'Inequality Operator':
+      self.check('Inequality Operator')
+      children.append(Node('Inequality Operator'))
+
+      children.append(self.op_argument())
+      self.check('Operation Delimiter')
+      children.append(Node('Operation Delimiter'))
+      
+      if self.current_lexeme[1] in {'Max', 'Min'}:
+        children.append(self.relational_operator())
+      else:
+        children.append(self.op_argument())
+    
+    return Node(None, 'Equality Comparison', children=children)
+
   # --------------------------------------------------------------------------------------------------
   # <program> ::== HAI <linebreak> <start_statement> <linebreak> KTHXBYE
   # --------------------------------------------------------------------------------------------------
@@ -204,8 +273,8 @@ class Syntax_Analyzer:
 
     # calls start_statement abstraction
     if self.current_lexeme[1] != "Program End":
-      if self.current_lexeme[1] in {'And', 'Or', 'Xor', 'Not', 'Infinite And', 'Infinite Or'}: 
-        children.append(self.boolean())
+      if self.current_lexeme[1] in {'Equality Operator', 'Inequality Operator', 'Max', 'Min'}: 
+        children.append(self.comparison())
       # children.append(self.start_statement([]))
 
     # linebreak?
