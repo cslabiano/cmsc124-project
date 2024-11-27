@@ -100,10 +100,22 @@ class Syntax_Analyzer:
       raise SyntaxError(f'Syntax Error: Expected Operation argument, but found {self.current_lexeme[1]}')
     return Node(None, "Op Argument", children=children)
 
+  def infinite_expression(self):
+    children = []
+
+    if self.current_lexeme[1] in {'Addition Expression', 'Subtraction Expression', 'Multiplication Expression', 'Division Expression', 'Modulo Expression'}:
+      # TODO: Arithmetic
+      pass
+    # Boolean expression
+    elif self.current_lexeme[1] in {'And Expression', 'Or Expression', 'Xor Expression', 'Not Expression'}:
+      children.append(self.boolean())
+    # Equality expression
+    elif self.current_lexeme[1] in {'Equality Operator Expression', 'Inequality Operator Expression'}:
+      children.append(self.comparison())
+
   # ======================================================================
   # <op_argument> ::= <literal> | <variable>
   # An operation argument can either be a literal, variable, or expression
-  # TODO: Infinite expressions are not yet supported
   # ======================================================================
   def infinite_op_argument(self):
     children = []
@@ -118,7 +130,8 @@ class Syntax_Analyzer:
         children.append(Node("Identifier"))
         self.check("Identifier")
 
-    #TODO: Handle infinite expressions here
+    elif 'Expression' in self.current_lexeme[1]: 
+      children.append(self.infinite_expression()) 
 
     else: 
       raise SyntaxError(f'Syntax Error: Expected Operation argument, but found {self.current_lexeme[1]}')
