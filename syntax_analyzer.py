@@ -73,10 +73,43 @@ class Syntax_Analyzer:
   # --------------------------------------------------------------------------------------------------
   # <start_statement> ::= <data_section> <linebreak> <statement> | <statement>
   # --------------------------------------------------------------------------------------------------
+
+  def variable(self):
+    children = []
+
+    self.check('Variable Declaration')
+    children.append(Node('Variable Declaration'))
+
+    self.check('Identifier')
+    children.append(Node('Identifier'))
+
+    self.check('Variable Assignment')
+    children.append(Node('Variable Assignment'))
+
+    children.append(self.op_argument())
+  
+    return Node(None, 'Variable', children=children)
+
+  
+  def data_section(self):
+    children = []
+
+    if self.current_lexeme[1] == 'Data section Delimiter':
+      self.check('Data section Delimiter')
+      children.append(Node('Data section Delimiter'))
+
+    if self.current_lexeme[1] != "Program End":
+      children.append(self.variable())
+
+    self.check("Data section Delimiter")
+    children.append(Node("Program End"))
+
   def start_statement(self):
     children = []
 
-    # Statement
+    if self.current_lexeme[1] == 'Data section Delimiter':
+      children.append(self.data_section())
+
     children.append(self.statement())
 
     return Node(None, 'Start Statement', children=children)
