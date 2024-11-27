@@ -93,7 +93,6 @@ class Syntax_Analyzer:
         children.append(Node("Identifier"))
         self.check("Identifier")
 
-    # TODO: Handle expressions here
     elif 'Expression' in self.current_lexeme[1]:
       children.append(self.expression())
 
@@ -148,7 +147,6 @@ class Syntax_Analyzer:
   # 
   # All fixed booleans must follow this format (except for not which only has 1 <op_argument>):   
   # <boolean_expression> <op_argument> <operation_delimiter> <op_argument> 
-  # TODO: Fix bug where AN that is not followed by an argument is accepted
   # ======================================================================
   def fixed_boolean(self):
     children = []
@@ -177,7 +175,6 @@ class Syntax_Analyzer:
   
   # ======================================================================
   # <infinite_argument> ::= <op_argument> AN <infinite_argument> | <op_argument>
-  # TODO: Fix bug where AN that is not followed by an argument is valid
   # ======================================================================
   def infinite_argument(self):
     children = []
