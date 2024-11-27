@@ -93,9 +93,9 @@ class Syntax_Analyzer:
   def expression(self):
     children = []
 
-    if self.current_lexeme[1] in {'Addition Expression', 'Subtraction Expression', 'Multiplication Expression', 'Division Expression', 'Modulo Expression'}:
-      # TODO: Arithmetic
-      pass
+    # Arithmetic
+    if self.current_lexeme[1] in {'Addition Expression', 'Subtraction Expression', 'Multiplication Expression', 'Division Expression', 'Modulo Expression', 'Max Expression', 'Min Expression'}:
+      children.append(self.arithmetic())
     # Boolean expression
     elif self.current_lexeme[1] in {'And Expression', 'Or Expression', 'Xor Expression', 'Not Expression', 'Infinite Or Expression', 'Infinite And Expression'}:
       children.append(self.boolean())
@@ -105,7 +105,23 @@ class Syntax_Analyzer:
     
     return Node(None, 'Expression', children=children) 
 
-  # --------------------------------------------------------------------------------------------------
+  def arithmetic(self):
+    children = []
+
+    if self.current_lexeme[1] in {'Addition Expression', 'Subtraction Expression', 'Multiplication Expression', 'Division Expression', 'Modulo Expression', 'Max Expression', 'Min Expression'}:
+      self.check(self.current_lexeme[1])
+      children.append(Node(self.current_lexeme[1]))
+
+      children.append(self.op_argument())
+
+      self.check('Operation Delimiter')
+      children.append(Node('Operation Delimiter'))
+
+      children.append(self.op_argument())
+
+    return Node(None, 'Arithmetic Expression', children=children)
+
+  # ======================================================================
   # <op_argument> ::= <literal> | <variable>
   # An operation argument can either be a literal, variable, or expression
   # --------------------------------------------------------------------------------------------------
