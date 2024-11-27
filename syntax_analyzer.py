@@ -41,6 +41,40 @@ class Syntax_Analyzer:
   # ==============================================================
 
   # ======================================================================
+  # <start_statement> ::= <data_section> <linebreak> <statement> | <statement>
+  # ======================================================================
+  def start_statement(self):
+    children = []
+
+    # Statement
+    children.append(self.statement())
+
+    return Node(None, 'Start Statement', children=children)
+  
+  def statement(self):
+    children = []
+
+    # expression
+    if 'Expression' in self.current_lexeme[1]:
+      children.append(self.expression())
+
+
+  def expression(self):
+    children = []
+
+    if self.current_lexeme[1] in {'Addition Expression', 'Subtraction Expression', 'Multiplication Expression', 'Division Expression', 'Modulo Expression'}:
+      # TODO: Arithmetic
+      pass
+    # Boolean expression
+    elif self.current_lexeme[1] in {'And Expression', 'Or Expression', 'Xor Expression', 'Not Expression', 'Infinite Or Expression', 'Infinite And Expression'}:
+      children.append(self.boolean())
+    # Equality expression
+    elif self.current_lexeme[1] in {'Equality Operator Expression', 'Inequality Operator Expression'}:
+      children.append(self.comparison())
+    
+    return Node(None, 'Expression', children=children) 
+
+  # ======================================================================
   # <op_argument> ::= <literal> | <variable>
   # An operation argument can either be a literal, variable, or expression
   # TODO: Expressions are not yet supported
@@ -95,9 +129,9 @@ class Syntax_Analyzer:
   def boolean(self):
     children = []
 
-    if self.current_lexeme[1] in {'And', 'Or', 'Xor', 'Not'}:
+    if self.current_lexeme[1] in {'And Expression', 'Or Expression', 'Xor Expression', 'Not Expression'}:
         children.append(self.fixed_boolean())
-    elif self.current_lexeme[1] in {'Infinite Or', 'Infinite And'}:
+    elif self.current_lexeme[1] in {'Infinite Or Expression', 'Infinite And Expression'}:
         children.append(self.infinite_boolean())
 
     return Node(None, "Boolean", children=children)
@@ -115,7 +149,7 @@ class Syntax_Analyzer:
   def fixed_boolean(self):
     children = []
 
-    if self.current_lexeme[1] in {'And', 'Or', 'Xor'}:
+    if self.current_lexeme[1] in {'And Expression', 'Or Expression', 'Xor Expression'}:
       self.check(self.current_lexeme[1])
       children.append(Node(self.current_lexeme[1]))
       
@@ -126,9 +160,9 @@ class Syntax_Analyzer:
 
       children.append(self.op_argument())
     
-    elif self.current_lexeme[1] == 'Not':
-      self.check("Not")
-      children.append(Node("Not"))
+    elif self.current_lexeme[1] == 'Not Expression':
+      self.check("Not Expression")
+      children.append(Node("Not Expression"))
 
       children.append(self.op_argument())
 
@@ -167,12 +201,12 @@ class Syntax_Analyzer:
     children = []
 
     # ALL OF or ANY OF
-    if self.current_lexeme[1] == "Infinite And":
-        self.check("Infinite And")
-        children.append(Node("Infinite And"))
+    if self.current_lexeme[1] == "Infinite And Expression":
+        self.check("Infinite And Expression")
+        children.append(Node("Infinite And Expression"))
     elif self.current_lexeme[1] == "Infinite Or":
-        self.check("Infinite Or")
-        children.append(Node("Infinite Or"))
+        self.check("Infinite Or Expression")
+        children.append(Node("Infinite Or Expression"))
 
     children.append(self.infinite_argument())
 
@@ -191,9 +225,9 @@ class Syntax_Analyzer:
   def relational_operator(self):
     children = []
 
-    if self.current_lexeme[1] == 'Max':
-      self.check('Max')
-      children.append(Node('Max'))
+    if self.current_lexeme[1] == 'Max Expression':
+      self.check('Max Expression')
+      children.append(Node('Max Expression'))
 
       children.append(self.op_argument())
 
@@ -201,9 +235,9 @@ class Syntax_Analyzer:
       children.append(Node('Operation Delimiter'))
 
       children.append(self.op_argument())
-    elif self.current_lexeme[1] == 'Min': 
-      self.check('Min')
-      children.append(Node('Min'))
+    elif self.current_lexeme[1] == 'Min Expression': 
+      self.check('Min Expression')
+      children.append(Node('Min Expression'))
 
       children.append(self.op_argument())
 
@@ -223,30 +257,29 @@ class Syntax_Analyzer:
   def comparison(self):
     children = []
     
-    if self.current_lexeme[1] == 'Equality Operator':
-      self.check('Equality Operator')
-      children.append(Node('Equality Operator'))
+    if self.current_lexeme[1] == 'Equality Operator Expression':
+      self.check('Equality Operator Expression')
+      children.append(Node('Equality Operator Expression'))
        
       children.append(self.op_argument())
       
       self.check('Operation Delimiter')
       children.append(Node('Operation Delimiter'))
 
-      if self.current_lexeme[1] in {'Max', 'Min'}:
-        print('RELATIONAL HERE')
+      if self.current_lexeme[1] in {'Max Expression', 'Min Expresion'}:
         children.append(self.relational_operator())
       else:
         children.append(self.op_argument())
 
-    elif self.current_lexeme[1] == 'Inequality Operator':
-      self.check('Inequality Operator')
+    elif self.current_lexeme[1] == 'Inequality Operator Expression':
+      self.check('Inequality Operator Expression')
       children.append(Node('Inequality Operator'))
 
       children.append(self.op_argument())
       self.check('Operation Delimiter')
       children.append(Node('Operation Delimiter'))
       
-      if self.current_lexeme[1] in {'Max', 'Min'}:
+      if self.current_lexeme[1] in {'Max Expression', 'Min Expression'}:
         children.append(self.relational_operator())
       else:
         children.append(self.op_argument())
@@ -273,9 +306,7 @@ class Syntax_Analyzer:
 
     # calls start_statement abstraction
     if self.current_lexeme[1] != "Program End":
-      if self.current_lexeme[1] in {'Equality Operator', 'Inequality Operator', 'Max', 'Min'}: 
-        children.append(self.comparison())
-      # children.append(self.start_statement([]))
+      children.append(self.start_statement())
 
     # linebreak?
 
