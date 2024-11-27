@@ -24,25 +24,54 @@ class Syntax_Analyzer:
       return str(e)
 
   # --------------------------------------------------------------------------------------------------
-  # pops lexeme from the list 
+  # checks if the current lexeme's classification matches the expected classification 
   # --------------------------------------------------------------------------------------------------
   def check(self, type):
+    children = []
     global line
     line += 1
+      
+    print("expected: ", type, "current: ", self.current_lexeme[1])
     if type == self.current_lexeme[1]:
-        self.lexemes.pop(0)
-        if self.lexemes:
-            self.current_lexeme = self.lexemes[0]
+      self.lexemes.pop(0)
+      if self.lexemes:
+        self.current_lexeme = self.lexemes[0]
+      return children
+    elif self.current_lexeme[1] == "Multiline Comment Start" or self.current_lexeme[1] == "Comment Delimiter":
+      self.comment()
     else:
-        raise SyntaxError(f'Syntax Error on line {line}: Expected {type}, but found {self.current_lexeme[1]}')
+      raise SyntaxError(f'Syntax Error on line {line}: Expected {type}, but found {self.current_lexeme[1]}')
+    
 
-  # ==============================================================
-  # dito kayo magdagdag ng other methods (production rules)
-  # ==============================================================
+  # --------------------------------------------------------------------------------------------------
+  # <comment> ::= <statement> <comment_inline> | <comment_long> 
+  # --------------------------------------------------------------------------------------------------
+  def  comment(self):
+    children = []
 
-  # ======================================================================
+    if self.current_lexeme[1] == "Multiline Comment Start":
+      self.check("Multiline Comment Start")
+      children.append(Node("Multiline Comment Start"))
+
+      while self.current_lexeme[1] != "Multiline Comment End":
+        self.check("Comment")
+        children.append(Node("Comment"))
+      
+      self.check("Multiline Comment End")
+      children.append(Node("Multiline Comment End"))
+    
+    if self.current_lexeme[1] == "Comment Delimiter":
+      self.check("Comment Delimiter")
+      children.append(Node("Comment Delimiter"))
+
+      self.check("Comment")
+      children.append("Comment")
+    
+    return Node(None, "Comment", children = children)
+
+  # --------------------------------------------------------------------------------------------------
   # <start_statement> ::= <data_section> <linebreak> <statement> | <statement>
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   def start_statement(self):
     children = []
 
@@ -51,9 +80,9 @@ class Syntax_Analyzer:
 
     return Node(None, 'Start Statement', children=children)
 
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   # <statement> ::= 
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   def statement(self):
     children = []
 
@@ -76,10 +105,10 @@ class Syntax_Analyzer:
     
     return Node(None, 'Expression', children=children) 
 
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   # <op_argument> ::= <literal> | <variable>
   # An operation argument can either be a literal, variable, or expression
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   def op_argument(self):
     children = []
 
@@ -113,10 +142,10 @@ class Syntax_Analyzer:
     elif self.current_lexeme[1] in {'Equality Operator Expression', 'Inequality Operator Expression'}:
       children.append(self.comparison())
 
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   # <op_argument> ::= <literal> | <variable>
   # An operation argument can either be a literal, variable, or expression
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   def infinite_op_argument(self):
     children = []
 
@@ -138,10 +167,10 @@ class Syntax_Analyzer:
 
     return Node(None, "Infinite Op Argument", children=children)
 
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   # <boolean> ::= <fixed_boolean> | <infinite_boolean>
   # Booleans can either be a fixed boolean or an infinite boolean 
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   def boolean(self):
     children = []
 
@@ -152,7 +181,7 @@ class Syntax_Analyzer:
 
     return Node(None, "Boolean", children=children)
   
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   # <fixed_boolean> ::= BOTH OF <op_argument> AN <op_argument> 
   #                     | EITHER OF <op_argument> AN <op_argument>  
   #                     | WON OF <op_argument> AN <op_argument> 
@@ -160,7 +189,7 @@ class Syntax_Analyzer:
   # 
   # All fixed booleans must follow this format (except for not which only has 1 <op_argument>):   
   # <boolean_expression> <op_argument> <operation_delimiter> <op_argument> 
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   def fixed_boolean(self):
     children = []
 
@@ -182,13 +211,10 @@ class Syntax_Analyzer:
       children.append(self.op_argument())
 
     return Node(None, "Fixed Boolean", children=children)
-
   
-    # ======================================================================
-  
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   # <infinite_argument> ::= <op_argument> AN <infinite_argument> | <op_argument>
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   def infinite_argument(self):
     children = []
 
@@ -204,13 +230,14 @@ class Syntax_Analyzer:
 
     return Node(None, "Infinite Argument", children=children)
 
+  # --------------------------------------------------------------------------------------------------
   # <infinite_boolean> ::= ALL OF <infinite_argument> MKAY
   #                       | ANY OF <infinite_argument> MKAY
   # 
   # All infinite booleans must follow this format
   # <boolean_expression> <infinite_argument> <function_call_delimiter>  
   # TODO: MKAY is currently a Function Call Delimiter only
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   def infinite_boolean(self):
     children = []
 
@@ -231,11 +258,11 @@ class Syntax_Analyzer:
 
     return Node(None, "Infinite Boolean", children=children)
   
-    # ======================================================================
-  
+  # --------------------------------------------------------------------------------------------------
   # <relational_operator ::= BIGGR OF <op_argument> AN <op_argument>
   #                          | DIFFRINT OF <op_argument> AN <op_argument> 
   # can either be a max or a min
+  # --------------------------------------------------------------------------------------------------
   def relational_operator(self):
     children = []
 
@@ -262,12 +289,13 @@ class Syntax_Analyzer:
 
     return Node(None, 'Relational Operator', children=children)
   
+  # --------------------------------------------------------------------------------------------------
   # <comparison> ::= BOTH SAEM <op_argument> AN <op_argument>
   # | DIFFRINT <op_argument> AN <op_argument>
   # | BOTH SAEM <op_argument> AN <relational_operator>
   # | DIFFRINT <op_argument> AN <relational_operator>
   # comparison can either end in an argument or a relational operator
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   def comparison(self):
     children = []
     
@@ -307,10 +335,8 @@ class Syntax_Analyzer:
     children = []
 
     # check if there are comments before HAI
-    if self.current_lexeme[1] == "Multiline Comment Start":
-      children.append(self.multiline_comment())
-    elif self.current_lexeme[1] == "Comment Delimiter":
-      children.append(self.comment())
+    # if self.current_lexeme[1] == "Multiline Comment Start" or self.current_lexeme[1] == "Comment Delimiter":
+    #   children.append(self.comment())
 
     # program must start with HAI
     self.check("Program Start")

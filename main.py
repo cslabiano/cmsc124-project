@@ -66,9 +66,9 @@ class UI(QMainWindow):
             self.label_console.setText(parse_tree)
           else:
             self.label_console.setText("Syntax is valid.\n")
-            self.populate_table(lexemes_copy)
         except SyntaxError as e:
           self.label_console.setText(str(e))
+      self.populate_table(lexemes_copy)
 
       # changes made in the text editor will be saved in the original file
       if self.file_path:
