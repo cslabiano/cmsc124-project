@@ -64,6 +64,13 @@ class Syntax_Analyzer:
   # <start_statement> ::= <data_section> <linebreak> <statement> | <statement>
   # --------------------------------------------------------------------------------------------------
 
+  def identifier(self):
+    children = []
+    self.check('Identifier')
+    children.append(Node('Identifier'))
+
+    return Node(None, 'Identifier', children=children)
+
   def variable(self):
     children = []
 
@@ -113,18 +120,23 @@ class Syntax_Analyzer:
   def statement(self):
     children = []
 
+    currentLex = self.current_lexeme[1]
+
     # expression
-    if 'Expression' in self.current_lexeme[1]:
+    if 'Expression' in currentLex:
       children.append(self.expression())
     # loop
-    elif self.current_lexeme[1] == 'Loop Delimiter':
+    elif currentLex == 'Loop Delimiter':
       children.append(self.loop())
     # comment
-    elif self.current_lexeme[1] in {"Multiline Comment Start", "Comment Delimiter"}:
+    elif currentLex in {"Multiline Comment Start", "Comment Delimiter"}:
       children.append(self.comment())
-        # print
-    elif self.current_lexeme[1] == 'Output Keyword':
+    # print
+    elif currentLex == 'Output Keyword':
       children.append(self.print_fn())
+    # input
+    elif currentLex == 'Input Keyword':
+      children.append(self.input())
 
     return Node(None, 'Statement', children=children)
   
@@ -464,6 +476,16 @@ class Syntax_Analyzer:
       children.append(self.print_multiple())
     
     return Node(None, "Print Statement", children=children)
+
+  def input(self):
+    children = []
+
+    self.check('Input Keyword')
+    children.append(Node('Input Keyword'))
+
+    children.append(self.identifier())
+
+    return Node(None, 'Input Keyword', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <program> ::== HAI <linebreak> <start_statement> <linebreak> KTHXBYE
