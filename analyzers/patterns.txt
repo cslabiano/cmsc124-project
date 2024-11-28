@@ -52,6 +52,7 @@
 "^IF U SAY SO\b", "Function Delimiter"
 "^I IZ\b", "Function Call Delimiter"
 "^MKAY\b", "Function Call Delimiter"
+"^\+", "Print Concatenation"
 "^\-?[0-9]+\.[0-9]+\b", "NUMBAR Literal"
 "^\-?[0-9]+\b", "NUMBR Literal"
 ^\"([^\”]|:\”)*\", "YARN Literal"

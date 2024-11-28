@@ -122,7 +122,10 @@ class Syntax_Analyzer:
     # comment
     elif self.current_lexeme[1] in {"Multiline Comment Start", "Comment Delimiter"}:
       children.append(self.comment())
-    
+        # print
+    elif self.current_lexeme[1] == 'Output Keyword':
+      children.append(self.print_fn())
+
     return Node(None, 'Statement', children=children)
   
 
@@ -424,7 +427,7 @@ class Syntax_Analyzer:
     children.append(Node('Condition Delimiter'))
 
     self.check('Identifier')
-    
+
     children.append(self.termination())
 
     while self.current_lexeme[1] != 'Loop Delimiter':
@@ -436,6 +439,31 @@ class Syntax_Analyzer:
     self.check('Identifier')
 
     return Node(None, 'Loop', children=children) 
+
+  def print_multiple(self):
+    children = []
+    self.check('Print Concatenation')
+    children.append(Node('Print Concatenation'))
+
+    children.append(self.op_argument())
+
+    if self.current_lexeme[1] == 'Print Concatenation':
+      children.append(self.print_multiple())
+
+    return Node(None, 'Print Multiple', children=children)
+  
+  def print_fn(self):
+    children = []
+
+    self.check('Output Keyword')
+    children.append(Node('Output Keyword'))
+
+    children.append(self.op_argument())
+
+    # if self.current_lexeme[1] == 'Print Concatenation':
+    #   children.add(self.print_multiple())
+    
+    return Node(None, "Print Statement", children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <program> ::== HAI <linebreak> <start_statement> <linebreak> KTHXBYE
