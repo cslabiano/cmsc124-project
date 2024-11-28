@@ -463,8 +463,8 @@ class Syntax_Analyzer:
 
     children.append(self.op_argument())
 
-    # if self.current_lexeme[1] == 'Print Concatenation':
-    #   children.add(self.print_multiple())
+    if self.current_lexeme[1] == 'Print Concatenation':
+      children.append(self.print_multiple())
     
     return Node(None, "Print Statement", children=children)
 
