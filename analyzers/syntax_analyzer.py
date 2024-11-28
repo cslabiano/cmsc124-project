@@ -77,8 +77,7 @@ class Syntax_Analyzer:
     self.check('Variable Declaration')
     children.append(Node('Variable Declaration'))
 
-    self.check('Identifier')
-    children.append(Node('Identifier'))
+    children.append(self.identifier())
 
     if self.current_lexeme[1] == 'Variable Assignment':
       self.check('Variable Assignment')
@@ -194,8 +193,7 @@ class Syntax_Analyzer:
       children.append(Node('String Delimiter'))
     # Variables
     elif self.current_lexeme[1] == "Identifier":
-        children.append(Node("Identifier"))
-        self.check("Identifier")
+      children.append(self.identifier())
 
     elif 'Expression' in self.current_lexeme[1]:
       children.append(self.expression())
@@ -231,8 +229,7 @@ class Syntax_Analyzer:
 
     # Variables
     elif self.current_lexeme[1] == "Identifier":
-        children.append(Node("Identifier"))
-        self.check("Identifier")
+      children.append(self.identifier())
 
     elif 'Expression' in self.current_lexeme[1]: 
       children.append(self.infinite_expression()) 
@@ -431,14 +428,14 @@ class Syntax_Analyzer:
     self.check('Loop Delimiter')
     children.append(Node('Loop Delimiter'))
 
-    self.check('Identifier')
+    children.append(self.identifier())
 
     children.append(self.inc_dec())
 
     self.check('Condition Delimiter')
     children.append(Node('Condition Delimiter'))
 
-    self.check('Identifier')
+    children.append(self.identifier())
 
     children.append(self.termination())
 
@@ -448,7 +445,7 @@ class Syntax_Analyzer:
     self.check('Loop Delimiter')
     children.append(Node('Loop Delimiter'))
 
-    self.check('Identifier')
+    children.append(self.identifier())
 
     return Node(None, 'Loop', children=children) 
 
