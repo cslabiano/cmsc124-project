@@ -126,6 +126,11 @@ class Syntax_Analyzer:
     # expression
     if 'Expression' in self.current_lexeme[1]:
       children.append(self.expression())
+    # loop
+    elif self.current_lexeme[1] == 'Loop Delimiter':
+      children.append(self.loop())
+
+    return Node(None, 'Statement', children=children)
 
   def expression(self):
     children = []
@@ -415,15 +420,17 @@ class Syntax_Analyzer:
     children = []
     
     self.check('Loop Delimiter')
-    children.add(Node('Loop Delimiter'))
+    children.append(Node('Loop Delimiter'))
 
-    children.add(self.variable())
+    self.check('Identifier')
 
-    children.add(self.inc_dec())
+    children.append(self.inc_dec())
 
     self.check('Condition Delimiter')
     children.append(Node('Condition Delimiter'))
 
+    self.check('Identifier')
+    
     children.append(self.termination())
 
     while self.current_lexeme[1] != 'Loop Delimiter':
@@ -432,12 +439,9 @@ class Syntax_Analyzer:
     self.check('Loop Delimiter')
     children.append(Node('Loop Delimiter'))
 
-    children.add(self.variable())
+    self.check('Identifier')
 
     return Node(None, 'Loop', children=children) 
-
-
-
 
   # --------------------------------------------------------------------------------------------------
   # <program> ::== HAI <linebreak> <start_statement> <linebreak> KTHXBYE
