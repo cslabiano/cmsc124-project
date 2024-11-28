@@ -1,9 +1,7 @@
 from node import Node
 
 # lexeme = lexemes[0][0] | current_lexeme[0]
-# classification = lexemes[0][1] | current_lexeme[1]
-
-line = 0
+# classification = lexemes[0][1] | current_lexeme[1
 
 class Syntax_Analyzer:
   def __init__(self, lexemes):
@@ -17,7 +15,7 @@ class Syntax_Analyzer:
     global line
     line = 0
     try:
-      parse_tree = self.program()  # Start the program parsing
+      parse_tree = self.program()  # start the program parsing
       return parse_tree
     except SyntaxError as e:
       return str(e)
@@ -26,27 +24,19 @@ class Syntax_Analyzer:
   # checks if the current lexeme's classification matches the expected classification 
   # --------------------------------------------------------------------------------------------------
   def check(self, type):
-    children = []
-    global line
-    line += 1
       
-    print("\n\nlexeme: ", self.current_lexeme[0], "\nexpected: ", type, "\ncurrent: ", self.current_lexeme[1])
+    print("lexeme: ", self.current_lexeme[0], "expected: ", type, "current: ", self.current_lexeme[1])
     if type == self.current_lexeme[1]:
       self.lexemes.pop(0)
       if self.lexemes:
         self.current_lexeme = self.lexemes[0]
-      return children
-    elif self.current_lexeme[1] == "Multiline Comment Start" or self.current_lexeme[1] == "Comment Delimiter":
-      self.comment()
-      self.check(type)
     else:
       raise SyntaxError(f'Syntax Error on line {line}: Expected {type}, but found {self.current_lexeme[1]}')
     
-
   # --------------------------------------------------------------------------------------------------
   # <comment> ::= <statement> <comment_inline> | <comment_long> 
   # --------------------------------------------------------------------------------------------------
-  def  comment(self):
+  def comment(self):
     children = []
 
     if self.current_lexeme[1] == "Multiline Comment Start":
@@ -124,6 +114,8 @@ class Syntax_Analyzer:
     # expression
     if 'Expression' in self.current_lexeme[1]:
       children.append(self.expression())
+    elif self.current_lexeme[1] in {"Multiline Comment Start", "Comment Delimiter"}:
+      children.append(self.comment())
     
     return children
 
@@ -158,7 +150,7 @@ class Syntax_Analyzer:
 
     return Node(None, 'Arithmetic Expression', children=children)
 
-  # ======================================================================
+  # --------------------------------------------------------------------------------------------------
   # <op_argument> ::= <literal> | <variable>
   # An operation argument can either be a literal, variable, or expression
   # --------------------------------------------------------------------------------------------------
@@ -388,8 +380,8 @@ class Syntax_Analyzer:
     children = []
 
     # check if there are comments before HAI
-    # if self.current_lexeme[1] == "Multiline Comment Start" or self.current_lexeme[1] == "Comment Delimiter":
-    #   children.append(self.comment())
+    while self.current_lexeme[1] == "Multiline Comment Start" or self.current_lexeme[1] == "Comment Delimiter":
+      children.append(self.comment())
 
     # program must start with HAI
     self.check("Program Start")
@@ -397,14 +389,10 @@ class Syntax_Analyzer:
 
     # calls start_statement abstraction
     if self.current_lexeme[1] != "Program End":
-      print("Not yet Program End")
-      start = self.start_statement()
-      children.append(start)
-      print(start)
+      children.append(self.start_statement())
 
     # program must end with KTHXBYE
     self.check("Program End")
     children.append(Node("Program End"))
 
-    print("reached end of parsing")
     return Node(None, "Program", children = children)

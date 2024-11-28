@@ -2,10 +2,12 @@ OBTW
   comment 1
   comment 2
 TLDR
+BTW comment before HAI
 HAI BTW comment
 OBTW
   comment 3
   comment 4
 TLDR
-BTW hello
+NOT 1
+NOT 2 BTW another comment
 KTHXBYE

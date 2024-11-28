@@ -55,6 +55,7 @@ class UI(QMainWindow):
     # if file is not empty, perform lexeme analysis
     if content:
       lexemes, error_msg = lexical_analyzer.analyze_lexemes(content)
+      print(lexemes)
       if error_msg:
         self.label_console.setText(error_msg)
       else:
