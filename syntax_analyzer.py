@@ -111,7 +111,8 @@ class Syntax_Analyzer:
     if self.current_lexeme[1] == 'Data section Delimiter':
       children.append(self.data_section())
 
-    children.append(self.statement())
+    while self.current_lexeme[1] != 'Program End':
+      children.append(self.statement())
 
     return Node(None, 'Start Statement', children=children)
 
@@ -401,4 +402,5 @@ class Syntax_Analyzer:
     self.check("Program End")
     children.append(Node("Program End"))
 
+    print("reached end of parsing")
     return Node(None, "Program", children = children)
