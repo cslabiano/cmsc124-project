@@ -83,10 +83,11 @@ class Syntax_Analyzer:
     self.check('Identifier')
     children.append(Node('Identifier'))
 
-    self.check('Variable Assignment')
-    children.append(Node('Variable Assignment'))
+    if self.current_lexeme[1] == 'Variable Assignment':
+      self.check('Variable Assignment')
+      children.append(Node('Variable Assignment'))
 
-    children.append(self.op_argument())
+      children.append(self.op_argument())
   
     return Node(None, 'Variable', children=children)
   
@@ -165,10 +166,18 @@ class Syntax_Analyzer:
     children = []
 
     # Literals
-    if self.current_lexeme[1] in {'NUMBR Literal', 'NUMBAR Literal', 'YARN Literal', 'TROOF Literal', 'TYPE Literal'}:
+    if self.current_lexeme[1] in {'NUMBR Literal', 'NUMBAR Literal', 'TROOF Literal', 'TYPE Literal'}:
         children.append(Node(self.current_lexeme[1]))
         self.check(self.current_lexeme[1])
+    elif self.current_lexeme[1] == 'String Delimiter':
+      children.append(Node('String Delimiter'))
+      self.check('String Delimiter')
 
+      self.check('YARN Literal')
+      children.append(Node('Yarn Literal'))
+
+      self.check('String Delimiter')
+      children.append(Node('String Delimiter'))
     # Variables
     elif self.current_lexeme[1] == "Identifier":
         children.append(Node("Identifier"))
@@ -379,6 +388,56 @@ class Syntax_Analyzer:
         children.append(self.op_argument())
     
     return Node(None, 'Equality Comparison', children=children)
+
+  def inc_dec(self):
+    children = []
+
+    if self.current_lexeme[1] == 'Loop Increment':
+      self.check('Loop Increment')
+      children.append(Node('Loop Increment'))
+    elif self.current_lexeme[1] == 'Loop Decrement':
+      self.check('Loop Decrement')
+      children.append(Node('Loop Decrement'))
+
+    return Node(None, 'Increment/Decrement', children=children)
+
+  def termination(self):
+    children = []
+
+    self.check('Loop Condition')
+    children.append(Node('Loop Condition'))
+
+    children.append(self.expression())
+
+    return Node(None, 'Loop Condition', children=children)
+
+  def loop(self):
+    children = []
+    
+    self.check('Loop Delimiter')
+    children.add(Node('Loop Delimiter'))
+
+    children.add(self.variable())
+
+    children.add(self.inc_dec())
+
+    self.check('Condition Delimiter')
+    children.append(Node('Condition Delimiter'))
+
+    children.append(self.termination())
+
+    while self.current_lexeme[1] != 'Loop Delimiter':
+      children.append(self.statement())
+
+    self.check('Loop Delimiter')
+    children.append(Node('Loop Delimiter'))
+
+    children.add(self.variable())
+
+    return Node(None, 'Loop', children=children) 
+
+
+
 
   # --------------------------------------------------------------------------------------------------
   # <program> ::== HAI <linebreak> <start_statement> <linebreak> KTHXBYE
