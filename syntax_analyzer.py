@@ -458,4 +458,8 @@ class Syntax_Analyzer:
     self.check("Program End")
     children.append(Node("Program End"))
 
+    # check if there are comments before HAI
+    while self.current_lexeme[1] == "Multiline Comment Start" or self.current_lexeme[1] == "Comment Delimiter":
+      children.append(self.comment())
+
     return Node(None, "Program", children = children)
