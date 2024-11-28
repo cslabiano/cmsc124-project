@@ -1,10 +1,14 @@
 import re
+import os
+
+script_dir = os.path.dirname(__file__)  # Directory of the current script
+patterns_path = os.path.join(script_dir, "patterns.txt")
 
 def analyze_lexemes(content):
   lexemes = []
   pattern_dict = {}
 
-  with open("patterns.txt", "r", encoding="utf-8") as patterns:
+  with open(patterns_path, "r", encoding="utf-8") as patterns:
     lines = patterns.readlines()
 
   # place patterns into a dictionary

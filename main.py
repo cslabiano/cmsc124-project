@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QTextEdit, QFileDialog, QLabel, QTableWidget, QTableWidgetItem
 from PyQt5 import uic
 import sys
-import lexical_analyzer
-from syntax_analyzer import Syntax_Analyzer
+import analyzers.lexical_analyzer as lexical_analyzer
+from analyzers.syntax_analyzer import Syntax_Analyzer
 
 class UI(QMainWindow):
   def __init__(self):

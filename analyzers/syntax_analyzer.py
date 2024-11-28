@@ -1,7 +1,8 @@
-from node import Node
-
-# lexeme = lexemes[0][0] | current_lexeme[0]
-# classification = lexemes[0][1] | current_lexeme[1
+class Node:
+  def __init__(self, type, value = None, children = None):
+    self.value = value
+    self.type = type
+    self.children = children
 
 class Syntax_Analyzer:
   def __init__(self, lexemes):
