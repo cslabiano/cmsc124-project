@@ -88,7 +88,6 @@ class Syntax_Analyzer:
     children.append(self.op_argument())
   
     return Node(None, 'Variable', children=children)
-
   
   def data_section(self):
     children = []
@@ -97,11 +96,13 @@ class Syntax_Analyzer:
       self.check('Data section Delimiter')
       children.append(Node('Data section Delimiter'))
 
-    if self.current_lexeme[1] != "Program End":
+    while self.current_lexeme[1] != "Data section Delimiter":
       children.append(self.variable())
 
     self.check("Data section Delimiter")
-    children.append(Node("Program End"))
+    children.append(Node("Data section Delimiter"))
+    
+    return Node(None, "Data Section", children=children)
 
   def start_statement(self):
     children = []
@@ -109,7 +110,7 @@ class Syntax_Analyzer:
     if self.current_lexeme[1] == 'Data section Delimiter':
       children.append(self.data_section())
 
-    if self.current_lexeme[1] != "Program End":
+    while self.current_lexeme[1] != 'Program End':
       children.append(self.statement())
 
     return Node(None, 'Start Statement', children=children)
@@ -405,4 +406,5 @@ class Syntax_Analyzer:
     self.check("Program End")
     children.append(Node("Program End"))
 
+    print("reached end of parsing")
     return Node(None, "Program", children = children)
