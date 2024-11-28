@@ -89,6 +89,9 @@ class Syntax_Analyzer:
       children.append(Node('Data section Delimiter'))
 
     while self.current_lexeme[1] != "Data section Delimiter":
+      if self.current_lexeme[1] in {"Multiline Comment Start", "Comment Delimiter"}:
+        # checks if there are comments within the data section
+        children.append(self.comment())
       children.append(self.variable())
 
     self.check("Data section Delimiter")

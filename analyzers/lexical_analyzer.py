@@ -1,4 +1,9 @@
 import re
+import os
+
+script_dir = os.path.dirname(__file__)  # directory of the current script
+patterns_path = os.path.join(script_dir, "patterns.txt")
+
 def analyze_lexemes(content):
   lexemes = []
   pattern_dict = {}
@@ -20,6 +25,7 @@ def analyze_lexemes(content):
   insideMultilineComment = False
   for line_num, line in enumerate(content.splitlines(), start=1):
     line = line.lstrip()
+    print(line)
     # if inside multiline comment, make each line a comment until TLDR
     if insideMultilineComment:
       # TODO: Change this logic to something not hardcoded
@@ -71,12 +77,5 @@ def analyze_lexemes(content):
       if not matched:
         # return an error message with line number for the gui to display
         return None, f"Lexical error on line {line_num}: '{line}' could not be matched."
-  print(lexemes)
+
   return lexemes, None
-
-def main():
-  content = "HAI KTHXBYE"
-  analyze_lexemes(content)
-
-if __name__ == "__main__":
-  main()
