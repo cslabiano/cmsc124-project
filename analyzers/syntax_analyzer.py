@@ -254,6 +254,14 @@ class Syntax_Analyzer:
 
     return Node(None, 'Arithmetic Expression', children=children)
 
+  def implicit_var(self):
+    children = []
+
+    self.check('Implicit Variable')
+    children.append('Implicit Variable')
+
+    return Node(None, 'Implicit Variable', children=children)
+
   # --------------------------------------------------------------------------------------------------
   # <op_argument> ::= <literal> | <variable>
   # An operation argument can either be a literal, variable, or expression
@@ -280,6 +288,8 @@ class Syntax_Analyzer:
 
     elif 'Expression' in self.current_lexeme[1]:
       children.append(self.expression())
+    elif self.current_lexeme[1] == 'Implicit Variable':
+      children.append(self.implicit_var())
 
     else: 
       raise SyntaxError(f'Syntax Error: Expected Operation argument, but found {self.current_lexeme[1]}')
