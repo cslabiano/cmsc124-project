@@ -147,7 +147,7 @@ class Syntax_Analyzer:
       children.append(self.typecast())
     elif currentLex == "String Concatenation":
       children.append(self.concatenation())
-      
+
     return Node(None, 'Statement', children=children)
   
   def expression(self):
@@ -550,12 +550,12 @@ class Syntax_Analyzer:
     self.check("String Concatenation")
     children.append(Node("String Concatenation"))
 
-    children.append(self.op_argument)
+    children.append(self.op_argument())
 
     while self.current_lexeme[1] == "Operation Delimiter":
       self.check("Operation Delimiter")
       children.append(Node("Operation Delimiter"))
-      children.append(self.op_argument)
+      children.append(self.op_argument())
 
     return Node(None, "String Concatenation", children = children)
 

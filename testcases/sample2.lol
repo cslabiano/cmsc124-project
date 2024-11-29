@@ -9,6 +9,7 @@ OBTW
   comment 4
 TLDR
 NOT 1
+SMOOSH "hello" AN "world" AN "bye"
 NOT 2 BTW another comment
 KTHXBYE
 OBTW
