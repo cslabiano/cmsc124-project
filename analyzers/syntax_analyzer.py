@@ -116,6 +116,22 @@ class Syntax_Analyzer:
 
     return Node(None, 'Start Statement', children=children)
 
+  def function_return(self):
+    children = []
+    self.check('Function Return')
+    children.append('Function Return')
+
+    children.append(self.expression())
+
+    return Node(None, 'Function Return', children=children)
+
+  def function_break(self):
+    children = []
+
+    self.check('Function Break')
+    children.append('Function Break')
+
+    return Node(None, 'Function Break', children=children)
   # --------------------------------------------------------------------------------------------------
   # <statement> ::= 
   # --------------------------------------------------------------------------------------------------
@@ -145,8 +161,18 @@ class Syntax_Analyzer:
     # could be a typecast or an assignment?
     elif currentLex == 'Identifier':
       children.append(self.typecast())
+    # string concatenation
     elif currentLex == "String Concatenation":
       children.append(self.concatenation())
+    # function definition
+    elif currentLex == 'Function Delimiter Start':
+      children.append(self.function_definition())
+    # function return
+    elif currentLex == 'Function Return':
+      children.append(self.function_return())
+    # function break
+    elif currentLex == 'Function Break':
+      children.append(self.function_break())
 
     return Node(None, 'Statement', children=children)
   
@@ -583,6 +609,52 @@ class Syntax_Analyzer:
       children.append(self.op_argument())
 
     return Node(None, "String Concatenation", children = children)
+
+  def function_argument(self):
+    children = []
+
+    # YR
+    self.check('Condition Delimiter')
+    children.append('Condition Delimiter')
+
+    # x
+    children.append(self.identifier())
+
+    # While AN
+    while self.current_lexeme[1] == 'Operation Delimiter':
+      # AN
+      self.check('Operation Delimiter')
+      children.append(Node('Operation Delimiter'))
+
+      # YR
+      self.check('Condition Delimiter')
+      children.append(Node('Condition Delimiter'))
+
+      # y
+      children.append(self.identifier())
+
+    return Node(None, 'Function Arguments', children=children)
+
+  def function_definition(self):
+    children = []
+    # HOW IZ I
+    self.check('Function Delimiter Start')
+    children.append(Node('Function Delimiter Start'))
+
+    # Function name
+    children.append(self.identifier())
+
+    # There is arguments
+    if self.current_lexeme[1] == 'Condition Delimiter':
+      children.append(self.function_argument())
+
+    while self.current_lexeme[1] != 'Function Delimiter End':
+      children.append(self.statement())
+
+    self.check('Function Delimiter End')
+    children.append(Node('Function Delimiter End'))    
+
+    return Node(None, 'Function Definition', children=children)  
 
   # --------------------------------------------------------------------------------------------------
   # <program> ::== HAI <linebreak> <start_statement> <linebreak> KTHXBYE
