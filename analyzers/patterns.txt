@@ -45,6 +45,7 @@
 "^WILE\b", "Loop Condition"
 "^IM OUTTA YR\b", Loop Delimiter"
 "^YR\b", "Condition Delimiter"
+"^IT\b", "Implicit Variable"
 "^HOW IZ I\b", "Function Delimiter Start"
 "^GTFO\b", "Function Break"
 "^FOUND YR\b", "Function Return"
