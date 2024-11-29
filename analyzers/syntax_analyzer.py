@@ -99,18 +99,18 @@ class Syntax_Analyzer:
   def data_section(self):
     children = []
 
-    if self.current_lexeme[1] == 'Data section Delimiter':
-      self.check('Data section Delimiter')
-      children.append(Node('Data section Delimiter'))
+    if self.current_lexeme[1] == 'Data section Delimiter Start':
+      self.check('Data section Delimiter Start')
+      children.append(Node('Data section Delimiter Start'))
 
-    while self.current_lexeme[1] != "Data section Delimiter":
+    while self.current_lexeme[1] != "Data section Delimiter End":
       if self.current_lexeme[1] in {"Multiline Comment Start", "Comment Delimiter"}:
         # checks if there are comments within the data section
         children.append(self.comment())
       children.append(self.variable())
 
-    self.check("Data section Delimiter")
-    children.append(Node("Data section Delimiter"))
+    self.check("Data section Delimiter End")
+    children.append(Node("Data section Delimiter End"))
     
     return Node(None, "Data Section", children=children)
   
@@ -120,7 +120,7 @@ class Syntax_Analyzer:
   def start_statement(self):
     children = []
 
-    if self.current_lexeme[1] == 'Data section Delimiter':
+    if self.current_lexeme[1] == 'Data section Delimiter Start':
       children.append(self.data_section())
 
     max_iter = len(self.lexemes)
@@ -238,7 +238,7 @@ class Syntax_Analyzer:
     if 'Expression' in currentLex:
       children.append(self.expression())
     # loop
-    elif currentLex == 'Loop Delimiter':
+    elif currentLex == 'Loop Delimiter Start':
       children.append(self.loop())
     # comment
     elif currentLex in {"Multiline Comment Start", "Comment Delimiter"}:
@@ -358,6 +358,8 @@ class Syntax_Analyzer:
       children.append(self.expression())
     elif self.current_lexeme[1] == 'Implicit Variable':
       children.append(self.implicit_var())
+    elif self.current_lexeme[1] == 'String Concatenation':
+      children.append(self.concatenation())
 
     else: 
       raise SyntaxError(f'Syntax Error: Expected Operation argument, but found {self.current_lexeme[1]}')
@@ -522,9 +524,9 @@ class Syntax_Analyzer:
     children.append(self.infinite_argument())
 
     # Check 'MKAY'
-    if self.current_lexeme[1] == "Function Call Delimiter":
-        self.check("Function Call Delimiter")
-        children.append(Node("Function Call Delimiter"))
+    if self.current_lexeme[1] == "Function Call Delimiter End":
+        self.check("Function Call Delimiter End")
+        children.append(Node("Function Call Delimiter End"))
 
     return Node(None, "Infinite Boolean", children=children)
   
@@ -675,7 +677,6 @@ class Syntax_Analyzer:
     children = []
 
     if self.current_lexeme[1] == "Else Keyword":
-      print("\nGinawa ko to")
       self.check("Else Keyword")
       children.append(Node("Else Keyword"))
 
@@ -809,8 +810,8 @@ class Syntax_Analyzer:
   def loop(self):
     children = []
     
-    self.check('Loop Delimiter')
-    children.append(Node('Loop Delimiter'))
+    self.check('Loop Delimiter Start')
+    children.append(Node('Loop Delimiter Start'))
 
     children.append(self.identifier())
 
@@ -823,18 +824,18 @@ class Syntax_Analyzer:
 
     children.append(self.termination())
 
-    while self.current_lexeme[1] != 'Loop Delimiter':
+    while self.current_lexeme[1] != 'Loop Delimiter End':
       children.append(self.statement())
 
-    self.check('Loop Delimiter')
-    children.append(Node('Loop Delimiter'))
+    self.check('Loop Delimiter End')
+    children.append(Node('Loop Delimiter End'))
 
     children.append(self.identifier())
 
     return Node(None, 'Loop', children=children) 
 
   # --------------------------------------------------------------------------------------------------
-  # <loop> ::= VISIBLE <op_argument> <plus_argument>
+  # <print_multiple> ::= VISIBLE <op_argument> <plus_argument>
   # --------------------------------------------------------------------------------------------------
   def print_multiple(self):
     children = []
