@@ -142,7 +142,7 @@ class Syntax_Analyzer:
     # typecast
     elif currentLex == 'Typecast Delimiter':
       children.append(self.typecast())
-    # could be a typecast?
+    # could be a typecast or an assignment?
     elif currentLex == 'Identifier':
       children.append(self.typecast())
     elif currentLex == "String Concatenation":
@@ -501,6 +501,7 @@ class Syntax_Analyzer:
     if self.current_lexeme[1] == 'Typecast Delimiter':
       children.append(self.explicit_typecast())
     
+    # Recasting
     elif self.current_lexeme[1] == 'Identifier':
       children.append(self.recasting())
 
@@ -533,14 +534,18 @@ class Syntax_Analyzer:
 
       self.check('TYPE Literal')
       children.append('TYPE Literal')
+      
     elif self.current_lexeme[1] == 'Assignment':
       self.check('Assignment')
       children.append(Node('Assignment'))
 
-      children.append(self.explicit_typecast())
+      if self.current_lexeme[1] == 'Typecast Delimiter':
+        children.append(self.explicit_typecast())
+      else:
+        children.append(self.op_argument())
 
     return Node(None, 'Recasting', children=children)
-  
+
   # --------------------------------------------------------------------------------------------------
   # <concatenation> ::= SMOOSH <op_argument> <an_op_argument>
   # --------------------------------------------------------------------------------------------------
