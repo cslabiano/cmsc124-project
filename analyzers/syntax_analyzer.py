@@ -225,6 +225,27 @@ class Syntax_Analyzer:
     elif self.current_lexeme[1] in {'Equality Operator Expression', 'Inequality Operator Expression'}:
       children.append(self.comparison())
 
+  def literal(self):
+    children = []
+
+    if self.current_lexeme[1] == 'NUMBAR Literal':
+      self.check('NUMBAR Literal')
+      children.append(Node('NUMBAR Literal'))
+    elif self.current_lexeme[1] == 'NUMBR Literal':
+      self.check('NUMBR Literal')
+      children.append(Node('NUMBR Literal'))
+    elif self.current_lexeme[1] == 'YARN Literal':
+      self.check('YARN Literal')
+      children.append(Node('YARN Literal'))
+    elif self.current_lexeme[1] == 'TROOF Literal':
+      self.check('TROOF Literal')
+      children.append(Node('TROOF Literal'))
+    elif self.current_lexeme[1] == 'TYPE Literal':
+      self.check('TYPE Literal')
+      children.append(Node('TYPE Literal'))
+    
+    return Node(None, 'Literal', children=children)
+
   # --------------------------------------------------------------------------------------------------
   # <op_argument> ::= <literal> | <variable>
   # An operation argument can either be a literal, variable, or expression
@@ -233,9 +254,8 @@ class Syntax_Analyzer:
     children = []
 
     # Literals
-    if self.current_lexeme[1] in {'NUMBR Literal', 'NUMBAR Literal', 'YARN Literal', 'TROOF Literal', 'TYPE Literal'}:
-        children.append(Node(self.current_lexeme[1]))
-        self.check(self.current_lexeme[1])
+    if 'Literal' in self.current_lexeme[1]:
+      children.append(self.literal())
 
     # Variables
     elif self.current_lexeme[1] == "Identifier":
@@ -327,7 +347,7 @@ class Syntax_Analyzer:
     if self.current_lexeme[1] == "Infinite And Expression":
         self.check("Infinite And Expression")
         children.append(Node("Infinite And Expression"))
-    elif self.current_lexeme[1] == "Infinite Or":
+    elif self.current_lexeme[1] == "Infinite Or Expression":
         self.check("Infinite Or Expression")
         children.append(Node("Infinite Or Expression"))
 
@@ -534,7 +554,7 @@ class Syntax_Analyzer:
 
       self.check('TYPE Literal')
       children.append('TYPE Literal')
-      
+
     elif self.current_lexeme[1] == 'Assignment':
       self.check('Assignment')
       children.append(Node('Assignment'))
