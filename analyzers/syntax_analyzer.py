@@ -63,7 +63,6 @@ class Syntax_Analyzer:
   # --------------------------------------------------------------------------------------------------
   # <start_statement> ::= <data_section> <linebreak> <statement> | <statement>
   # --------------------------------------------------------------------------------------------------
-
   def variable(self):
     children = []
 
@@ -131,7 +130,6 @@ class Syntax_Analyzer:
 
     return Node(None, 'Statement', children=children)
   
-
   def expression(self):
     children = []
 
