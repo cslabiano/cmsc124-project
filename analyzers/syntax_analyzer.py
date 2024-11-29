@@ -63,14 +63,21 @@ class Syntax_Analyzer:
   # --------------------------------------------------------------------------------------------------
   # <start_statement> ::= <data_section> <linebreak> <statement> | <statement>
   # --------------------------------------------------------------------------------------------------
+
+  def identifier(self):
+    children = []
+    self.check('Identifier')
+    children.append(Node('Identifier'))
+
+    return Node(None, 'Identifier', children=children)
+
   def variable(self):
     children = []
 
     self.check('Variable Declaration')
     children.append(Node('Variable Declaration'))
 
-    self.check('Identifier')
-    children.append(Node('Identifier'))
+    children.append(self.identifier())
 
     if self.current_lexeme[1] == 'Variable Assignment':
       self.check('Variable Assignment')
@@ -115,19 +122,32 @@ class Syntax_Analyzer:
   def statement(self):
     children = []
 
+    currentLex = self.current_lexeme[1]
+
     # expression
-    if 'Expression' in self.current_lexeme[1]:
+    if 'Expression' in currentLex:
       children.append(self.expression())
     # loop
-    elif self.current_lexeme[1] == 'Loop Delimiter':
+    elif currentLex == 'Loop Delimiter':
       children.append(self.loop())
     # comment
-    elif self.current_lexeme[1] in {"Multiline Comment Start", "Comment Delimiter"}:
+    elif currentLex in {"Multiline Comment Start", "Comment Delimiter"}:
       children.append(self.comment())
-        # print
-    elif self.current_lexeme[1] == 'Output Keyword':
+    # print
+    elif currentLex == 'Output Keyword':
       children.append(self.print_fn())
-
+    # input
+    elif currentLex == 'Input Keyword':
+      children.append(self.input())
+    # typecast
+    elif currentLex == 'Typecast Delimiter':
+      children.append(self.typecast())
+    # could be a typecast?
+    elif currentLex == 'Identifier':
+      children.append(self.typecast())
+    elif currentLex == "String Concatenation":
+      children.append(self.concatenation())
+      
     return Node(None, 'Statement', children=children)
   
   def expression(self):
@@ -183,8 +203,7 @@ class Syntax_Analyzer:
       children.append(Node('String Delimiter'))
     # Variables
     elif self.current_lexeme[1] == "Identifier":
-        children.append(Node("Identifier"))
-        self.check("Identifier")
+      children.append(self.identifier())
 
     elif 'Expression' in self.current_lexeme[1]:
       children.append(self.expression())
@@ -220,8 +239,7 @@ class Syntax_Analyzer:
 
     # Variables
     elif self.current_lexeme[1] == "Identifier":
-        children.append(Node("Identifier"))
-        self.check("Identifier")
+      children.append(self.identifier())
 
     elif 'Expression' in self.current_lexeme[1]: 
       children.append(self.infinite_expression()) 
@@ -420,14 +438,14 @@ class Syntax_Analyzer:
     self.check('Loop Delimiter')
     children.append(Node('Loop Delimiter'))
 
-    self.check('Identifier')
+    children.append(self.identifier())
 
     children.append(self.inc_dec())
 
     self.check('Condition Delimiter')
     children.append(Node('Condition Delimiter'))
 
-    self.check('Identifier')
+    children.append(self.identifier())
 
     children.append(self.termination())
 
@@ -437,7 +455,7 @@ class Syntax_Analyzer:
     self.check('Loop Delimiter')
     children.append(Node('Loop Delimiter'))
 
-    self.check('Identifier')
+    children.append(self.identifier())
 
     return Node(None, 'Loop', children=children) 
 
@@ -465,6 +483,81 @@ class Syntax_Analyzer:
       children.append(self.print_multiple())
     
     return Node(None, "Print Statement", children=children)
+
+  def input(self):
+    children = []
+
+    self.check('Input Keyword')
+    children.append(Node('Input Keyword'))
+
+    children.append(self.identifier())
+
+    return Node(None, 'Input Keyword', children=children)
+
+  def typecast(self):
+    children = []
+
+    # Explicit typecast
+    if self.current_lexeme[1] == 'Typecast Delimiter':
+      children.append(self.explicit_typecast())
+    
+    elif self.current_lexeme[1] == 'Identifier':
+      children.append(self.recasting())
+
+    return Node(None, 'Typecast', children=children)
+
+  def explicit_typecast(self):
+    children = []
+
+    self.check('Typecast Delimiter')
+    children.append(Node('Typecast Delimiter'))
+
+    children.append(self.identifier())
+
+    if self.current_lexeme[1] == 'Typecast Keyword':
+      self.check('Typecast Keyword')
+      children.append(Node('Typecast Keyword'))
+
+    self.check('TYPE Literal')
+    children.append(Node('TYPE Literal'))
+
+    return Node(None, 'Explicit Typecast', children=children)
+
+  def recasting(self):
+    children = []
+
+    children.append(self.identifier())
+    if self.current_lexeme[1] == 'Typecast Keyword':
+      self.check('Typecast Keyword')
+      children.append('Typecast Keyword')
+
+      self.check('TYPE Literal')
+      children.append('TYPE Literal')
+    elif self.current_lexeme[1] == 'Assignment':
+      self.check('Assignment')
+      children.append(Node('Assignment'))
+
+      children.append(self.explicit_typecast())
+
+    return Node(None, 'Recasting', children=children)
+  
+  # --------------------------------------------------------------------------------------------------
+  # <concatenation> ::= SMOOSH <op_argument> <an_op_argument>
+  # --------------------------------------------------------------------------------------------------
+  def concatenation(self):
+    children = []
+
+    self.check("String Concatenation")
+    children.append(Node("String Concatenation"))
+
+    children.append(self.op_argument)
+
+    while self.current_lexeme[1] == "Operation Delimiter":
+      self.check("Operation Delimiter")
+      children.append(Node("Operation Delimiter"))
+      children.append(self.op_argument)
+
+    return Node(None, "String Concatenation", children = children)
 
   # --------------------------------------------------------------------------------------------------
   # <program> ::== HAI <linebreak> <start_statement> <linebreak> KTHXBYE
