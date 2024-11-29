@@ -111,8 +111,17 @@ class Syntax_Analyzer:
     if self.current_lexeme[1] == 'Data section Delimiter':
       children.append(self.data_section())
 
+    max_iter = len(self.lexemes)
+    iter_count = 0
+
     while self.current_lexeme[1] != 'Program End':
+      if iter_count >= max_iter:
+        raise SyntaxError(
+            f"Unexpected end of input or invalid syntax in 'HAI' clause. "
+            f"Expected 'Program End', but got '{self.current_lexeme[1]}'"
+          )
       children.append(self.statement())
+      iter_count += 1
 
     return Node(None, 'Start Statement', children=children)
 
@@ -148,8 +157,13 @@ class Syntax_Analyzer:
     elif currentLex == "String Concatenation":
       children.append(self.concatenation())
 
+    elif currentLex == "Control Flow Delimiter If-else":
+      children.append(self.if_then())
+    elif currentLex == "Control Flow Delimiter Switch":
+      children.append(self.switch_case())
+
     return Node(None, 'Statement', children=children)
-  
+
   def expression(self):
     children = []
 
@@ -409,6 +423,171 @@ class Syntax_Analyzer:
         children.append(self.op_argument())
     
     return Node(None, 'Equality Comparison', children=children)
+  
+  # --------------------------------------------------------------------------------------------------
+  # <if_then> ::= O RLY? <linebreak> <if_clause> <linebreak> <else_clause> <linebreak> OIC
+  # | O RLY? <linebreak> <if_clause> <linebreak> <else_if_clause> <linebreak> <else_clause> <linebreak> OIC
+  # start with O RLY? and end with OIC
+  # --------------------------------------------------------------------------------------------------
+  def if_then(self):
+    children = []
+
+    if self.current_lexeme[1] == "Control Flow Delimiter If-else":
+      self.check("Control Flow Delimiter If-else")
+      children.append(Node("Control Flow Delimiter If-else"))
+
+    if self.current_lexeme[1] != "Control Flow Delimiter End":
+      children.append(self.if_clause())
+    
+    while self.current_lexeme[1] == "Else-if Keyword":
+      children.append(self.else_if_clause())
+
+    if self.current_lexeme[1] == "Else Keyword":
+      children.append(self.else_clause())
+    
+    self.check("Control Flow Delimiter End")
+    children.append(Node("Control Flow Delimiter End"))
+
+    return Node(None, "If-Then", children=children)
+
+  # --------------------------------------------------------------------------------------------------
+  # <if_clause> ::= YA RLY <linebreak> <statement>
+  # start with YA RLY and has 1 or more statements
+  # --------------------------------------------------------------------------------------------------
+  def if_clause(self):
+    children = []
+
+    if self.current_lexeme[1] == "If Keyword":
+      self.check("If Keyword")
+      children.append(Node("If Keyword"))
+
+      max_iter = len(self.lexemes)
+      iter_count = 0
+
+      while self.current_lexeme[1] not in {"Else-if Keyword", "Else Keyword", "Control Flow Delimiter End"}:
+        if iter_count >= max_iter:
+          raise SyntaxError(
+            f"Unexpected end of input or invalid syntax in 'YA RLY' clause. "
+            f"Expected 'Control Flow Delimiter End', but got '{self.current_lexeme[1]}'"
+          )
+        children.append(self.statement())
+        iter_count += 1
+    
+
+    return Node(None, "If Clause", children=children)
+  
+  # --------------------------------------------------------------------------------------------------
+  # <else_if_clause> ::= MEBBE <statement>
+  # start with MEBBE and statement is in-line
+  # --------------------------------------------------------------------------------------------------
+  def else_if_clause(self):
+    children = []
+
+    if self.current_lexeme[1] == "Else-if Keyword":
+      self.check("Else-if Keyword")
+      children.append(Node("Else-if Keyword"))
+
+      children.append(self.statement())
+
+      # TODO: Ensure that the next statement should be an Else-if Keyword or Else Keyword or Control Flow Delimiter End
+
+    return Node(None, "Else-if Clause", children=children)
+  
+  # --------------------------------------------------------------------------------------------------
+  # <else__clause> ::= NO WAI <linebreak> <statement>
+  # start with NO WAI and has 1 more statements
+  # --------------------------------------------------------------------------------------------------
+  def else_clause(self):
+    children = []
+
+    if self.current_lexeme[1] == "Else Keyword":
+      print("\nGinawa ko to")
+      self.check("Else Keyword")
+      children.append(Node("Else Keyword"))
+
+      max_iter = len(self.lexemes)
+      iter_count = 0
+
+      while self.current_lexeme[1] != "Control Flow Delimiter End":
+        if iter_count >= max_iter:
+          raise SyntaxError(
+            f"Unexpected end of input or invalid syntax in 'NO WAI' clause. "
+            f"Expected 'Control Flow Delimiter End', but got '{self.current_lexeme[1]}'"
+          )
+        children.append(self.statement())
+        iter_count += 1
+
+    return Node(None, "Else Clause", children=children)
+  
+  # --------------------------------------------------------------------------------------------------
+  # <switch_case> ::= WTF? <linebreak> <case_blocks> <linebreak> OIC
+  # start with WTF and end with OIC
+  # --------------------------------------------------------------------------------------------------
+  def switch_case(self):
+    children = []
+
+    if self.current_lexeme[1] == "Control Flow Delimiter Switch":
+      self.check("Control Flow Delimiter Switch")
+      children.append(Node("Control Flow Delimiter Switch"))
+    
+    while self.current_lexeme[1] == "Switch-case Keyword":
+      children.append(self.case_block())
+
+    if self.current_lexeme[1] == "Switch-case Default":
+      children.append(self.case_default())
+    
+    self.check("Control Flow Delimiter End")
+    children.append(Node("Control Flow Delimiter End"))
+
+    return Node(None, "Switch Case", children=children)
+  
+  def case_block(self):
+    children = []
+
+    if self.current_lexeme[1] == "Switch-case Keyword":
+      self.check("Switch-case Keyword")
+      children.append(Node("Switch-case Keyword"))
+
+      if self.current_lexeme[1] in {'NUMBR Literal', 'NUMBAR Literal', 'TROOF Literal', 'TYPE Literal'}:
+        children.append(Node(self.current_lexeme[1]))
+        self.check(self.current_lexeme[1])
+
+      max_iter = len(self.lexemes)
+      iter_count = 0
+
+      while self.current_lexeme[1] not in {"Switch-case Keyword", "Switch-case Default", "Control Flow Delimiter End"}:
+        if iter_count >= max_iter:
+          raise SyntaxError(
+            f"Unexpected end of input or invalid syntax in 'OMG' clause. "
+            f"Expected 'Control Flow Delimiter End', but got '{self.current_lexeme[1]}'"
+          )
+        children.append(self.statement())
+        iter_count += 1
+    
+
+    return Node(None, "Case Block", children=children)
+
+  def case_default(self):
+    children = []
+
+    if self.current_lexeme[1] == "Switch-case Default":
+      self.check("Switch-case Default")
+      children.append(Node("Switch-case Default"))
+
+      max_iter = len(self.lexemes)
+      iter_count = 0
+
+      while self.current_lexeme[1] != "Control Flow Delimiter End":
+        if iter_count >= max_iter:
+          raise SyntaxError(
+            f"Unexpected end of input or invalid syntax in 'OMGWTF' clause. "
+            f"Expected 'Control Flow Delimiter End', but got '{self.current_lexeme[1]}'"
+          )
+        children.append(self.statement())
+        iter_count += 1
+    
+
+    return Node(None, "Case Default Block", children=children)
 
   def inc_dec(self):
     children = []

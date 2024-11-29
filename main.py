@@ -52,6 +52,8 @@ class UI(QMainWindow):
     # get the current content of the text editor after clicking the execute button
     content = self.text_editor.toPlainText()
 
+    lexemes_copy = []
+
     # if file is not empty, perform lexeme analysis
     if content:
       lexemes, error_msg = lexical_analyzer.analyze_lexemes(content)
