@@ -136,7 +136,12 @@ class Syntax_Analyzer:
     # input
     elif currentLex == 'Input Keyword':
       children.append(self.input())
-
+    # typecast
+    elif currentLex == 'Typecast Delimiter':
+      children.append(self.typecast())
+    # could be a typecast?
+    elif currentLex == 'Identifier':
+      children.append(self.typecast())
     return Node(None, 'Statement', children=children)
   
 
@@ -484,6 +489,52 @@ class Syntax_Analyzer:
 
     return Node(None, 'Input Keyword', children=children)
 
+  def typecast(self):
+    children = []
+
+    # Explicit typecast
+    if self.current_lexeme[1] == 'Typecast Delimiter':
+      children.append(self.explicit_typecast())
+    
+    elif self.current_lexeme[1] == 'Identifier':
+      children.append(self.recasting())
+
+    return Node(None, 'Typecast', children=children)
+
+  def explicit_typecast(self):
+    children = []
+
+    self.check('Typecast Delimiter')
+    children.append(Node('Typecast Delimiter'))
+
+    children.append(self.identifier())
+
+    if self.current_lexeme[1] == 'Typecast Keyword':
+      self.check('Typecast Keyword')
+      children.append(Node('Typecast Keyword'))
+
+    self.check('TYPE Literal')
+    children.append(Node('TYPE Literal'))
+
+    return Node(None, 'Explicit Typecast', children=children)
+
+  def recasting(self):
+    children = []
+
+    children.append(self.identifier())
+    if self.current_lexeme[1] == 'Typecast Keyword':
+      self.check('Typecast Keyword')
+      children.append('Typecast Keyword')
+
+      self.check('TYPE Literal')
+      children.append('TYPE Literal')
+    elif self.current_lexeme[1] == 'Assignment':
+      self.check('Assignment')
+      children.append(Node('Assignment'))
+
+      children.append(self.explicit_typecast())
+
+    return Node(None, 'Recasting', children=children)
   # --------------------------------------------------------------------------------------------------
   # <program> ::== HAI <linebreak> <start_statement> <linebreak> KTHXBYE
   # --------------------------------------------------------------------------------------------------
