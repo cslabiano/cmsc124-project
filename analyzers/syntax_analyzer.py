@@ -61,9 +61,8 @@ class Syntax_Analyzer:
     return Node(None, "Comment", children = children)
 
   # --------------------------------------------------------------------------------------------------
-  # <start_statement> ::= <data_section> <linebreak> <statement> | <statement>
+  # For Identifiers
   # --------------------------------------------------------------------------------------------------
-
   def identifier(self):
     children = []
     self.check('Identifier')
@@ -71,6 +70,13 @@ class Syntax_Analyzer:
 
     return Node(None, 'Identifier', children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <variable> ::= I HAS A variable 
+  # | I HAS A variable ITZ <literal> 
+  # | I HAS A variable ITZ variable 
+  # | I HAS A variable ITZ <expression>
+  # | <var> <linebreak> <var>
+  # --------------------------------------------------------------------------------------------------
   def variable(self):
     children = []
 
@@ -87,6 +93,9 @@ class Syntax_Analyzer:
   
     return Node(None, 'Variable', children=children)
   
+  # --------------------------------------------------------------------------------------------------
+  # <datasection> ::= WAZZUP <linebreak> <var> <linebreak> BUHBYE
+  # --------------------------------------------------------------------------------------------------
   def data_section(self):
     children = []
 
@@ -104,7 +113,10 @@ class Syntax_Analyzer:
     children.append(Node("Data section Delimiter"))
     
     return Node(None, "Data Section", children=children)
-
+  
+  # --------------------------------------------------------------------------------------------------
+  # <start_statement> ::= <data_section> <linebreak> <statement> | <statement>
+  # --------------------------------------------------------------------------------------------------
   def start_statement(self):
     children = []
 
@@ -125,6 +137,9 @@ class Syntax_Analyzer:
 
     return Node(None, 'Start Statement', children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <function_return> ::= FOUND YR <expression>
+  # --------------------------------------------------------------------------------------------------
   def function_return(self):
     children = []
     self.check('Function Return')
@@ -134,6 +149,9 @@ class Syntax_Analyzer:
 
     return Node(None, 'Function Return', children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <function_break> ::= GTFO
+  # --------------------------------------------------------------------------------------------------
   def function_break(self):
     children = []
 
@@ -142,6 +160,10 @@ class Syntax_Analyzer:
 
     return Node(None, 'Function Break', children=children)
  
+  # --------------------------------------------------------------------------------------------------
+  # <function_argument> ::= YR <expression>
+  # | <function_argument> AN YR <expression>
+  # --------------------------------------------------------------------------------------------------
   def function_argument_call(self):
     children = []
 
@@ -167,6 +189,10 @@ class Syntax_Analyzer:
 
     return Node(None, 'Function Arguments', children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <function_call> ::= I IZ function MKAY
+  # | I IZ function <fn_argument> MKAY
+  # --------------------------------------------------------------------------------------------------
   def function_call(self):
     children = []
 
@@ -186,7 +212,22 @@ class Syntax_Analyzer:
     return Node(None, 'Function Call', children=children)
  
   # --------------------------------------------------------------------------------------------------
-  # <statement> ::= 
+  # <statement> ::= <print> 
+  # | <comment> 
+  # | <var>
+  # | <expression> 
+  # | <concatenation> 
+  # | <input> 
+  # | <if_then> 
+  # | <switch_case> 
+  # | <loop> 
+  # | <definition> 
+  # | <return>
+  # | <assignment>
+  # | <typecast>
+  # | <break> 
+  # | <call> 
+  # | <statement> <linebreak> <statement>
   # --------------------------------------------------------------------------------------------------
   def statement(self):
     children = []
@@ -229,14 +270,26 @@ class Syntax_Analyzer:
     # function call
     elif currentLex == 'Function Call Delimiter Start':
       children.append(self.function_call())
-
+    # control flow if-else
     elif currentLex == "Control Flow Delimiter If-else":
       children.append(self.if_then())
+    # control flow switch
     elif currentLex == "Control Flow Delimiter Switch":
       children.append(self.switch_case())
 
     return Node(None, 'Statement', children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <expression> ::= SUM OF <op_argument> AN <op_argument>
+  # | DIFF OF <op_argument> AN <op_argument>
+  # | PRODUKT OF <op_argument> AN <op_argument>
+  # | QUOSHUNT OF <op_argument> AN <op_argument>
+  # | MOD OF <op_argument> AN <op_argument>
+  # | BIGGR OF <op_argument> AN <op_argument>
+  # | SMALLR OF <op_argument> AN <op_argument>
+  # | <boolean>
+  # | <comparison>
+  # --------------------------------------------------------------------------------------------------
   def expression(self):
     children = []
 
@@ -268,6 +321,7 @@ class Syntax_Analyzer:
 
     return Node(None, 'Arithmetic Expression', children=children)
 
+  # implicit variables?
   def implicit_var(self):
     children = []
 
@@ -309,6 +363,17 @@ class Syntax_Analyzer:
       raise SyntaxError(f'Syntax Error: Expected Operation argument, but found {self.current_lexeme[1]}')
     return Node(None, "Op Argument", children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <expression> ::= SUM OF <op_argument> AN <op_argument>
+  # | DIFF OF <op_argument> AN <op_argument>
+  # | PRODUKT OF <op_argument> AN <op_argument>
+  # | QUOSHUNT OF <op_argument> AN <op_argument>
+  # | MOD OF <op_argument> AN <op_argument>
+  # | BIGGR OF <op_argument> AN <op_argument>
+  # | SMALLR OF <op_argument> AN <op_argument>
+  # | <fixed_boolean>
+  # | <comparison>
+  # --------------------------------------------------------------------------------------------------
   def infinite_expression(self):
     children = []
 
@@ -322,6 +387,12 @@ class Syntax_Analyzer:
     elif self.current_lexeme[1] in {'Equality Operator Expression', 'Inequality Operator Expression'}:
       children.append(self.comparison())
 
+  # --------------------------------------------------------------------------------------------------
+  # <literal> ::= numbr 
+  # | numbar 
+  # | yarn 
+  # | troof
+  # --------------------------------------------------------------------------------------------------
   def literal(self):
     children = []
 
@@ -644,6 +715,11 @@ class Syntax_Analyzer:
 
     return Node(None, "Switch Case", children=children)
   
+  # --------------------------------------------------------------------------------------------------
+  # <case_block> ::= OMG <literal> <linebreak> <statement> <linebreak> <case_blocks> 
+  # | OMG <literal> <linebreak> <statement> 
+  # | OMG <literal> <linebreak> <statement> <linebreak> <default_case>
+  # --------------------------------------------------------------------------------------------------
   def case_block(self):
     children = []
 
@@ -656,9 +732,11 @@ class Syntax_Analyzer:
         self.check(self.current_lexeme[1])
 
       max_iter = len(self.lexemes)
+      print(max_iter)
       iter_count = 0
 
       while self.current_lexeme[1] not in {"Switch-case Keyword", "Switch-case Default", "Control Flow Delimiter End"}:
+        print(iter_count)
         if iter_count >= max_iter:
           raise SyntaxError(
             f"Unexpected end of input or invalid syntax in 'OMG' clause. "
@@ -670,6 +748,9 @@ class Syntax_Analyzer:
 
     return Node(None, "Case Block", children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <case_default> ::= OMGWTF <linebreak> <statement>
+  # --------------------------------------------------------------------------------------------------
   def case_default(self):
     children = []
 
@@ -692,6 +773,10 @@ class Syntax_Analyzer:
 
     return Node(None, "Case Default Block", children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <inc_dec> ::= UPPIN 
+  # | NERFIN
+  # --------------------------------------------------------------------------------------------------
   def inc_dec(self):
     children = []
 
@@ -704,6 +789,10 @@ class Syntax_Analyzer:
 
     return Node(None, 'Increment/Decrement', children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <termination> ::= TIL <expression> 
+  # | WILE <expression>
+  # --------------------------------------------------------------------------------------------------
   def termination(self):
     children = []
 
@@ -714,6 +803,9 @@ class Syntax_Analyzer:
 
     return Node(None, 'Loop Condition', children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <loop> ::= IM IN YR variable <inc_dec> YR variable <termination> <linebreak> <statement> <linebreak> IM OUTTA YR variable
+  # --------------------------------------------------------------------------------------------------
   def loop(self):
     children = []
     
@@ -741,6 +833,9 @@ class Syntax_Analyzer:
 
     return Node(None, 'Loop', children=children) 
 
+  # --------------------------------------------------------------------------------------------------
+  # <loop> ::= VISIBLE <op_argument> <plus_argument>
+  # --------------------------------------------------------------------------------------------------
   def print_multiple(self):
     children = []
     self.check('Print Concatenation')
@@ -753,6 +848,10 @@ class Syntax_Analyzer:
 
     return Node(None, 'Print Multiple', children=children)
   
+  # --------------------------------------------------------------------------------------------------
+  # <print_fn> ::= <print_one> 
+  # | <print_multiple>
+  # --------------------------------------------------------------------------------------------------
   def print_fn(self):
     children = []
 
@@ -766,6 +865,9 @@ class Syntax_Analyzer:
     
     return Node(None, "Print Statement", children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <input> ::= GIMMEH <variable>
+  # --------------------------------------------------------------------------------------------------
   def input(self):
     children = []
 
@@ -776,6 +878,10 @@ class Syntax_Analyzer:
 
     return Node(None, 'Input Keyword', children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <typecast> ::= <explicit_typecasting> 
+  # | <recasting>
+  # --------------------------------------------------------------------------------------------------
   def typecast(self):
     children = []
 
@@ -789,6 +895,10 @@ class Syntax_Analyzer:
 
     return Node(None, 'Typecast', children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <explicit_typecasting> ::= MAEK variable A type 
+  # | MAEK variable type
+  # --------------------------------------------------------------------------------------------------
   def explicit_typecast(self):
     children = []
 
@@ -806,6 +916,10 @@ class Syntax_Analyzer:
 
     return Node(None, 'Explicit Typecast', children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <recasting> ::= variable IS NOW A type
+  # | variable R <explicit_typecasting>
+  # --------------------------------------------------------------------------------------------------
   def recasting(self):
     children = []
 
@@ -846,6 +960,10 @@ class Syntax_Analyzer:
 
     return Node(None, "String Concatenation", children = children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <function_argument_definition> ::= YR variable 
+  # | <fn_parameter> AN YR variable
+  # --------------------------------------------------------------------------------------------------
   def function_argument_definition(self):
     children = []
 
@@ -871,6 +989,10 @@ class Syntax_Analyzer:
 
     return Node(None, 'Function Arguments', children=children)
 
+  # --------------------------------------------------------------------------------------------------
+  # <function_definition> ::= HOW IZ I function <linebreak> <statement> <linebreak> IF U SAY SO  
+  # | HOW IZ I function <fn_parameter> <linebreak> <statement> <linebreak> IF U SAY SO
+  # --------------------------------------------------------------------------------------------------
   def function_definition(self):
     children = []
     # HOW IZ I
