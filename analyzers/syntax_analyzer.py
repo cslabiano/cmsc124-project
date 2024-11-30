@@ -908,10 +908,6 @@ class Syntax_Analyzer:
 
     children.append(self.identifier())
 
-    if self.current_lexeme[1] == 'Typecast Keyword':
-      self.check('Typecast Keyword')
-      children.append(Node('Typecast Keyword'))
-
     self.check('TYPE Literal')
     children.append(Node('TYPE Literal'))
 
