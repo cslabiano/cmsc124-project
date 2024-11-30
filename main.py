@@ -47,6 +47,10 @@ class UI(QMainWindow):
     with open(self.file_path, "r") as f:
       content = f.read()  # read the entire file content
       self.text_editor.setText(content)  # display the content in the label
+    
+    # clear tables and console when a new file is opened
+    self.lexeme_table.clearContents()
+    self.label_console.setText("")
 
   def execute(self):
     # get the current content of the text editor after clicking the execute button
