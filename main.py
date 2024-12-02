@@ -51,6 +51,7 @@ class UI(QMainWindow):
     
     # clear tables and console when a new file is opened
     self.lexeme_table.clearContents()
+    self.symbol_table.clearContents()
     self.label_console.setText("")
 
   def execute(self):
@@ -78,20 +79,21 @@ class UI(QMainWindow):
             self.label_console.setText("Syntax is valid.\n")
         except SyntaxError as e:
           self.label_console.setText(str(e))
-      self.populate_table(lexemes_copy)
+      self.populate_lexeme_table(lexemes_copy)
 
       # if parse tree is not empty 
       if parse_tree:
         # semantical analysis
         analyzer = Semantic_Analyzer(parse_tree)
         symbols = analyzer.analyze()
+        self.populate_symbol_table(symbols)
 
       # changes made in the text editor will be saved in the original file
       if self.file_path:
         with open(self.file_path, "w") as f:
           f.write(content)
 
-  def populate_table(self, lexemes):
+  def populate_lexeme_table(self, lexemes):
     self.lexeme_table.clearContents()   # clear previous contents of the table
     self.lexeme_table.setRowCount(len(lexemes))   # get the length of the lexemes and set it as the number of rows of the table widget
       
@@ -99,6 +101,15 @@ class UI(QMainWindow):
     for row, (lexeme, classification) in enumerate(lexemes):
       self.lexeme_table.setItem(row, 0, QTableWidgetItem(lexeme))
       self.lexeme_table.setItem(row, 1, QTableWidgetItem(classification))
+
+  def populate_symbol_table(self, symbols):
+    self.symbol_table.clearContents()
+    self.symbol_table.setRowCount(len(symbols))
+
+    # populate the table
+    for row, (symbol, value) in enumerate(symbols.items()):
+      self.symbol_table.setItem(row, 0, QTableWidgetItem(symbol))
+      self.symbol_table.setItem(row, 1, QTableWidgetItem(str(value)))
 
 # initialize the app
 app = QApplication(sys.argv)

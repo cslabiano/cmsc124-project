@@ -77,8 +77,8 @@ class Syntax_Analyzer:
   # --------------------------------------------------------------------------------------------------
   def identifier(self):
     children = []
+    children.append(Node('Identifier', value = self.current_lexeme[0]))
     self.check('Identifier')
-    children.append(Node('Identifier'))
 
     return Node('Identifier', children=children)
 
