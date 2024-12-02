@@ -53,6 +53,7 @@ class Semantic_Analyzer:
   '''
     Evaluates an expression
 
+    return: the result of the expression
     args: 
       temp = the key to be put in the symbol table
       operation = node with format 
@@ -67,7 +68,6 @@ class Semantic_Analyzer:
   '''
   def expression(self, operation):
     op_type = operation.classification
-    print(op_type)
     op_args = operation.children
 
     # Use value to access the value of the operand
@@ -93,13 +93,26 @@ class Semantic_Analyzer:
 
   ''' 
     Evaluates the operand 
-    operand is Identifier or Literal
-    value is either the identifier name or the literal value
 
-    args: operand = node with format "Class: Identifier, Value: num or Class: NUMBR Literal, Value: 13"
-    returns the typecasted value depending on the classification
-
-    TODO: An operand can be an expression?
+    return: the typecasted value depending on the classification
+    args: operand = node with format 
+    "
+      Class: Identifier, Value: num
+      
+      or 
+      
+      Class: NUMBR Literal, Value: 13
+      
+      or 
+      
+      Class: Expression, Value: None
+        |- Class: Addition Expression, Value: None
+            |- Class: Op Argument, Value: None
+            |   |- Class: NUMBR Literal, Value: 11
+            |- Class: Operation Delimiter, Value: None
+            |- Class: Op Argument, Value: None
+                |- Class: NUMBR Literal, Value: 6
+      "
   '''
   def evaluate_operand(self, operand):
     classification = operand.classification
@@ -117,3 +130,5 @@ class Semantic_Analyzer:
       return str(value)
     elif classification == 'TROOF Literal':
       return True if value == "WIN" else False
+    elif classification == 'Expression':
+      return self.expression(operand.children[0])
