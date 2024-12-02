@@ -76,11 +76,9 @@ class Syntax_Analyzer:
   # For Identifiers
   # --------------------------------------------------------------------------------------------------
   def identifier(self):
-    children = []
-    children.append(Node('Identifier', value = self.current_lexeme[0]))
+    identifier_value = self.current_lexeme[0]
     self.check('Identifier')
-
-    return Node('Identifier', children=children)
+    return Node('Identifier', value=identifier_value)
 
   # --------------------------------------------------------------------------------------------------
   # <variable> ::= I HAS A variable 
