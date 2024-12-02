@@ -354,14 +354,15 @@ class Syntax_Analyzer:
         children.append(Node(self.current_lexeme[1], value = self.current_lexeme[0]))
         self.check(self.current_lexeme[1])
     elif self.current_lexeme[1] == 'String Delimiter':
-      children.append(Node('String Delimiter'))
-      self.check('String Delimiter')
+        children.append(Node('String Delimiter'))
+        self.check('String Delimiter')
 
-      self.check('YARN Literal')
-      children.append(Node('Yarn Literal'))
+        if self.current_lexeme[1] == 'YARN Literal':
+            children.append(Node('YARN Literal', value=self.current_lexeme[0]))
+            self.check('YARN Literal')
 
-      self.check('String Delimiter')
-      children.append(Node('String Delimiter'))
+        self.check('String Delimiter')
+        children.append(Node('String Delimiter'))
     # Variables
     elif self.current_lexeme[1] == "Identifier":
       children.append(self.identifier())

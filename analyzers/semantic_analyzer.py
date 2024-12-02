@@ -33,10 +33,17 @@ class Semantic_Analyzer:
           # find the op argument node
           elif child.classification == "Op Argument":  
             for arg in child.children:
+              print(f"Processing: {arg.classification}, Value: {arg}")  # Debug print
               # check for literal type
               if arg.classification == "NUMBR Literal":
                 # assign value and add to the symbol table  
                 self.symbol_table[temp] = int(arg.value)  
+              elif arg.classification == "YARN Literal" :
+                self.symbol_table[temp] = str(arg.value)
+              elif arg.classification == "NUMBAR Literal":
+                self.symbol_table[temp] = float(arg.value)
+              elif arg.classification == "TROOF Literal":
+                self.symbol_table[temp] = True if arg.value == "WIN" else False
     
     # print for checking anf debugging
     print("Symbol Table:", self.symbol_table)
