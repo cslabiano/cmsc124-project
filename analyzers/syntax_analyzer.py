@@ -320,18 +320,18 @@ class Syntax_Analyzer:
   def arithmetic(self):
     children = []
 
-    if self.current_lexeme[1] in {'Addition Expression', 'Subtraction Expression', 'Multiplication Expression', 'Division Expression', 'Modulo Expression', 'Max Expression', 'Min Expression'}:
-      self.check(self.current_lexeme[1])
-      children.append(Node(self.current_lexeme[1]))
+    expression_type = self.current_lexeme[1]
+    self.check(expression_type)
+    children.append(Node(expression_type))
 
-      children.append(self.op_argument())
+    children.append(self.op_argument())
 
-      self.check('Operation Delimiter')
-      children.append(Node('Operation Delimiter'))
+    self.check('Operation Delimiter')
+    children.append(Node('Operation Delimiter'))
 
-      children.append(self.op_argument())
+    children.append(self.op_argument())
 
-    return Node('Arithmetic Expression', children=children)
+    return Node(expression_type, children=children)
 
   # implicit variables?
   def implicit_var(self):
