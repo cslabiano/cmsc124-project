@@ -3,6 +3,7 @@ from PyQt5 import uic
 import sys
 import analyzers.lexical_analyzer as lexical_analyzer
 from analyzers.syntax_analyzer import Syntax_Analyzer
+from analyzers.semantic_analyzer import Semantic_Analyzer
 
 class UI(QMainWindow):
   def __init__(self):
@@ -60,6 +61,7 @@ class UI(QMainWindow):
 
     # if file is not empty, perform lexeme analysis
     if content:
+      # lexical analysis
       lexemes, error_msg = lexical_analyzer.analyze_lexemes(content)
       print(lexemes)
       if error_msg:
@@ -67,6 +69,7 @@ class UI(QMainWindow):
       else:
         try:
           lexemes_copy = lexemes.copy()
+          # syntactical analysis
           parser = Syntax_Analyzer(lexemes)
           parse_tree = parser.analyze()
           if isinstance(parse_tree, str):
@@ -76,6 +79,12 @@ class UI(QMainWindow):
         except SyntaxError as e:
           self.label_console.setText(str(e))
       self.populate_table(lexemes_copy)
+
+      # if parse tree is not empty 
+      if parse_tree:
+        # semantical analysis
+        analyzer = Semantic_Analyzer(parse_tree)
+        symbols = analyzer.analyze()
 
       # changes made in the text editor will be saved in the original file
       if self.file_path:

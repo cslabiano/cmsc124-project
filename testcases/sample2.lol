@@ -1,19 +1,4 @@
-OBTW
-  comment 1
-  comment 2
-TLDR
-BTW comment before HAI
-HAI BTW comment
-OBTW
-  comment 3
-  comment 4
-TLDR
-NOT 1
-SMOOSH "hello" AN "world" AN "bye"
-NOT 2 BTW another comment
+HAI
+SUM OF 6 AN 5
+DIFF OF 3 AN 4
 KTHXBYE
-OBTW
-  comment 5
-  comment 6
-TLDR
-BTW comment after KTHXBYE
