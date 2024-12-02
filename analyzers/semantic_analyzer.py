@@ -30,10 +30,12 @@ class Semantic_Analyzer:
               if identifier.classification == "Identifier": 
                 # store the identifier temporarilu 
                 temp = identifier.value  
+                if temp not in self.symbol_table:
+                  self.symbol_table[temp] = None
           # find the op argument node
           elif child.classification == "Op Argument":  
             for arg in child.children:
-              print(f"Processing: {arg.classification}, Value: {arg}")  # Debug print
+              print(f"Processing: {arg.classification}, Value: {arg.value}")  # Debug print
               # check for literal type
               if arg.classification == "NUMBR Literal":
                 # assign value and add to the symbol table  
