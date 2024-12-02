@@ -322,7 +322,7 @@ class Syntax_Analyzer:
 
     expression_type = self.current_lexeme[1]
     self.check(expression_type)
-    children.append(Node(expression_type))
+    # children.append(Node(expression_type))
 
     children.append(self.op_argument())
 
@@ -393,8 +393,7 @@ class Syntax_Analyzer:
     children = []
 
     if self.current_lexeme[1] in {'Addition Expression', 'Subtraction Expression', 'Multiplication Expression', 'Division Expression', 'Modulo Expression'}:
-      # TODO: Arithmetic
-      pass
+      children.append(self.arithmetic())
     # Boolean expression
     elif self.current_lexeme[1] in {'And Expression', 'Or Expression', 'Xor Expression', 'Not Expression'}:
       children.append(self.boolean())
