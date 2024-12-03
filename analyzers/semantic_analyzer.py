@@ -1,9 +1,11 @@
 import re
+from PyQt5.QtWidgets import QInputDialog
 
 class Semantic_Analyzer:
-  def __init__(self, parse_tree):
+  def __init__(self, parse_tree, ui):
     self.tree = parse_tree
     self.symbol_table = {"IT": None}
+    self.ui = ui
 
   def analyze(self):
     for node in self.tree.children:
@@ -14,15 +16,22 @@ class Semantic_Analyzer:
             self.data_section(statement)
           else:
             for child in statement.children:
-              if child.classification == "Expression":
+              type = child.classification
+              if type == "Expression":
                 self.expression(child.children)
-              elif child.classification == 'Typecast': # Could be a typecast or an assignment
+              elif type == 'Typecast': # Could be a typecast or an assignment
                 typecast_type = child.children[0].classification
                 print(typecast_type)
                 if typecast_type == 'Recasting':
                   self.assignment(child.children[0])
                 elif typecast_type == 'Explicit Typecast':
                   self.typecast(child.children[0])
+              elif type == "Input Keyword":
+                self.gimmeh(child.children)
+
+    # print for checking anf debugging
+    print("Symbol Table:", self.symbol_table)
+
     return self.symbol_table
 
   def data_section(self, statement):
@@ -53,10 +62,6 @@ class Semantic_Analyzer:
                 self.symbol_table[temp] = True if arg.value == "WIN" else False
               elif arg.classification == "Expression":
                 self.symbol_table[temp] = self.expression(arg.children[0])
-    
-    # print for checking anf debugging
-    print("Symbol Table:", self.symbol_table)
-
 
   '''
     Evaluates an expression
@@ -97,7 +102,6 @@ class Semantic_Analyzer:
       return operand1 if operand1 > operand2 else operand2
     elif op_type == 'Min Expression':
       return operand1 if operand1 < operand2 else operand2
-
 
   ''' 
     Evaluates the operand 
@@ -143,7 +147,6 @@ class Semantic_Analyzer:
       return self.expression(operand.children[0])
 
   '''
-
   assigns a value to a variable
   
   return: void
@@ -261,5 +264,14 @@ class Semantic_Analyzer:
       print(f"The value of it is {it}")
       self.symbol_table["IT"] = it
 
+  def gimmeh(self, input):
+    var_name = input[1].value
 
+    input_value, ok = QInputDialog.getText(self.ui, 'Input', f'Enter a value for {var_name}:')
+
+    if ok and input_value:
+      self.symbol_table[var_name] = input_value
+
+  def visible(self):
+    pass
 

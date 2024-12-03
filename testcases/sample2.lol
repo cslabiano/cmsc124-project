@@ -1,8 +1,0 @@
-HAI
-	WAZZUP
-		I HAS A num ITZ 3
-		I HAS A num2 ITZ 4
-		I HAS A num3 ITZ 5
-	BUHBYE
-	SUM OF 6 AN 4
-KTHXBYE

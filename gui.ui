@@ -14,7 +14,11 @@
    <string>LOL Code Interpreter</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background: #181818</string>
+   <string notr="true">background: #181818;
+color: white;
+QInputDialog {
+        border-radius: 10px;
+    }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="execute_button">
@@ -113,7 +117,7 @@ padding: 8px;</string>
       <x>520</x>
       <y>570</y>
       <width>851</width>
-      <height>221</height>
+      <height>181</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -128,6 +132,18 @@ color: white;</string>
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::AutoText</enum>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+    <property name="margin">
+     <number>7</number>
+    </property>
+    <property name="indent">
+     <number>-1</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_lexemes">
@@ -357,6 +373,16 @@ color: white;</string>
       <string>Value</string>
      </property>
     </column>
+   </widget>
+   <widget class="QLineEdit" name="edit_input">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>751</y>
+      <width>851</width>
+      <height>41</height>
+     </rect>
+    </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
