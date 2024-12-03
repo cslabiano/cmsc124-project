@@ -182,11 +182,11 @@ class Semantic_Analyzer:
       identifier_value = self.symbol_table[identifier] # Value to be typecasted 
       it = None
 
+      print(identifier_value)
+
       # Takes the identifier value and converts it based on the type
       
       # NOOB
-      # if false == 0 
-      # any other value == 1
       if type_to_typecast == 'NOOB': 
         pass
       # TROOF
@@ -208,6 +208,30 @@ class Semantic_Analyzer:
         # YARN TO NUMBAR
         elif type(identifier_value) == str:
           it = float(identifier_value)
+        # NOOB TO NUMBAR
+        elif identifier_value == None: 
+          it = 0.0
+        elif type(identifier_value) == float: 
+          it = identifier_value
+      elif type_to_typecast == 'NUMBR':
+        # NUMBAR TO NUMBR
+        if type(identifier_value) == float:
+          it = int(identifier_value)
+        # TROOF TO NUMBR
+        elif type(identifier_value) == bool:
+          if identifier_value == True: 
+            it = 1
+          elif identifier_value == False: 
+            it = 0
+        # YARN TO NUMBR
+        elif type(identifier_value) == str: 
+          it = int(identifier_value)
+        # NOOB TO NUMBR
+        elif identifier_value == None: 
+          it = 0
+        # NUMBR TO NUMBR
+        elif type(identifier_value) == int: 
+          it = identifier_value
       print(f"The value of it is {it}")
       self.symbol_table["IT"] = it
 
