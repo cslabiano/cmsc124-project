@@ -187,8 +187,18 @@ class Semantic_Analyzer:
       # Takes the identifier value and converts it based on the type
       
       # NOOB
+      # TODO: Check if tama ba to
       if type_to_typecast == 'NOOB': 
-        pass
+        if type(identifier_value) == str: 
+          it = ""
+        elif type(identifier_value) == int: 
+          it = 0
+        elif type(identifier_value) == float: 
+          it = 0.0
+        elif type(identifier_value) == bool: 
+          it = False
+        elif identifier_value == None: 
+          it = None
       # TROOF
       elif type_to_typecast == 'TROOF':
         if identifier_value == "" or identifier_value == 0:
