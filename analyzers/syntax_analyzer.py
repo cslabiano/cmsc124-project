@@ -394,10 +394,12 @@ class Syntax_Analyzer:
       children.append(self.arithmetic())
     # Boolean expression
     elif self.current_lexeme[1] in {'And Expression', 'Or Expression', 'Xor Expression', 'Not Expression'}:
-      children.append(self.boolean())
+      children.append(self.fixed_boolean())
     # Equality expression
     elif self.current_lexeme[1] in {'Equality Operator Expression', 'Inequality Operator Expression'}:
       children.append(self.comparison())
+
+    return Node('Infinite Expression', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <literal> ::= numbr 
