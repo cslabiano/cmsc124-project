@@ -18,7 +18,6 @@ class Semantic_Analyzer:
                 self.expression(child.children)
               elif child.classification == 'Typecast': # Could be a typecast or an assignment
                 typecast_type = child.children[0].classification
-                print(typecast_type)
                 if typecast_type == 'Recasting':
                   self.assignment(child.children[0])
                 elif typecast_type == 'Explicit Typecast':
@@ -155,12 +154,11 @@ class Semantic_Analyzer:
           |- Class: TROOF Literal, Value: WIN
   '''
   def assignment(self, node):
-    assignment_node = node[0]
-    assignment_type = assignment_node.classification
+    assignment_type = node.classification
+    
     if assignment_type == 'Recasting':
-      identifier = assignment_node.children[0].value
-      new_value = self.evaluate_operand(assignment_node.children[2].children[0])
-      
+      identifier = node.children[0].value
+      new_value = self.evaluate_operand(node.children[2].children[0])
       self.symbol_table[identifier] = new_value
 
   '''
