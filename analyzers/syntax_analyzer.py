@@ -827,7 +827,9 @@ class Syntax_Analyzer:
     self.check('Loop Delimiter Start')
     children.append(Node('Loop Delimiter Start'))
 
-    children.append(self.identifier())
+    children.append(Node('Loop Identifier', value=self.current_lexeme[0]))
+    self.check('Identifier')
+    # children.append(self.identifier())
 
     children.append(self.inc_dec())
 
@@ -844,7 +846,9 @@ class Syntax_Analyzer:
     self.check('Loop Delimiter End')
     children.append(Node('Loop Delimiter End'))
 
-    children.append(self.identifier())
+    children.append(Node('Loop Identifier', value=self.current_lexeme[0]))
+    self.check('Identifier')
+    # children.append(self.identifier())
 
     return Node('Loop', children=children) 
 
@@ -868,6 +872,7 @@ class Syntax_Analyzer:
   # | <print_multiple>
   # --------------------------------------------------------------------------------------------------
   def print_fn(self):
+    
     children = []
 
     self.check('Output Keyword')
