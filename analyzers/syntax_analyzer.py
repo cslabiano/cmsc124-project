@@ -410,21 +410,23 @@ class Syntax_Analyzer:
   def literal(self):
     children = []
 
+    literal_value = self.current_lexeme[0]
+
     if self.current_lexeme[1] == 'NUMBAR Literal':
+      children.append(Node('NUMBAR Literal', value=literal_value))
       self.check('NUMBAR Literal')
-      children.append(Node('NUMBAR Literal'))
     elif self.current_lexeme[1] == 'NUMBR Literal':
       self.check('NUMBR Literal')
-      children.append(Node('NUMBR Literal'))
+      children.append(Node('NUMBR Literal', value=literal_value))
     elif self.current_lexeme[1] == 'YARN Literal':
       self.check('YARN Literal')
-      children.append(Node('YARN Literal'))
+      children.append(Node('YARN Literal', value=literal_value))
     elif self.current_lexeme[1] == 'TROOF Literal':
       self.check('TROOF Literal')
-      children.append(Node('TROOF Literal'))
+      children.append(Node('TROOF Literal', value=literal_value))
     elif self.current_lexeme[1] == 'TYPE Literal':
       self.check('TYPE Literal')
-      children.append(Node('TYPE Literal'))
+      children.append(Node('TYPE Literal', value=literal_value))
     
     return Node('Literal', children=children)
 
@@ -922,9 +924,8 @@ class Syntax_Analyzer:
 
     self.check('Typecast Keyword')
     children.append(Node('Typecast Keyword'))
-    
-    self.check('TYPE Literal')
-    children.append(Node('TYPE Literal'))
+
+    children.append(self.literal())
 
     return Node('Explicit Typecast', children=children)
 
