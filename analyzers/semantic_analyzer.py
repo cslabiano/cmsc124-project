@@ -1,3 +1,5 @@
+import re
+
 class Semantic_Analyzer:
   def __init__(self, parse_tree):
     self.tree = parse_tree
@@ -242,6 +244,20 @@ class Semantic_Analyzer:
         # NUMBR TO NUMBR
         elif type(identifier_value) == int: 
           it = identifier_value
+      elif type_to_typecast == 'YARN':
+        # NUMBR or NUMBAR to YARN
+        if re.fullmatch(r"\-?[0-9]+\.[0-9]+\b", str(identifier_value)) or re.fullmatch(r"\-?[0-9]+\b", str(identifier_value)):
+          if type(identifier_value) == int or type(identifier_value): 
+              it = str(identifier_value)
+          else:
+              # TODO: Show this error in console
+              raise ValueError(f"Invalid value for conversion to YARN: {identifier_value}")
+        # NOOB TO YARN
+        elif identifier_value == None: 
+          it = ""
+        elif type(identifier_value) == str: 
+          it = identifier_value
+
       print(f"The value of it is {it}")
       self.symbol_table["IT"] = it
 
