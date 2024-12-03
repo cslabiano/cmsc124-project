@@ -14,7 +14,13 @@ class Semantic_Analyzer:
             for child in statement.children:
               if child.classification == "Expression":
                 self.expression(child.children)
-    
+              elif child.classification == 'Typecast': # Could be a typecast or an assignment
+                typecast_type = child.children[0].classification
+                print(typecast_type)
+                if typecast_type == 'Recasting':
+                  self.assignment(child.children[0])
+                elif typecast_type == 'Explicit Typecast':
+                  self.typecast(child.children[0])
     return self.symbol_table
 
   def data_section(self, statement):
@@ -32,7 +38,7 @@ class Semantic_Analyzer:
           # find the op argument node
           elif child.classification == "Op Argument":  
             for arg in child.children:
-              print(f"Processing: {arg.classification}, Value: {arg.value}")  # Debug print
+              # print(f"Processing: {arg.classification}, Value: {arg.value}")
               # check for literal type
               if arg.classification == "NUMBR Literal":
                 # assign value and add to the symbol table  
@@ -120,6 +126,7 @@ class Semantic_Analyzer:
 
     if classification == 'Identifier':
       if value not in self.symbol_table:
+        # TODO: Show semantic error in console
         raise NameError(f"Identifier '{value}' is not initialized.") 
       return self.symbol_table[value]
     elif classification == 'NUMBR Literal':
@@ -132,3 +139,77 @@ class Semantic_Analyzer:
       return True if value == "WIN" else False
     elif classification == 'Expression':
       return self.expression(operand.children[0])
+
+  '''
+
+  assigns a value to a variable
+  
+  return: void
+  args: takes a node (list) in this format
+    Class: Recasting, Value: None
+      |- Class: Identifier, Value: x
+      |- Class: Assignment, Value: None
+      |- Class: Op Argument, Value: None
+          |- Class: TROOF Literal, Value: WIN
+  '''
+  def assignment(self, node):
+    assignment_node = node[0]
+    assignment_type = assignment_node.classification
+    if assignment_type == 'Recasting':
+      identifier = assignment_node.children[0].value
+      new_value = self.evaluate_operand(assignment_node.children[2].children[0])
+      
+      self.symbol_table[identifier] = new_value
+
+  '''
+  typecasts a variable and puts it in IT
+
+
+  args: takes a node (list) in this format
+    Class: Explicit Typecast, Value: None
+      Class: Typecast Delimiter, Value: None
+      Class: Identifier, Value: x
+      Class: Typecast Keyword, Value: None
+      Class: Literal, Value: None
+        Class: TYPE Literal, Value: NUMBAR
+
+  MAEK 3 A NUMBAR 
+  '''
+  def typecast(self, node):
+    if node.classification == 'Explicit Typecast':
+      identifier = node.children[1].value # Name of identifier in symbol table
+      type_to_typecast = node.children[3].children[0].value # Type to typecast to 
+      identifier_value = self.symbol_table[identifier] # Value to be typecasted 
+      it = None
+
+      # Takes the identifier value and converts it based on the type
+      
+      # NOOB
+      # if false == 0 
+      # any other value == 1
+      if type_to_typecast == 'NOOB': 
+        pass
+      # TROOF
+      elif type_to_typecast == 'TROOF':
+        if identifier_value == "" or identifier_value == 0:
+          it = False
+        else:
+          it = True
+      elif type_to_typecast == 'NUMBAR':
+        # NUMBR TO NUMBAR
+        if type(identifier_value) == int:
+          it = float(identifier_value)
+        # TROOF TO NUMBAR
+        elif type(identifier_value) == bool: 
+          if identifier_value == False:
+            it = 0.0
+          if identifier_value == True: 
+            it = 1.0
+        # YARN TO NUMBAR
+        elif type(identifier_value) == str:
+          it = float(identifier_value)
+      print(f"The value of it is {it}")
+      self.symbol_table["IT"] = it
+
+
+
