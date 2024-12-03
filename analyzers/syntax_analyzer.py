@@ -920,6 +920,9 @@ class Syntax_Analyzer:
 
     children.append(self.identifier())
 
+    self.check('Typecast Keyword')
+    children.append(Node('Typecast Keyword'))
+    
     self.check('TYPE Literal')
     children.append(Node('TYPE Literal'))
 
