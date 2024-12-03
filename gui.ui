@@ -111,41 +111,6 @@ padding: 8px;</string>
      <number>1</number>
     </property>
    </widget>
-   <widget class="QLabel" name="console">
-    <property name="geometry">
-     <rect>
-      <x>520</x>
-      <y>570</y>
-      <width>851</width>
-      <height>181</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background: #1f1f1f;
-color: white;</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Box</enum>
-    </property>
-    <property name="lineWidth">
-     <number>1</number>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="textFormat">
-     <enum>Qt::AutoText</enum>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-    </property>
-    <property name="margin">
-     <number>7</number>
-    </property>
-    <property name="indent">
-     <number>-1</number>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_lexemes">
     <property name="geometry">
      <rect>
@@ -382,6 +347,23 @@ color: white;</string>
       <width>851</width>
       <height>41</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="console">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>570</y>
+      <width>851</width>
+      <height>181</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: #1f1f1f;
+color: white;</string>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAsNeeded</enum>
     </property>
    </widget>
   </widget>

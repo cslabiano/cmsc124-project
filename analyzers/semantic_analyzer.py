@@ -28,6 +28,8 @@ class Semantic_Analyzer:
                   self.typecast(child.children[0])
               elif type == "Input Keyword":
                 self.gimmeh(child.children)
+              elif type == "Print Statement":
+                self.visible(child.children[1])
 
     # print for checking anf debugging
     print("Symbol Table:", self.symbol_table)
@@ -272,6 +274,35 @@ class Semantic_Analyzer:
     if ok and input_value:
       self.symbol_table[var_name] = input_value
 
-  def visible(self):
-    pass
+  '''
+  Class: Statement, Value: None
+    Class: Print Statement, Value: None
+      Class: Output Keyword, Value: None
+      Class: Op Argument, Value: None
+        Class: Identifier, Value: sum
+
+  Class: Statement, Value: None
+    Class: Print Statement, Value: None
+      Class: Output Keyword, Value: None
+      Class: Op Argument, Value: None
+        Class: String Delimiter, Value: None
+        Class: YARN Literal, Value: declarations
+        Class: String Delimiter, Value: None
+  '''
+
+  def visible(self, op_arg):
+    print(op_arg.classification)
+    op_class = op_arg.children[0]
+    print(op_class.classification)
+    if op_class.classification == "Identifier":
+      value = self.symbol_table[op_class.value]
+      print(value)
+      self.ui.print_in_console(str(value))
+    elif op_class.classification == "String Delimiter":
+      value = op_arg.children[1].value
+      self.ui.print_in_console(str(value))
+
+
+    else:
+      pass
 

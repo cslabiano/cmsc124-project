@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QTextEdit, QFileDialog, QLabel, QTableWidget, QTableWidgetItem, QLineEdit
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QTextEdit, QFileDialog, QLabel, QTableWidget, QTableWidgetItem, QLineEdit, QPlainTextEdit
 from PyQt5 import uic
 from PyQt5.QtCore import QEventLoop, QTimer
 import sys
@@ -19,7 +19,8 @@ class UI(QMainWindow):
 
     # label
     self.label_filename = self.findChild(QLabel, "label_filename")
-    self.label_console = self.findChild(QLabel, "console")
+    self.label_console = self.findChild(QPlainTextEdit, "console")
+    self.label_console.setReadOnly(True)
 
     # tables
     self.lexeme_table = self.findChild(QTableWidget, "lexeme_table")
@@ -57,7 +58,7 @@ class UI(QMainWindow):
     # clear tables and console when a new file is opened
     self.lexeme_table.clearContents()
     self.symbol_table.clearContents()
-    self.label_console.setText("")
+    self.label_console.clear()
 
   def execute(self):
     # get the current content of the text editor after clicking the execute button
@@ -71,7 +72,7 @@ class UI(QMainWindow):
       lexemes, error_msg = lexical_analyzer.analyze_lexemes(content)
       print(lexemes)
       if error_msg:
-        self.label_console.setText(error_msg)
+        self.label_console.setPlainText(error_msg)
       else:
         try:
           lexemes_copy = lexemes.copy()
@@ -79,11 +80,11 @@ class UI(QMainWindow):
           parser = Syntax_Analyzer(lexemes)
           parse_tree = parser.analyze()
           if isinstance(parse_tree, str):
-            self.label_console.setText(parse_tree)
+            self.label_console.setPlainText(parse_tree)
           else:
-            self.label_console.setText("Syntax is valid.\n")
+            self.label_console.setPlainText("Syntax is valid.\n")
         except SyntaxError as e:
-          self.label_console.setText(str(e))
+          self.label_console.setPlainText(str(e))
       self.populate_lexeme_table(lexemes_copy)
 
       # if parse tree is not empty 
@@ -94,7 +95,7 @@ class UI(QMainWindow):
           symbols = self.analyzer.analyze()
           self.populate_symbol_table(symbols)
         except Exception as e:
-          self.label_console.setText(f"Error during semantic analysis: {str(e)}")
+          self.label_console.setPlainText(f"Error during semantic analysis: {str(e)}")
 
       # changes made in the text editor will be saved in the original file
       if self.file_path:
@@ -110,6 +111,11 @@ class UI(QMainWindow):
   #   except Exception as e:
   #     self.label_console.setText(f'Error: {str}')
 
+
+  def print_in_console(self, message):
+    current_text = self.label_console.toPlainText()  # get the current text
+    new_text = current_text + "\n" + message if current_text else message  # append the new message
+    self.label_console.setPlainText(new_text)  # update the console
 
   def populate_lexeme_table(self, lexemes):
     self.lexeme_table.clearContents()   # clear previous contents of the table
