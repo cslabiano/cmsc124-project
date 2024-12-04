@@ -34,6 +34,8 @@ class Semantic_Analyzer:
         self.if_then(child.children)
       elif child.classification == "Switch Case":
         self.switch_case(child.children)
+      elif child.classification == "Print Statement":
+        self.visible(child.children[1])
 
   def data_section(self, statement):
     # temporary variable to hold the identifier name
@@ -377,7 +379,7 @@ class Semantic_Analyzer:
       print(value)
       self.ui.print_in_console(str(value))
     elif op_class.classification == "String Delimiter":
-      value = op_arg.children[1].value
+      value = "\"" + op_arg.children[1].value + "\""
       self.ui.print_in_console(str(value))
 
 
