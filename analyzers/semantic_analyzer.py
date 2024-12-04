@@ -20,22 +20,25 @@ class Semantic_Analyzer:
 
   def process_statement(self, statement):
     for child in statement.children:
-      if child.classification == "Expression":
+      type = child.classification
+      if type == "Expression":
         # self.expression(child.children)
         for expr in child.children:
           self.expression(expr)
-      elif child.classification == 'Typecast': # Could be a typecast or an assignment
+      elif type == 'Typecast': # Could be a typecast or an assignment
         typecast_type = child.children[0].classification
         if typecast_type == 'Recasting':
           self.assignment(child.children[0])
         elif typecast_type == 'Explicit Typecast':
           self.typecast(child.children[0])
-      elif child.classification == 'If-Then':
+      elif type == 'If-Then':
         self.if_then(child.children)
-      elif child.classification == "Switch Case":
+      elif type == "Switch Case":
         self.switch_case(child.children)
-      elif child.classification == "Print Statement":
+      elif type == "Print Statement":
         self.visible(child.children[1])
+      elif type == "Input Keyword":
+        self.gimmeh(child.children)
 
   def data_section(self, statement):
     # temporary variable to hold the identifier name
@@ -368,6 +371,36 @@ class Semantic_Analyzer:
         Class: String Delimiter, Value: None
         Class: YARN Literal, Value: declarations
         Class: String Delimiter, Value: None
+  
+  Class: Statement, Value: None
+      Class: Print Statement, Value: None
+        Class: Output Keyword, Value: None
+        Class: Op Argument, Value: None
+          Class: Expression, Value: None
+            Class: Max Expression, Value: None
+              Class: Op Argument, Value: None
+                Class: Expression, Value: None
+                  Class: Multiplication Expression, Value: None
+                    Class: Op Argument, Value: None
+                      Class: NUMBR Literal, Value: 11
+                    Class: Operation Delimiter, Value: None
+                    Class: Op Argument, Value: None
+                      Class: NUMBR Literal, Value: 2
+              Class: Operation Delimiter, Value: None
+              Class: Op Argument, Value: None
+                Class: Expression, Value: None
+                  Class: Division Expression, Value: None
+                    Class: Op Argument, Value: None
+                      Class: Expression, Value: None
+                        Class: Addition Expression, Value: None
+                          Class: Op Argument, Value: None
+                            Class: NUMBR Literal, Value: 3
+                          Class: Operation Delimiter, Value: None
+                          Class: Op Argument, Value: None
+                            Class: NUMBR Literal, Value: 5
+                    Class: Operation Delimiter, Value: None
+                    Class: Op Argument, Value: None
+                      Class: NUMBR Literal, Value: 2
   '''
 
   def visible(self, op_arg):
@@ -381,7 +414,9 @@ class Semantic_Analyzer:
     elif op_class.classification == "String Delimiter":
       value = "\"" + op_arg.children[1].value + "\""
       self.ui.print_in_console(str(value))
-
+    # elif op_arg.classification == "Expression":
+    #   value = self.expression(op_arg.children[0])  
+    #   self.ui.print_in_console(str(value))
 
     else:
       pass
