@@ -677,7 +677,19 @@ class Syntax_Analyzer:
       self.check("Else-if Keyword")
       children.append(Node("Else-if Keyword"))
 
-      children.append(self.statement())
+      children.append(self.expression())
+
+      max_iter = len(self.lexemes)
+      iter_count = 0
+
+      while self.current_lexeme[1] not in {"Else-if Keyword", "Else Keyword", "Control Flow Delimiter End"}:
+        if iter_count >= max_iter:
+          raise SyntaxError(
+            f"Unexpected end of input or invalid syntax in 'MEBBE' clause. "
+            f"Expected 'Control Flow Delimiter End', but got '{self.current_lexeme[1]}'"
+          )
+        children.append(self.statement())
+        iter_count += 1
 
       # TODO: Ensure that the next statement should be an Else-if Keyword or Else Keyword or Control Flow Delimiter End
 

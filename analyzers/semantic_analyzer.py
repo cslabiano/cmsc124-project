@@ -13,16 +13,25 @@ class Semantic_Analyzer:
             print("data section")
             self.data_section(statement)
           else:
-            for child in statement.children:
-              if child.classification == "Expression":
-                self.expression(child.children)
-              elif child.classification == 'Typecast': # Could be a typecast or an assignment
-                typecast_type = child.children[0].classification
-                if typecast_type == 'Recasting':
-                  self.assignment(child.children[0])
-                elif typecast_type == 'Explicit Typecast':
-                  self.typecast(child.children[0])
+            self.process_statement(statement)
     return self.symbol_table
+
+  def process_statement(self, statement):
+    for child in statement.children:
+      if child.classification == "Expression":
+        # self.expression(child.children)
+        for expr in child.children:
+          self.expression(expr)
+      elif child.classification == 'Typecast': # Could be a typecast or an assignment
+        typecast_type = child.children[0].classification
+        if typecast_type == 'Recasting':
+          self.assignment(child.children[0])
+        elif typecast_type == 'Explicit Typecast':
+          self.typecast(child.children[0])
+      elif child.classification == 'If-Then':
+        self.if_then(child.children)
+      elif child.classification == "Switch Case":
+        self.switch_case(child.children)
 
   def data_section(self, statement):
     # temporary variable to hold the identifier name
@@ -259,5 +268,82 @@ class Semantic_Analyzer:
       print(f"The value of it is {it}")
       self.symbol_table["IT"] = it
 
+  def if_then(self, node):
 
+    # takes the value of IT
+    it_value = self.symbol_table["IT"]
+    # check if IT is WIN or FAIL
+    condition = self.is_true(it_value)
 
+    for child in node[1:]:
+
+      # END IF FOUND OIC
+      if child.classification == "Control Flow Delimiter End":
+        break
+
+      # IF CLAUSE
+      elif child.classification == "If Clause" and condition:
+        if_clause = child
+        for statement in if_clause.children[1:]:
+          print(statement.classification)
+          self.process_statement(statement)
+      
+      # ELSE IF CLAUSE (checks the expression if true or false)
+      elif child.classification == "Else-if Clause" and self.is_true(self.expression(child.children[1].children[0])):
+        else_if_clause = child
+        for statement in else_if_clause.children[2:]:
+          print(statement.classification)
+          self.process_statement(statement)
+
+      # ELSE CLAUSE (if none of the clauses is true)
+      elif child.classification == "Else Clause":
+        else_clause = child
+        for statement in else_clause.children[1:]:
+          print(statement.classification)
+          self.process_statement(statement)
+  
+  def switch_case(self, node):
+
+    it_value = self.symbol_table["IT"]
+
+    for child in node[1:]:
+
+      if child.classification == "Control Flow Delimiter End":
+        break
+
+      elif child.classification == "Case Block" and self.is_it_equal(it_value, child.children[1]):
+        case_block = child
+        for statement in case_block.children[2:]:
+          print(statement.classification)
+          self.process_statement(statement)
+      
+      elif child.classification == "Case Default Block":
+        case_def_block = child
+        for statement in case_def_block.children[1:]:
+          print(statement.classification)
+          self.process_statement(statement)
+
+  # checks if an expression is true (used for if-clause)
+  def is_true(self, it_value):
+
+    if it_value is None or it_value == "":
+      return False
+    elif type(it_value) == bool:
+      return it_value
+    elif type(it_value) == int or type(it_value) == float:
+      if it_value != 0:
+        return True
+      else:
+        return False
+    elif type(it_value) == str:
+      return True
+    else:
+        # error checking
+        raise ValueError(f"Unsupported type for truthiness check: {type(it_value)}")
+
+  def is_it_equal(self, it_value, literal):
+
+    if it_value == literal:
+      return True
+    else:
+      return False
