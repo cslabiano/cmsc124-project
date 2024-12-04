@@ -14,7 +14,11 @@
    <string>LOL Code Interpreter</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background: #181818</string>
+   <string notr="true">background: #181818;
+color: white;
+QInputDialog {
+        border-radius: 10px;
+    }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="execute_button">
@@ -105,29 +109,6 @@ padding: 8px;</string>
     </property>
     <property name="lineWidth">
      <number>1</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="console">
-    <property name="geometry">
-     <rect>
-      <x>520</x>
-      <y>570</y>
-      <width>851</width>
-      <height>221</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background: #1f1f1f;
-color: white;</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Box</enum>
-    </property>
-    <property name="lineWidth">
-     <number>1</number>
-    </property>
-    <property name="text">
-     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="label_lexemes">
@@ -357,6 +338,33 @@ color: white;</string>
       <string>Value</string>
      </property>
     </column>
+   </widget>
+   <widget class="QLineEdit" name="edit_input">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>751</y>
+      <width>851</width>
+      <height>41</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="console">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>570</y>
+      <width>851</width>
+      <height>181</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: #1f1f1f;
+color: white;</string>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAsNeeded</enum>
+    </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

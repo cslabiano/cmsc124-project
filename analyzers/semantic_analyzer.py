@@ -1,9 +1,11 @@
 import re
+from PyQt5.QtWidgets import QInputDialog
 
 class Semantic_Analyzer:
-  def __init__(self, parse_tree):
+  def __init__(self, parse_tree, ui):
     self.tree = parse_tree
     self.symbol_table = {"IT": None}
+    self.ui = ui
 
   def analyze(self):
     for node in self.tree.children:
@@ -61,10 +63,6 @@ class Semantic_Analyzer:
                 self.symbol_table[temp] = True if arg.value == "WIN" else False
               elif arg.classification == "Expression":
                 self.symbol_table[temp] = self.expression(arg.children[0])
-    
-    # print for checking anf debugging
-    print("Symbol Table:", self.symbol_table)
-
 
   '''
     Evaluates an expression
@@ -105,7 +103,6 @@ class Semantic_Analyzer:
       return operand1 if operand1 > operand2 else operand2
     elif op_type == 'Min Expression':
       return operand1 if operand1 < operand2 else operand2
-
 
   ''' 
     Evaluates the operand 
@@ -151,7 +148,6 @@ class Semantic_Analyzer:
       return self.expression(operand.children[0])
 
   '''
-
   assigns a value to a variable
   
   return: void
@@ -268,82 +264,43 @@ class Semantic_Analyzer:
       print(f"The value of it is {it}")
       self.symbol_table["IT"] = it
 
-  def if_then(self, node):
+  def gimmeh(self, input):
+    var_name = input[1].value
 
-    # takes the value of IT
-    it_value = self.symbol_table["IT"]
-    # check if IT is WIN or FAIL
-    condition = self.is_true(it_value)
+    input_value, ok = QInputDialog.getText(self.ui, 'Input', f'Enter a value for {var_name}:')
 
-    for child in node[1:]:
+    if ok and input_value:
+      self.symbol_table[var_name] = input_value
 
-      # END IF FOUND OIC
-      if child.classification == "Control Flow Delimiter End":
-        break
+  '''
+  Class: Statement, Value: None
+    Class: Print Statement, Value: None
+      Class: Output Keyword, Value: None
+      Class: Op Argument, Value: None
+        Class: Identifier, Value: sum
 
-      # IF CLAUSE
-      elif child.classification == "If Clause" and condition:
-        if_clause = child
-        for statement in if_clause.children[1:]:
-          print(statement.classification)
-          self.process_statement(statement)
-      
-      # ELSE IF CLAUSE (checks the expression if true or false)
-      elif child.classification == "Else-if Clause" and self.is_true(self.expression(child.children[1].children[0])):
-        else_if_clause = child
-        for statement in else_if_clause.children[2:]:
-          print(statement.classification)
-          self.process_statement(statement)
+  Class: Statement, Value: None
+    Class: Print Statement, Value: None
+      Class: Output Keyword, Value: None
+      Class: Op Argument, Value: None
+        Class: String Delimiter, Value: None
+        Class: YARN Literal, Value: declarations
+        Class: String Delimiter, Value: None
+  '''
 
-      # ELSE CLAUSE (if none of the clauses is true)
-      elif child.classification == "Else Clause":
-        else_clause = child
-        for statement in else_clause.children[1:]:
-          print(statement.classification)
-          self.process_statement(statement)
-  
-  def switch_case(self, node):
+  def visible(self, op_arg):
+    print(op_arg.classification)
+    op_class = op_arg.children[0]
+    print(op_class.classification)
+    if op_class.classification == "Identifier":
+      value = self.symbol_table[op_class.value]
+      print(value)
+      self.ui.print_in_console(str(value))
+    elif op_class.classification == "String Delimiter":
+      value = op_arg.children[1].value
+      self.ui.print_in_console(str(value))
 
-    it_value = self.symbol_table["IT"]
 
-    for child in node[1:]:
-
-      if child.classification == "Control Flow Delimiter End":
-        break
-
-      elif child.classification == "Case Block" and self.is_it_equal(it_value, child.children[1]):
-        case_block = child
-        for statement in case_block.children[2:]:
-          print(statement.classification)
-          self.process_statement(statement)
-      
-      elif child.classification == "Case Default Block":
-        case_def_block = child
-        for statement in case_def_block.children[1:]:
-          print(statement.classification)
-          self.process_statement(statement)
-
-  # checks if an expression is true (used for if-clause)
-  def is_true(self, it_value):
-
-    if it_value is None or it_value == "":
-      return False
-    elif type(it_value) == bool:
-      return it_value
-    elif type(it_value) == int or type(it_value) == float:
-      if it_value != 0:
-        return True
-      else:
-        return False
-    elif type(it_value) == str:
-      return True
     else:
-        # error checking
-        raise ValueError(f"Unsupported type for truthiness check: {type(it_value)}")
+      pass
 
-  def is_it_equal(self, it_value, literal):
-
-    if it_value == literal:
-      return True
-    else:
-      return False
