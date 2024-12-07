@@ -601,7 +601,7 @@ class Syntax_Analyzer:
 
     elif self.current_lexeme[1] == 'Inequality Operator Expression':
       self.check('Inequality Operator Expression')
-      children.append(Node('Inequality Operator'))
+      children.append(Node('Inequality Operator Expression'))
 
       children.append(self.op_argument())
       self.check('Operation Delimiter')
@@ -823,8 +823,8 @@ class Syntax_Analyzer:
   def termination(self):
     children = []
 
+    children.append(Node('Loop Condition', value = self.current_lexeme[0]))
     self.check('Loop Condition')
-    children.append(Node('Loop Condition'))
 
     children.append(self.expression())
 

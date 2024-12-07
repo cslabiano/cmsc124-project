@@ -15,30 +15,32 @@ class Semantic_Analyzer:
             print("data section")
             self.data_section(statement)
           else:
-            self.process_statement(statement)
+            for child in statement.children:
+              self.process_statement(child)
     return self.symbol_table
 
-  def process_statement(self, statement):
-    for child in statement.children:
-      type = child.classification
-      if type == "Expression":
-        # self.expression(child.children)
-        for expr in child.children:
-          self.expression(expr)
-      elif type == 'Typecast': # Could be a typecast or an assignment
-        typecast_type = child.children[0].classification
-        if typecast_type == 'Recasting':
-          self.assignment(child.children[0])
-        elif typecast_type == 'Explicit Typecast':
-          self.typecast(child.children[0])
-      elif type == 'If-Then':
-        self.if_then(child.children)
-      elif type == "Switch Case":
-        self.switch_case(child.children)
-      elif type == "Print Statement":
-        self.visible(child.children[1])
-      elif type == "Input Keyword":
-        self.gimmeh(child.children)
+  def process_statement(self, child):
+    type = child.classification
+    if type == "Expression":
+      # self.expression(child.children)
+      for expr in child.children:
+        self.expression(expr)
+    elif type == 'Typecast': # Could be a typecast or an assignment
+      typecast_type = child.children[0].classification
+      if typecast_type == 'Recasting':
+        self.assignment(child.children[0])
+      elif typecast_type == 'Explicit Typecast':
+        self.typecast(child.children[0])
+    elif type == 'If-Then':
+      self.if_then(child.children)
+    elif type == "Switch Case":
+      self.switch_case(child.children)
+    elif type == "Print Statement":
+      self.visible(child.children[1])
+    elif type == "Input Keyword":
+      self.gimmeh(child.children)
+    elif type == "Loop":
+      self.loop(child.children)
 
   def data_section(self, statement):
     # temporary variable to hold the identifier name
@@ -105,9 +107,39 @@ class Semantic_Analyzer:
     elif op_type == 'Modulo Expression':
       return operand1 % operand2
     elif op_type == 'Max Expression':
-      return operand1 if operand1 > operand2 else operand2
+      return operand1 if float(operand1) > float(operand2) else operand2
     elif op_type == 'Min Expression':
-      return operand1 if operand1 < operand2 else operand2
+      return operand1 if float(operand1) < float(operand2) else operand2
+    
+  '''
+  Class: Equality Operator Expression, Value: None
+    Class: Op Argument, Value: None
+      Class: Identifier, Value: num2
+    Class: Operation Delimiter, Value: None
+    Class: Op Argument, Value: None
+      Class: Expression, Value: None
+        Class: Min Expression, Value: None
+          Class: Op Argument, Value: None
+            Class: Identifier, Value: num2
+          Class: Operation Delimiter, Value: None
+          Class: Op Argument, Value: None
+            Class: Identifier, Value: num1
+  '''
+  def equality(self, args):
+    op_args = args.children
+    op_type = op_args[0].classification
+
+    op1 = self.evaluate_operand(op_args[1].children[0])
+    op2 = self.evaluate_operand(op_args[3].children[0])
+
+    print(op_type, op1, op2)
+    if type(op1) != type(op2):
+      op1, op2 = float(op1), float(op2)
+
+    if op_type == 'Equality Operator Expression':
+      return True if op1 == op2 else False
+    elif op_type == 'Inequality Operator Expression':
+      return True if op1 != op2 else False
 
   ''' 
     Evaluates the operand 
@@ -138,19 +170,24 @@ class Semantic_Analyzer:
 
     if classification == 'Identifier':
       if value not in self.symbol_table:
-        # TODO: Show semantic error in console
-        raise NameError(f"Identifier '{value}' is not initialized.") 
+        raise NameError(f"Identifier '{value}' is not initialized.")
       return self.symbol_table[value]
     elif classification == 'NUMBR Literal':
       return int(value)
     elif classification == 'NUMBAR Literal':
       return float(value)
     elif classification == 'YARN Literal':
-      return str(value)
+      if str(value).isdigit():  
+        print("implicitly typecasted ", value, "into float")
+        return float(value)
+      else:
+        return str(value)
     elif classification == 'TROOF Literal':
       return True if value == "WIN" else False
     elif classification == 'Expression':
       return self.expression(operand.children[0])
+    else:
+      raise TypeError(f"Unsupported operand classification: {classification}")
 
   '''
   assigns a value to a variable
@@ -379,3 +416,75 @@ class Semantic_Analyzer:
       value = self.expression(op_class.children[0])  
       self.ui.print_in_console(str(value))
 
+
+  def loop(self, loop_children):
+    loop_cond = None
+    loop_id = loop_children[1]
+    inc = loop_children[2].children[0].classification
+
+    var = loop_children[4].value
+
+    # check if the value needs typecasting
+    if isinstance(self.symbol_table[var], str):
+      if str(self.symbol_table[var]).isdigit():
+        self.symbol_table[var] = float(val)
+
+    val = self.symbol_table[var]
+    
+    if loop_children[5].children[0].value == "WILE":
+      loop_cond = True
+    elif loop_children[5].children[0].value == "TIL":
+      loop_cond = False
+
+    expr = loop_children[5].children[1].children[0]
+    expr_bool = self.equality(expr)
+  
+
+    print("expr_bool: ", expr_bool)
+    while expr_bool is not loop_cond:
+
+      statement = loop_children[6].children[0]
+      self.process_statement(statement)
+
+      if inc == "Loop Increment":
+        val += 1
+        self.symbol_table[var] = val
+      elif inc == "Loop Decrement":
+        val -= 1
+        self.symbol_table[var] = val
+
+      expr = loop_children[5].children[1].children[0]
+      expr_bool = self.equality(expr)
+      print("expr_bool: ", expr_bool)
+
+
+      if expr_bool == loop_cond:
+        break
+
+'''
+  Class: Statement, Value: None
+    Class: Loop, Value: None
+      Class: Loop Delimiter Start, Value: None
+      Class: Loop Identifier, Value: desc
+      Class: Increment/Decrement, Value: None
+        Class: Loop Increment, Value: None
+      Class: Condition Delimiter, Value: None
+      Class: Identifier, Value: num2
+      Class: Loop Condition, Value: None
+        Class: Loop Condition, Value: None
+        Class: Expression, Value: None
+          Class: Equality Comparison, Value: None
+            Class: Equality Operator Expression, Value: None
+            Class: Op Argument, Value: None
+              Class: Identifier, Value: num2
+            Class: Operation Delimiter, Value: None
+            Class: Op Argument, Value: None
+              Class: Identifier, Value: num1
+      Class: Statement, Value: None
+        Class: Print Statement, Value: None
+          Class: Output Keyword, Value: None
+          Class: Op Argument, Value: None
+            Class: Identifier, Value: num2
+      Class: Loop Delimiter End, Value: None
+      Class: Loop Identifier, Value: desc
+  '''

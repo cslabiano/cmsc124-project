@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QTextEdit, QFileDialog, QLabel, QTableWidget, QTableWidgetItem, QLineEdit, QPlainTextEdit
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QTextEdit, QFileDialog, QLabel, QTableWidget, QTableWidgetItem, QPlainTextEdit
 from PyQt5 import uic
 from PyQt5.QtCore import QEventLoop, QTimer
 import sys
@@ -28,17 +28,14 @@ class UI(QMainWindow):
 
     # text editor and input
     self.text_editor = self.findChild(QTextEdit, "print_file")
-    self.edit_input = self.findChild(QLineEdit, "edit_input")
 
     # call widget functions
     self.open_button.clicked.connect(self.open_file)
     self.execute_button.clicked.connect(self.execute)
-    # self.edit_input.returnPressed.connect(self.get_input)
 
     # initializations
     self.file_path = None
     self.analyzer = None
-    self.edit_input.setReadOnly(True)
 
     # shows the app
     self.show()
@@ -81,8 +78,6 @@ class UI(QMainWindow):
           parse_tree = parser.analyze()
           if isinstance(parse_tree, str):
             self.label_console.setPlainText(parse_tree)
-          else:
-            self.label_console.setPlainText("Syntax is valid.\n")
         except SyntaxError as e:
           self.label_console.setPlainText(str(e))
       self.populate_lexeme_table(lexemes_copy)
@@ -101,16 +96,6 @@ class UI(QMainWindow):
       if self.file_path:
         with open(self.file_path, "w") as f:
           f.write(content)
-
-  # def get_input(self):
-  #   user_input = self.label_console.text()
-  #   self.label_console.clear()
-  #   try:
-  #     result = self.analyzer.gimmeh_input(user_input)
-  #     self.label_console.setText(f'Input: {result}')
-  #   except Exception as e:
-  #     self.label_console.setText(f'Error: {str}')
-
 
   def print_in_console(self, message):
     current_text = self.label_console.toPlainText()  # get the current text
@@ -133,7 +118,12 @@ class UI(QMainWindow):
     # populate the table
     for row, (symbol, value) in enumerate(symbols.items()):
       self.symbol_table.setItem(row, 0, QTableWidgetItem(symbol))
-      self.symbol_table.setItem(row, 1, QTableWidgetItem(str(value)))
+      if isinstance(value, str):
+        str_value = "\"" + str(value) + "\""
+        self.symbol_table.setItem(row, 1, QTableWidgetItem(str_value))
+      else:
+        self.symbol_table.setItem(row, 1, QTableWidgetItem(str(value)))
+        
 
 # initialize the app
 app = QApplication(sys.argv)

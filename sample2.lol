@@ -1,10 +1,22 @@
 HAI
-    WAZZUP
-        BTW variable dec
-        I HAS A monde
-        I HAS A num ITZ 17
-    BUHBYE
+	WAZZUP
+		I HAS A num1
+		I HAS A num2
+	BUHBYE
+	
+	VISIBLE "Gimmeh a number: "
+	GIMMEH num1
 
-    GIMMEH monde
-	VISIBLE monde
+	num2 R 0
+
+	IM IN YR asc UPPIN YR num2 WILE BOTH SAEM num2 AN num1
+		VISIBLE num2
+	IM OUTTA YR asc
+
+	VISIBLE "***"
+
+	IM IN YR desc NERFIN YR num2 TIL DIFFRINT num2 AN 0
+		VISIBLE num2
+	IM OUTTA YR desc
+
 KTHXBYE

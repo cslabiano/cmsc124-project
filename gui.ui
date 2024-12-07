@@ -339,23 +339,13 @@ color: white;</string>
      </property>
     </column>
    </widget>
-   <widget class="QLineEdit" name="edit_input">
-    <property name="geometry">
-     <rect>
-      <x>520</x>
-      <y>751</y>
-      <width>851</width>
-      <height>41</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPlainTextEdit" name="console">
     <property name="geometry">
      <rect>
       <x>520</x>
       <y>570</y>
       <width>851</width>
-      <height>181</height>
+      <height>221</height>
      </rect>
     </property>
     <property name="styleSheet">
