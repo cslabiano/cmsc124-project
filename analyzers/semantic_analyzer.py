@@ -349,6 +349,10 @@ class Semantic_Analyzer:
     else:
       return False
 
+  # --------------------------------------------------------------------------------------------------
+  # creats a pop up input dialog using a pyqt5 widget, QInputDialog, to ask for input
+  # stores the input in the symbol table as yarn (string)
+  # --------------------------------------------------------------------------------------------------
   def gimmeh(self, input):
     var_name = input[1].value
     input_value, ok = QInputDialog.getText(self.ui, 'Input', f'Enter a value for {var_name}:')

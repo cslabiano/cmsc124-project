@@ -6,4 +6,5 @@ HAI
     BUHBYE
 
     GIMMEH monde
+	VISIBLE monde
 KTHXBYE
