@@ -404,19 +404,16 @@ class Semantic_Analyzer:
   '''
 
   def visible(self, op_arg):
-    print(op_arg.classification)
     op_class = op_arg.children[0]
-    print(op_class.classification)
     if op_class.classification == "Identifier":
       value = self.symbol_table[op_class.value]
-      print(value)
       self.ui.print_in_console(str(value))
     elif op_class.classification == "String Delimiter":
       value = "\"" + op_arg.children[1].value + "\""
       self.ui.print_in_console(str(value))
-    # elif op_arg.classification == "Expression":
-    #   value = self.expression(op_arg.children[0])  
-    #   self.ui.print_in_console(str(value))
+    elif op_class.classification == "Expression":
+      value = self.expression(op_class.children[0])  
+      self.ui.print_in_console(str(value))
 
     else:
       pass

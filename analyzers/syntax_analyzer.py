@@ -6,11 +6,11 @@ class Node:
 
 # print tree for checking and debugging
 def traverse_tree(node, level=0):
-  # Print the current node's type and value
-  indent = "  " * level  # Indentation to show tree hierarchy
+  # print the current node's classification and value
+  indent = "  " * level  # indentation to show tree hierarchy
   print(f"{indent}Class: {node.classification}, Value: {node.value}")
 
-  # If the node has children, recursively traverse them
+  # if the node has children, recursively traverse them
   if node.children:
     for child in node.children:
       traverse_tree(child, level + 1)
