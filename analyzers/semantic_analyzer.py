@@ -351,70 +351,27 @@ class Semantic_Analyzer:
 
   def gimmeh(self, input):
     var_name = input[1].value
-
     input_value, ok = QInputDialog.getText(self.ui, 'Input', f'Enter a value for {var_name}:')
 
     if ok and input_value:
       self.symbol_table[var_name] = input_value
 
-  '''
-  Class: Statement, Value: None
-    Class: Print Statement, Value: None
-      Class: Output Keyword, Value: None
-      Class: Op Argument, Value: None
-        Class: Identifier, Value: sum
-
-  Class: Statement, Value: None
-    Class: Print Statement, Value: None
-      Class: Output Keyword, Value: None
-      Class: Op Argument, Value: None
-        Class: String Delimiter, Value: None
-        Class: YARN Literal, Value: declarations
-        Class: String Delimiter, Value: None
-  
-  Class: Statement, Value: None
-      Class: Print Statement, Value: None
-        Class: Output Keyword, Value: None
-        Class: Op Argument, Value: None
-          Class: Expression, Value: None
-            Class: Max Expression, Value: None
-              Class: Op Argument, Value: None
-                Class: Expression, Value: None
-                  Class: Multiplication Expression, Value: None
-                    Class: Op Argument, Value: None
-                      Class: NUMBR Literal, Value: 11
-                    Class: Operation Delimiter, Value: None
-                    Class: Op Argument, Value: None
-                      Class: NUMBR Literal, Value: 2
-              Class: Operation Delimiter, Value: None
-              Class: Op Argument, Value: None
-                Class: Expression, Value: None
-                  Class: Division Expression, Value: None
-                    Class: Op Argument, Value: None
-                      Class: Expression, Value: None
-                        Class: Addition Expression, Value: None
-                          Class: Op Argument, Value: None
-                            Class: NUMBR Literal, Value: 3
-                          Class: Operation Delimiter, Value: None
-                          Class: Op Argument, Value: None
-                            Class: NUMBR Literal, Value: 5
-                    Class: Operation Delimiter, Value: None
-                    Class: Op Argument, Value: None
-                      Class: NUMBR Literal, Value: 2
-  '''
-
+  # --------------------------------------------------------------------------------------------------
+  # passes the values to be printed to the ui in main.py
+  # --------------------------------------------------------------------------------------------------
   def visible(self, op_arg):
     op_class = op_arg.children[0]
     if op_class.classification == "Identifier":
       value = self.symbol_table[op_class.value]
-      self.ui.print_in_console(str(value))
+      if isinstance(value, str):
+        value = "\"" + value + "\""
+        self.ui.print_in_console(str(value))
+      else:
+        self.ui.print_in_console(str(value))
     elif op_class.classification == "String Delimiter":
       value = "\"" + op_arg.children[1].value + "\""
       self.ui.print_in_console(str(value))
     elif op_class.classification == "Expression":
       value = self.expression(op_class.children[0])  
       self.ui.print_in_console(str(value))
-
-    else:
-      pass
 
