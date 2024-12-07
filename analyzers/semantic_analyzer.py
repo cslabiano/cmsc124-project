@@ -416,10 +416,12 @@ class Semantic_Analyzer:
       value = self.expression(op_class.children[0])  
       self.ui.print_in_console(str(value))
 
-
+  # --------------------------------------------------------------------------------------------------
+  # implements the loop function
+  # TODO: implement loops with expressions as parameters
+  # --------------------------------------------------------------------------------------------------
   def loop(self, loop_children):
     loop_cond = None
-    loop_id = loop_children[1]
     inc = loop_children[2].children[0].classification
 
     var = loop_children[4].value
@@ -428,9 +430,9 @@ class Semantic_Analyzer:
     if isinstance(self.symbol_table[var], str):
       if str(self.symbol_table[var]).isdigit():
         self.symbol_table[var] = float(val)
-
     val = self.symbol_table[var]
-    
+  
+    # check if the loop condition is WILE or TIL
     if loop_children[5].children[0].value == "WILE":
       loop_cond = True
     elif loop_children[5].children[0].value == "TIL":
@@ -439,8 +441,7 @@ class Semantic_Analyzer:
     expr = loop_children[5].children[1].children[0]
     expr_bool = self.equality(expr)
   
-
-    print("expr_bool: ", expr_bool)
+    print("expr_bool: ", expr_bool) # print for debugging
     while expr_bool is not loop_cond:
 
       statement = loop_children[6].children[0]
@@ -455,36 +456,7 @@ class Semantic_Analyzer:
 
       expr = loop_children[5].children[1].children[0]
       expr_bool = self.equality(expr)
-      print("expr_bool: ", expr_bool)
-
+      print("expr_bool: ", expr_bool) # print for debugging 
 
       if expr_bool == loop_cond:
         break
-
-'''
-  Class: Statement, Value: None
-    Class: Loop, Value: None
-      Class: Loop Delimiter Start, Value: None
-      Class: Loop Identifier, Value: desc
-      Class: Increment/Decrement, Value: None
-        Class: Loop Increment, Value: None
-      Class: Condition Delimiter, Value: None
-      Class: Identifier, Value: num2
-      Class: Loop Condition, Value: None
-        Class: Loop Condition, Value: None
-        Class: Expression, Value: None
-          Class: Equality Comparison, Value: None
-            Class: Equality Operator Expression, Value: None
-            Class: Op Argument, Value: None
-              Class: Identifier, Value: num2
-            Class: Operation Delimiter, Value: None
-            Class: Op Argument, Value: None
-              Class: Identifier, Value: num1
-      Class: Statement, Value: None
-        Class: Print Statement, Value: None
-          Class: Output Keyword, Value: None
-          Class: Op Argument, Value: None
-            Class: Identifier, Value: num2
-      Class: Loop Delimiter End, Value: None
-      Class: Loop Identifier, Value: desc
-  '''
