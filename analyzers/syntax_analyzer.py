@@ -160,7 +160,7 @@ class Syntax_Analyzer:
   def function_return(self):
     children = []
     self.check('Function Return')
-    children.append(Node('Function Return'))
+    # children.append(Node('Function Return'))
 
     children.append(self.expression())
 
