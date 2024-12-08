@@ -1095,13 +1095,23 @@ class Syntax_Analyzer:
     if self.current_lexeme[1] == 'Condition Delimiter':
       children.append(self.function_argument_definition())
 
-    while self.current_lexeme[1] != 'Function Delimiter End':
-      children.append(self.statement())
+    # while self.current_lexeme[1] != 'Function Delimiter End':
+    #   children.append(self.statement())
+
+    children.append(self.function_statements())
 
     self.check('Function Delimiter End')
     children.append(Node('Function Delimiter End'))    
 
     return Node('Function Delimiter Start', children=children)  
+
+  def function_statements(self):
+    children = []
+
+    while self.current_lexeme[1] != 'Function Delimiter End':
+      children.append(self.statement())
+
+    return Node('Function Statements', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <program> ::== HAI <linebreak> <start_statement> <linebreak> KTHXBYE
