@@ -1,8 +1,19 @@
 class Node:
-  def __init__(self, type, value = None, children = None):
+  def __init__(self, classification, value = None, children = None):
     self.value = value
-    self.type = type
+    self.classification = classification
     self.children = children
+
+# print tree for checking and debugging
+def traverse_tree(node, level=0):
+  # print the current node's classification and value
+  indent = "  " * level  # indentation to show tree hierarchy
+  print(f"{indent}Class: {node.classification}, Value: {node.value}")
+
+  # if the node has children, recursively traverse them
+  if node.children:
+    for child in node.children:
+      traverse_tree(child, level + 1)
 
 class Syntax_Analyzer:
   def __init__(self, lexemes):
@@ -17,6 +28,7 @@ class Syntax_Analyzer:
     line = 0
     try:
       parse_tree = self.program()  # start the program parsing
+      traverse_tree(parse_tree)
       return parse_tree
     except SyntaxError as e:
       return str(e)
@@ -56,19 +68,24 @@ class Syntax_Analyzer:
       children.append(Node("Comment Delimiter"))
 
       self.check("Comment")
-      children.append("Comment")
+      children.append(Node("Comment"))
     
-    return Node(None, "Comment", children = children)
+    return Node("Comment", children = children)
 
   # --------------------------------------------------------------------------------------------------
   # For Identifiers
   # --------------------------------------------------------------------------------------------------
   def identifier(self):
     children = []
-    self.check('Identifier')
-    children.append(Node('Identifier'))
 
-    return Node(None, 'Identifier', children=children)
+    identifier_value = self.current_lexeme[0]
+    self.check('Identifier')
+
+    if self.current_lexeme[1] == "Control Flow Delimiter Switch":
+      children.append(self.switch_case())
+    
+    
+    return Node('Identifier', value=identifier_value, children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <variable> ::= I HAS A variable 
@@ -91,7 +108,7 @@ class Syntax_Analyzer:
 
       children.append(self.op_argument())
   
-    return Node(None, 'Variable', children=children)
+    return Node('Variable', children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <datasection> ::= WAZZUP <linebreak> <var> <linebreak> BUHBYE
@@ -112,7 +129,7 @@ class Syntax_Analyzer:
     self.check("Data section Delimiter End")
     children.append(Node("Data section Delimiter End"))
     
-    return Node(None, "Data Section", children=children)
+    return Node("Data Section", children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <start_statement> ::= <data_section> <linebreak> <statement> | <statement>
@@ -135,7 +152,7 @@ class Syntax_Analyzer:
       children.append(self.statement())
       iter_count += 1
 
-    return Node(None, 'Start Statement', children=children)
+    return Node('Start Statement', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <function_return> ::= FOUND YR <expression>
@@ -143,11 +160,11 @@ class Syntax_Analyzer:
   def function_return(self):
     children = []
     self.check('Function Return')
-    children.append('Function Return')
+    # children.append(Node('Function Return'))
 
     children.append(self.expression())
 
-    return Node(None, 'Function Return', children=children)
+    return Node('Function Return', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <function_break> ::= GTFO
@@ -156,9 +173,9 @@ class Syntax_Analyzer:
     children = []
 
     self.check('Function Break')
-    children.append('Function Break')
+    children.append(Node('Function Break'))
 
-    return Node(None, 'Function Break', children=children)
+    return Node('Function Break', children=children)
  
   # --------------------------------------------------------------------------------------------------
   # <function_argument> ::= YR <expression>
@@ -169,7 +186,7 @@ class Syntax_Analyzer:
 
     # YR
     self.check('Condition Delimiter')
-    children.append('Condition Delimiter')
+    children.append(Node('Condition Delimiter'))
 
     # expression
     children.append(self.op_argument())
@@ -187,7 +204,7 @@ class Syntax_Analyzer:
       # expression
       children.append(self.op_argument())
 
-    return Node(None, 'Function Arguments', children=children)
+    return Node('Function Arguments', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <function_call> ::= I IZ function MKAY
@@ -198,7 +215,7 @@ class Syntax_Analyzer:
 
     # I IZ
     self.check('Function Call Delimiter Start')
-    children.append('Function Call Delimiter Start')
+    children.append(Node('Function Call Delimiter Start'))
 
     # function name
     children.append(self.identifier())
@@ -207,9 +224,9 @@ class Syntax_Analyzer:
       children.append(self.function_argument_call())
 
     self.check('Function Call Delimiter End')
-    children.append('Function Call Delimiter End')
+    children.append(Node('Function Call Delimiter End'))
 
-    return Node(None, 'Function Call', children=children)
+    return Node('Function Call', children=children)
  
   # --------------------------------------------------------------------------------------------------
   # <statement> ::= <print> 
@@ -236,7 +253,12 @@ class Syntax_Analyzer:
 
     # expression
     if 'Expression' in currentLex:
-      children.append(self.expression())
+      next_lexeme = self.lexemes[4]
+      if next_lexeme[1] == "Control Flow Delimiter If-else":
+        children.append(self.expression())
+        children.append(self.if_then())
+      else:
+        children.append(self.expression())
     # loop
     elif currentLex == 'Loop Delimiter Start':
       children.append(self.loop())
@@ -254,7 +276,12 @@ class Syntax_Analyzer:
       children.append(self.typecast())
     # could be a typecast or an assignment?
     elif currentLex == 'Identifier':
-      children.append(self.typecast())
+      # if the next lexeme is a switch-case, go immediately to identifier
+      next_lexeme = self.lexemes[1]
+      if next_lexeme[1] == "Control Flow Delimiter Switch":
+        children.append(self.identifier())
+      else:
+        children.append(self.typecast())
     # string concatenation
     elif currentLex == "String Concatenation":
       children.append(self.concatenation())
@@ -273,11 +300,12 @@ class Syntax_Analyzer:
     # control flow if-else
     elif currentLex == "Control Flow Delimiter If-else":
       children.append(self.if_then())
+      # raise SyntaxError(f'Syntax Error: Expected Expression before If-Then')
     # control flow switch
     elif currentLex == "Control Flow Delimiter Switch":
       children.append(self.switch_case())
 
-    return Node(None, 'Statement', children=children)
+    return Node('Statement', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <expression> ::= SUM OF <op_argument> AN <op_argument>
@@ -303,32 +331,32 @@ class Syntax_Analyzer:
     elif self.current_lexeme[1] in {'Equality Operator Expression', 'Inequality Operator Expression'}:
       children.append(self.comparison())
     
-    return Node(None, 'Expression', children=children) 
+    return Node('Expression', children=children) 
 
   def arithmetic(self):
     children = []
 
-    if self.current_lexeme[1] in {'Addition Expression', 'Subtraction Expression', 'Multiplication Expression', 'Division Expression', 'Modulo Expression', 'Max Expression', 'Min Expression'}:
-      self.check(self.current_lexeme[1])
-      children.append(Node(self.current_lexeme[1]))
+    expression_type = self.current_lexeme[1]
+    self.check(expression_type)
+    # children.append(Node(expression_type))
 
-      children.append(self.op_argument())
+    children.append(self.op_argument())
 
-      self.check('Operation Delimiter')
-      children.append(Node('Operation Delimiter'))
+    self.check('Operation Delimiter')
+    children.append(Node('Operation Delimiter'))
 
-      children.append(self.op_argument())
+    children.append(self.op_argument())
 
-    return Node(None, 'Arithmetic Expression', children=children)
+    return Node(expression_type, children=children)
 
   # implicit variables?
   def implicit_var(self):
     children = []
 
     self.check('Implicit Variable')
-    children.append('Implicit Variable')
+    children.append(Node('Implicit Variable'))
 
-    return Node(None, 'Implicit Variable', children=children)
+    return Node('Implicit Variable', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <op_argument> ::= <literal> | <variable>
@@ -339,17 +367,18 @@ class Syntax_Analyzer:
 
     # Literals
     if self.current_lexeme[1] in {'NUMBR Literal', 'NUMBAR Literal', 'TROOF Literal', 'TYPE Literal'}:
-        children.append(Node(self.current_lexeme[1]))
+        children.append(Node(self.current_lexeme[1], value = self.current_lexeme[0]))
         self.check(self.current_lexeme[1])
     elif self.current_lexeme[1] == 'String Delimiter':
-      children.append(Node('String Delimiter'))
-      self.check('String Delimiter')
+        children.append(Node('String Delimiter'))
+        self.check('String Delimiter')
 
-      self.check('YARN Literal')
-      children.append(Node('Yarn Literal'))
+        if self.current_lexeme[1] == 'YARN Literal':
+            children.append(Node('YARN Literal', value=self.current_lexeme[0]))
+            self.check('YARN Literal')
 
-      self.check('String Delimiter')
-      children.append(Node('String Delimiter'))
+        self.check('String Delimiter')
+        children.append(Node('String Delimiter'))
     # Variables
     elif self.current_lexeme[1] == "Identifier":
       children.append(self.identifier())
@@ -363,7 +392,7 @@ class Syntax_Analyzer:
 
     else: 
       raise SyntaxError(f'Syntax Error: Expected Operation argument, but found {self.current_lexeme[1]}')
-    return Node(None, "Op Argument", children=children)
+    return Node("Op Argument", children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <expression> ::= SUM OF <op_argument> AN <op_argument>
@@ -380,14 +409,17 @@ class Syntax_Analyzer:
     children = []
 
     if self.current_lexeme[1] in {'Addition Expression', 'Subtraction Expression', 'Multiplication Expression', 'Division Expression', 'Modulo Expression'}:
-      # TODO: Arithmetic
-      pass
+      children.append(self.arithmetic())
     # Boolean expression
     elif self.current_lexeme[1] in {'And Expression', 'Or Expression', 'Xor Expression', 'Not Expression'}:
-      children.append(self.boolean())
+      children.append(self.fixed_boolean())
     # Equality expression
     elif self.current_lexeme[1] in {'Equality Operator Expression', 'Inequality Operator Expression'}:
       children.append(self.comparison())
+    else: 
+      raise SyntaxError("Syntax error: can't nest infinite boolean expressions")
+
+    return Node('Infinite Expression', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <literal> ::= numbr 
@@ -398,23 +430,25 @@ class Syntax_Analyzer:
   def literal(self):
     children = []
 
+    literal_value = self.current_lexeme[0]
+
     if self.current_lexeme[1] == 'NUMBAR Literal':
+      children.append(Node('NUMBAR Literal', value=literal_value))
       self.check('NUMBAR Literal')
-      children.append(Node('NUMBAR Literal'))
     elif self.current_lexeme[1] == 'NUMBR Literal':
       self.check('NUMBR Literal')
-      children.append(Node('NUMBR Literal'))
+      children.append(Node('NUMBR Literal', value=literal_value))
     elif self.current_lexeme[1] == 'YARN Literal':
       self.check('YARN Literal')
-      children.append(Node('YARN Literal'))
+      children.append(Node('YARN Literal', value=literal_value))
     elif self.current_lexeme[1] == 'TROOF Literal':
       self.check('TROOF Literal')
-      children.append(Node('TROOF Literal'))
+      children.append(Node('TROOF Literal', value=literal_value))
     elif self.current_lexeme[1] == 'TYPE Literal':
       self.check('TYPE Literal')
-      children.append(Node('TYPE Literal'))
+      children.append(Node('TYPE Literal', value=literal_value))
     
-    return Node(None, 'Literal', children=children)
+    return Node('Literal', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <op_argument> ::= <literal> | <variable>
@@ -424,20 +458,37 @@ class Syntax_Analyzer:
     children = []
 
     # Literals
-    if 'Literal' in self.current_lexeme[1]:
-      children.append(self.literal())
+    if self.current_lexeme[1] in {'NUMBR Literal', 'NUMBAR Literal', 'TROOF Literal', 'TYPE Literal'}:
+        children.append(Node(self.current_lexeme[1], value = self.current_lexeme[0]))
+        self.check(self.current_lexeme[1])
+    elif self.current_lexeme[1] == 'String Delimiter':
+        children.append(Node('String Delimiter'))
+        self.check('String Delimiter')
 
+        if self.current_lexeme[1] == 'YARN Literal':
+            children.append(Node('YARN Literal', value=self.current_lexeme[0]))
+            self.check('YARN Literal')
+
+        self.check('String Delimiter')
+        children.append(Node('String Delimiter'))
     # Variables
     elif self.current_lexeme[1] == "Identifier":
       children.append(self.identifier())
-
+    # Expressions
     elif 'Expression' in self.current_lexeme[1]: 
-      children.append(self.infinite_expression()) 
+      children.append(self.infinite_expression())
+    # Implicit variable
+    elif self.current_lexeme[1] == 'Implicit Variable':
+      children.append(self.implicit_var())
+    # String concatenation
+    elif self.current_lexeme[1] == 'String Concatenation':
+      children.append(self.concatenation())
 
     else: 
       raise SyntaxError(f'Syntax Error: Expected Operation argument, but found {self.current_lexeme[1]}')
 
-    return Node(None, "Infinite Op Argument", children=children)
+    return Node("Infinite Op Argument", children=children)
+
 
   # --------------------------------------------------------------------------------------------------
   # <boolean> ::= <fixed_boolean> | <infinite_boolean>
@@ -450,8 +501,12 @@ class Syntax_Analyzer:
         children.append(self.fixed_boolean())
     elif self.current_lexeme[1] in {'Infinite Or Expression', 'Infinite And Expression'}:
         children.append(self.infinite_boolean())
+        print(f"SHOULD BE MKAY BUT IS {self.current_lexeme[1]}")
+        infinite_boolean_delimiter = self.current_lexeme[1]
+        self.check('Function Call Delimiter End')
+        children.append(Node('Infinite Expression Delimiter End'))
 
-    return Node(None, "Boolean", children=children)
+    return Node("Boolean", children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <fixed_boolean> ::= BOTH OF <op_argument> AN <op_argument> 
@@ -464,10 +519,10 @@ class Syntax_Analyzer:
   # --------------------------------------------------------------------------------------------------
   def fixed_boolean(self):
     children = []
+    boolean_type = self.current_lexeme[1]
 
-    if self.current_lexeme[1] in {'And Expression', 'Or Expression', 'Xor Expression'}:
-      self.check(self.current_lexeme[1])
-      children.append(Node(self.current_lexeme[1]))
+    if boolean_type in {'And Expression', 'Or Expression', 'Xor Expression'}:
+      self.check(boolean_type)
       
       children.append(self.op_argument())
 
@@ -477,12 +532,12 @@ class Syntax_Analyzer:
       children.append(self.op_argument())
     
     elif self.current_lexeme[1] == 'Not Expression':
-      self.check("Not Expression")
-      children.append(Node("Not Expression"))
+      self.check(boolean_type)
+      # children.append(Node("Not Expression"))
 
       children.append(self.op_argument())
 
-    return Node(None, "Fixed Boolean", children=children)
+    return Node(boolean_type, children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <infinite_argument> ::= <op_argument> AN <infinite_argument> | <op_argument>
@@ -500,7 +555,7 @@ class Syntax_Analyzer:
         # Recursive call to check if there are more arguments
         children.append(self.infinite_argument())
 
-    return Node(None, "Infinite Argument", children=children)
+    # return Node("Infinite Argument", children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <infinite_boolean> ::= ALL OF <infinite_argument> MKAY
@@ -513,22 +568,33 @@ class Syntax_Analyzer:
   def infinite_boolean(self):
     children = []
 
+    boolean_type = self.current_lexeme[1]
     # ALL OF or ANY OF
     if self.current_lexeme[1] == "Infinite And Expression":
         self.check("Infinite And Expression")
-        children.append(Node("Infinite And Expression"))
+        # children.append(Node("Infinite And Expression"))
     elif self.current_lexeme[1] == "Infinite Or Expression":
         self.check("Infinite Or Expression")
-        children.append(Node("Infinite Or Expression"))
+        # children.append(Node("Infinite Or Expression"))
 
-    children.append(self.infinite_argument())
+    while self.current_lexeme[1] != "Function Call Delimiter End":
+      children.append(self.infinite_op_argument())
+
+      # If there is an 'AN', it means there are more arguments
+      if self.current_lexeme[1] == "Operation Delimiter":
+          self.check("Operation Delimiter")
+          children.append(Node("Operation Delimiter"))
+
+          # Recursive call to check if there are more arguments
+          # children.append(self.infinite_argument())
+
+    # children.append(self.infinite_argument())
 
     # Check 'MKAY'
     if self.current_lexeme[1] == "Function Call Delimiter End":
-        self.check("Function Call Delimiter End")
-        children.append(Node("Function Call Delimiter End"))
-
-    return Node(None, "Infinite Boolean", children=children)
+        # self.check("Function Call Delimiter End")
+        # children.append(Node("Function Call Delimiter End"))
+      return Node(boolean_type, children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <relational_operator ::= BIGGR OF <op_argument> AN <op_argument>
@@ -540,7 +606,7 @@ class Syntax_Analyzer:
 
     if self.current_lexeme[1] == 'Max Expression':
       self.check('Max Expression')
-      children.append(Node('Max Expression'))
+      # children.append(Node('Max Expression'))
 
       children.append(self.op_argument())
 
@@ -548,9 +614,10 @@ class Syntax_Analyzer:
       children.append(Node('Operation Delimiter'))
 
       children.append(self.op_argument())
+      return Node('Max Expression', children=children)
     elif self.current_lexeme[1] == 'Min Expression': 
       self.check('Min Expression')
-      children.append(Node('Min Expression'))
+      # children.append(Node('Min Expression'))
 
       children.append(self.op_argument())
 
@@ -558,8 +625,9 @@ class Syntax_Analyzer:
       children.append(Node('Operation Delimiter'))
 
       children.append(self.op_argument())
+      return Node('Min Expression', children=children)
 
-    return Node(None, 'Relational Operator', children=children)
+    # return Node('Op Argument', children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <comparison> ::= BOTH SAEM <op_argument> AN <op_argument>
@@ -573,32 +641,26 @@ class Syntax_Analyzer:
     
     if self.current_lexeme[1] == 'Equality Operator Expression':
       self.check('Equality Operator Expression')
-      children.append(Node('Equality Operator Expression'))
+      # children.append(Node('Equality Operator Expression'))
        
       children.append(self.op_argument())
       
       self.check('Operation Delimiter')
       children.append(Node('Operation Delimiter'))
 
-      if self.current_lexeme[1] in {'Max Expression', 'Min Expresion'}:
-        children.append(self.relational_operator())
-      else:
-        children.append(self.op_argument())
+      children.append(self.op_argument())
+      return Node('Equality Comparison Expression', children=children)
 
     elif self.current_lexeme[1] == 'Inequality Operator Expression':
       self.check('Inequality Operator Expression')
-      children.append(Node('Inequality Operator'))
+      # children.append(Node('Inequality Operator Expression'))
 
       children.append(self.op_argument())
       self.check('Operation Delimiter')
       children.append(Node('Operation Delimiter'))
       
-      if self.current_lexeme[1] in {'Max Expression', 'Min Expression'}:
-        children.append(self.relational_operator())
-      else:
-        children.append(self.op_argument())
-    
-    return Node(None, 'Equality Comparison', children=children)
+      children.append(self.op_argument())
+      return Node('Inequality Comparison Expression', children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <if_then> ::= O RLY? <linebreak> <if_clause> <linebreak> <else_clause> <linebreak> OIC
@@ -624,7 +686,7 @@ class Syntax_Analyzer:
     self.check("Control Flow Delimiter End")
     children.append(Node("Control Flow Delimiter End"))
 
-    return Node(None, "If-Then", children=children)
+    return Node("If-Then", children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <if_clause> ::= YA RLY <linebreak> <statement>
@@ -650,7 +712,7 @@ class Syntax_Analyzer:
         iter_count += 1
     
 
-    return Node(None, "If Clause", children=children)
+    return Node("If Clause", children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <else_if_clause> ::= MEBBE <statement>
@@ -663,11 +725,23 @@ class Syntax_Analyzer:
       self.check("Else-if Keyword")
       children.append(Node("Else-if Keyword"))
 
-      children.append(self.statement())
+      children.append(self.expression())
+
+      max_iter = len(self.lexemes)
+      iter_count = 0
+
+      while self.current_lexeme[1] not in {"Else-if Keyword", "Else Keyword", "Control Flow Delimiter End"}:
+        if iter_count >= max_iter:
+          raise SyntaxError(
+            f"Unexpected end of input or invalid syntax in 'MEBBE' clause. "
+            f"Expected 'Control Flow Delimiter End', but got '{self.current_lexeme[1]}'"
+          )
+        children.append(self.statement())
+        iter_count += 1
 
       # TODO: Ensure that the next statement should be an Else-if Keyword or Else Keyword or Control Flow Delimiter End
 
-    return Node(None, "Else-if Clause", children=children)
+    return Node("Else-if Clause", children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <else__clause> ::= NO WAI <linebreak> <statement>
@@ -692,7 +766,7 @@ class Syntax_Analyzer:
         children.append(self.statement())
         iter_count += 1
 
-    return Node(None, "Else Clause", children=children)
+    return Node("Else Clause", children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <switch_case> ::= WTF? <linebreak> <case_blocks> <linebreak> OIC
@@ -714,7 +788,7 @@ class Syntax_Analyzer:
     self.check("Control Flow Delimiter End")
     children.append(Node("Control Flow Delimiter End"))
 
-    return Node(None, "Switch Case", children=children)
+    return Node("Switch Case", children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <case_block> ::= OMG <literal> <linebreak> <statement> <linebreak> <case_blocks> 
@@ -729,8 +803,19 @@ class Syntax_Analyzer:
       children.append(Node("Switch-case Keyword"))
 
       if self.current_lexeme[1] in {'NUMBR Literal', 'NUMBAR Literal', 'TROOF Literal', 'TYPE Literal'}:
-        children.append(Node(self.current_lexeme[1]))
+        children.append(Node(self.current_lexeme[1], value = self.current_lexeme[0]))
         self.check(self.current_lexeme[1])
+      
+      elif self.current_lexeme[1] == 'String Delimiter':
+        children.append(Node('String Delimiter'))
+        self.check('String Delimiter')
+
+        if self.current_lexeme[1] == 'YARN Literal':
+            children.append(Node('YARN Literal', value=self.current_lexeme[0]))
+            self.check('YARN Literal')
+
+        self.check('String Delimiter')
+        children.append(Node('String Delimiter'))
 
       max_iter = len(self.lexemes)
       print(max_iter)
@@ -747,7 +832,7 @@ class Syntax_Analyzer:
         iter_count += 1
     
 
-    return Node(None, "Case Block", children=children)
+    return Node("Case Block", children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <case_default> ::= OMGWTF <linebreak> <statement>
@@ -772,7 +857,7 @@ class Syntax_Analyzer:
         iter_count += 1
     
 
-    return Node(None, "Case Default Block", children=children)
+    return Node("Case Default Block", children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <inc_dec> ::= UPPIN 
@@ -788,7 +873,7 @@ class Syntax_Analyzer:
       self.check('Loop Decrement')
       children.append(Node('Loop Decrement'))
 
-    return Node(None, 'Increment/Decrement', children=children)
+    return Node('Increment/Decrement', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <termination> ::= TIL <expression> 
@@ -797,12 +882,12 @@ class Syntax_Analyzer:
   def termination(self):
     children = []
 
+    children.append(Node('Loop Condition', value = self.current_lexeme[0]))
     self.check('Loop Condition')
-    children.append(Node('Loop Condition'))
 
     children.append(self.expression())
 
-    return Node(None, 'Loop Condition', children=children)
+    return Node('Loop Condition', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <loop> ::= IM IN YR variable <inc_dec> YR variable <termination> <linebreak> <statement> <linebreak> IM OUTTA YR variable
@@ -813,7 +898,9 @@ class Syntax_Analyzer:
     self.check('Loop Delimiter Start')
     children.append(Node('Loop Delimiter Start'))
 
-    children.append(self.identifier())
+    children.append(Node('Loop Identifier', value=self.current_lexeme[0]))
+    self.check('Identifier')
+    # children.append(self.identifier())
 
     children.append(self.inc_dec())
 
@@ -830,9 +917,11 @@ class Syntax_Analyzer:
     self.check('Loop Delimiter End')
     children.append(Node('Loop Delimiter End'))
 
-    children.append(self.identifier())
+    children.append(Node('Loop Identifier', value=self.current_lexeme[0]))
+    self.check('Identifier')
+    # children.append(self.identifier())
 
-    return Node(None, 'Loop', children=children) 
+    return Node('Loop', children=children) 
 
   # --------------------------------------------------------------------------------------------------
   # <print_multiple> ::= VISIBLE <op_argument> <plus_argument>
@@ -847,13 +936,14 @@ class Syntax_Analyzer:
     if self.current_lexeme[1] == 'Print Concatenation':
       children.append(self.print_multiple())
 
-    return Node(None, 'Print Multiple', children=children)
+    return Node('Print Multiple', children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <print_fn> ::= <print_one> 
   # | <print_multiple>
   # --------------------------------------------------------------------------------------------------
   def print_fn(self):
+    
     children = []
 
     self.check('Output Keyword')
@@ -864,7 +954,7 @@ class Syntax_Analyzer:
     if self.current_lexeme[1] == 'Print Concatenation':
       children.append(self.print_multiple())
     
-    return Node(None, "Print Statement", children=children)
+    return Node("Print Statement", children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <input> ::= GIMMEH <variable>
@@ -877,7 +967,7 @@ class Syntax_Analyzer:
 
     children.append(self.identifier())
 
-    return Node(None, 'Input Keyword', children=children)
+    return Node('Input Keyword', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <typecast> ::= <explicit_typecasting> 
@@ -894,7 +984,7 @@ class Syntax_Analyzer:
     elif self.current_lexeme[1] == 'Identifier':
       children.append(self.recasting())
 
-    return Node(None, 'Typecast', children=children)
+    return Node('Typecast', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <explicit_typecasting> ::= MAEK variable A type 
@@ -908,10 +998,12 @@ class Syntax_Analyzer:
 
     children.append(self.identifier())
 
-    self.check('TYPE Literal')
-    children.append(Node('TYPE Literal'))
+    self.check('Typecast Keyword')
+    children.append(Node('Typecast Keyword'))
 
-    return Node(None, 'Explicit Typecast', children=children)
+    children.append(self.literal())
+
+    return Node('Explicit Typecast', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <recasting> ::= variable IS NOW A type
@@ -923,10 +1015,10 @@ class Syntax_Analyzer:
     children.append(self.identifier())
     if self.current_lexeme[1] == 'Typecast Keyword':
       self.check('Typecast Keyword')
-      children.append('Typecast Keyword')
+      children.append(Node('Typecast Keyword'))
 
       self.check('TYPE Literal')
-      children.append('TYPE Literal')
+      children.append(Node('TYPE Literal'))
 
     elif self.current_lexeme[1] == 'Assignment':
       self.check('Assignment')
@@ -937,7 +1029,7 @@ class Syntax_Analyzer:
       else:
         children.append(self.op_argument())
 
-    return Node(None, 'Recasting', children=children)
+    return Node('Recasting', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <concatenation> ::= SMOOSH <op_argument> <an_op_argument>
@@ -955,7 +1047,7 @@ class Syntax_Analyzer:
       children.append(Node("Operation Delimiter"))
       children.append(self.op_argument())
 
-    return Node(None, "String Concatenation", children = children)
+    return Node("String Concatenation", children = children)
 
   # --------------------------------------------------------------------------------------------------
   # <function_argument_definition> ::= YR variable 
@@ -966,7 +1058,7 @@ class Syntax_Analyzer:
 
     # YR
     self.check('Condition Delimiter')
-    children.append('Condition Delimiter')
+    children.append(Node('Condition Delimiter'))
 
     # x
     children.append(self.identifier())
@@ -984,7 +1076,7 @@ class Syntax_Analyzer:
       # y
       children.append(self.identifier())
 
-    return Node(None, 'Function Arguments', children=children)
+    return Node('Function Arguments', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <function_definition> ::= HOW IZ I function <linebreak> <statement> <linebreak> IF U SAY SO  
@@ -994,7 +1086,7 @@ class Syntax_Analyzer:
     children = []
     # HOW IZ I
     self.check('Function Delimiter Start')
-    children.append(Node('Function Delimiter Start'))
+    # children.append(Node('Function Delimiter Start'))
 
     # Function name
     children.append(self.identifier())
@@ -1003,13 +1095,23 @@ class Syntax_Analyzer:
     if self.current_lexeme[1] == 'Condition Delimiter':
       children.append(self.function_argument_definition())
 
-    while self.current_lexeme[1] != 'Function Delimiter End':
-      children.append(self.statement())
+    # while self.current_lexeme[1] != 'Function Delimiter End':
+    #   children.append(self.statement())
+
+    children.append(self.function_statements())
 
     self.check('Function Delimiter End')
     children.append(Node('Function Delimiter End'))    
 
-    return Node(None, 'Function Definition', children=children)  
+    return Node('Function Delimiter Start', children=children)  
+
+  def function_statements(self):
+    children = []
+
+    while self.current_lexeme[1] != 'Function Delimiter End':
+      children.append(self.statement())
+
+    return Node('Function Statements', children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <program> ::== HAI <linebreak> <start_statement> <linebreak> KTHXBYE
@@ -1037,4 +1139,4 @@ class Syntax_Analyzer:
     while self.current_lexeme[1] == "Multiline Comment Start" or self.current_lexeme[1] == "Comment Delimiter":
       children.append(self.comment())
 
-    return Node(None, "Program", children = children)
+    return Node("Program", children = children)
