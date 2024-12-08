@@ -289,6 +289,8 @@ class Semantic_Analyzer:
       return symbol_value
     
     elif classification == 'NUMBR Literal':
+      print('ITS A NUMBR')
+      print(value)
       return int(value)
     elif classification == 'NUMBAR Literal':
       return float(value)
@@ -320,11 +322,25 @@ class Semantic_Analyzer:
       identifier = node.children[0].value
       if node.children[2].classification == "Op Argument":
         new_value = self.evaluate_operand(node.children[2].children[0])
+        print(new_value)
+        self.symbol_table[identifier] = new_value
+
       elif node.children[2].classification == "Explicit Typecast":
         self.typecast(node.children[2])
         new_value = self.symbol_table["IT"]
       elif node.children[2].classification == "TYPE Literal":
-        new_value = self.typecast(node.children[2])
+        type_to_assign = node.children[2].value 
+        old_value = self.symbol_table[identifier]
+        if type_to_assign == 'NUMBR': 
+          new_value = int(old_value)
+        elif type_to_assign == 'NUMBAR': 
+          new_value = float(old_value)
+        elif type_to_assign == 'TROOF': 
+          new_value = False if old_value == "" or float(old_value == 0) or old_value == False else True
+        elif type_to_assign == 'YARN':
+          new_value = str(old_value)
+        elif type_to_assign == 'NOOB': 
+          new_value = None
 
       self.symbol_table[identifier] = new_value
 
@@ -367,7 +383,7 @@ class Semantic_Analyzer:
           it = None
       # TROOF
       elif type_to_typecast == 'TROOF':
-        if identifier_value == None or identifier_value == 0:
+        if identifier_value == None or identifier_value == 0 or identifier_value == False:
           it = False
         else:
           it = True
