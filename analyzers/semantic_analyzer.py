@@ -2,10 +2,9 @@ import re
 from PyQt5.QtWidgets import QInputDialog
 
 class Semantic_Analyzer:
-  def __init__(self, parse_tree, ui):
+  def __init__(self, parse_tree, ui, symbol_table = None):
     self.tree = parse_tree
-    self.symbol_table = {"IT": None}
-    self.stack = []
+    self.symbol_table = symbol_table if symbol_table is not None else {"IT": None}
     self.ui = ui
 
   def analyze(self):
@@ -53,7 +52,8 @@ class Semantic_Analyzer:
     elif type == "Function Definition":
       self.define_function(child.children)
     elif type == "Function Return":
-      pass
+      print('THERE IS A RETURN OMG')
+      return self.evaluate_operand(child.children[0])
     elif type == "Function Call":
       self.call_function(child)
 
@@ -606,4 +606,44 @@ class Semantic_Analyzer:
     self.stack.append
 
   def call_function(self, op_args):
-    pass
+    function_call_args = op_args.children
+    function_name = function_call_args[1].value
+    function_arguments = function_call_args[2].children
+    actual_params = []
+    # Get the actual parameters
+    for arg in function_arguments:
+      if arg.classification not in {'Operation Delimiter', 'Condition Delimiter'}:
+        actual_params.append(self.evaluate_operand(arg.children[0]))
+
+    # Traverse tree and find function
+    for node in self.tree.children:
+      if node.classification == "Start Statement":
+        for statement in node.children:
+          if statement.classification == "Statement":
+            for child in statement.children:
+              if child.classification == 'Function Delimiter Start':
+                function_definition_children = child.children
+                if function_definition_children[0].value == function_name:
+                  # Get the formal parameters 
+                  formal_params = []
+                  function_definition_arguments = function_definition_children[1].children
+
+                  for arg in function_definition_arguments:
+                    if arg.classification not in {'Condition Delimiter', 'Operation Delimiter'}: 
+                      formal_params.append(arg.value)
+
+                  # Check if the parameters match
+                  if len(formal_params) != len(actual_params):
+                    raise ValueError("Arguments do not match")
+                  
+                  # Create dictionary for formal:actual
+                  function_symbol_table = dict(zip(formal_params, actual_params))
+                  # Create list to hold function statement nodes
+                  function_statements = function_definition_children[2].children
+
+                  # Create a new Semantic Analyzer instance for the function
+                  new_analyzer = Semantic_Analyzer(parse_tree=function_statements, ui=self.ui, symbol_table=function_symbol_table)
+                  for statement in function_statements: 
+                    
+                    self.symbol_table['IT'] = new_analyzer.process_statement(statement.children[0])
+                      
