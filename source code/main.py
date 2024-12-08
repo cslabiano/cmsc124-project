@@ -115,6 +115,17 @@ class UI(QMainWindow):
       message = "WIN"
     elif message == "False":
       message = "FAIL"
+    else: 
+      if ":)" in message: 
+        message = message.replace(":)", '\n')
+      if ":>" in message: 
+        message = message.replace(":>", '\t')
+      # if ":o" in message: 
+      #   message = message.replace(":o", '\g')
+      if "::" in message:
+        message = message.replace("::", ":")
+      if ':"' in message:
+        message = message.replace(':"', '\"')
 
     new_text = current_text + "\n" + message if current_text else message  # append the new message
     self.label_console.setPlainText(new_text)  # update the console
