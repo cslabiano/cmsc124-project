@@ -598,7 +598,7 @@ class Syntax_Analyzer:
 
     if self.current_lexeme[1] == 'Max Expression':
       self.check('Max Expression')
-      children.append(Node('Max Expression'))
+      # children.append(Node('Max Expression'))
 
       children.append(self.op_argument())
 
@@ -606,9 +606,10 @@ class Syntax_Analyzer:
       children.append(Node('Operation Delimiter'))
 
       children.append(self.op_argument())
+      return Node('Max Expression', children=children)
     elif self.current_lexeme[1] == 'Min Expression': 
       self.check('Min Expression')
-      children.append(Node('Min Expression'))
+      # children.append(Node('Min Expression'))
 
       children.append(self.op_argument())
 
@@ -616,8 +617,9 @@ class Syntax_Analyzer:
       children.append(Node('Operation Delimiter'))
 
       children.append(self.op_argument())
+      return Node('Min Expression', children=children)
 
-    return Node('Relational Operator', children=children)
+    # return Node('Op Argument', children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <comparison> ::= BOTH SAEM <op_argument> AN <op_argument>
@@ -638,10 +640,7 @@ class Syntax_Analyzer:
       self.check('Operation Delimiter')
       children.append(Node('Operation Delimiter'))
 
-      if self.current_lexeme[1] in {'Max Expression', 'Min Expresion'}:
-        children.append(self.relational_operator())
-      else:
-        children.append(self.op_argument())
+      children.append(self.op_argument())
       return Node('Equality Comparison Expression', children=children)
 
     elif self.current_lexeme[1] == 'Inequality Operator Expression':
@@ -652,10 +651,7 @@ class Syntax_Analyzer:
       self.check('Operation Delimiter')
       children.append(Node('Operation Delimiter'))
       
-      if self.current_lexeme[1] in {'Max Expression', 'Min Expression'}:
-        children.append(self.relational_operator())
-      else:
-        children.append(self.op_argument())
+      children.append(self.op_argument())
       return Node('Inequality Comparison Expression', children=children)
   
   # --------------------------------------------------------------------------------------------------
