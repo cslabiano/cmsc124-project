@@ -518,6 +518,7 @@ class Semantic_Analyzer:
 
     if ok and input_value:
       self.symbol_table[var_name] = input_value
+      self.ui.print_in_console(input_value)
 
   # --------------------------------------------------------------------------------------------------
   # function for printing in the console, supports concatenation
