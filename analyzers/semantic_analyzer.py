@@ -35,6 +35,8 @@ class Semantic_Analyzer:
       # print(child.children[0].classification)
       if child.children[0].classification == "Switch Case":
         self.switch_case(child)
+      else: 
+        self.typecast(child)
     elif type == 'If-Then':
       self.if_then(child.children)
     # elif type == "Switch Case":
