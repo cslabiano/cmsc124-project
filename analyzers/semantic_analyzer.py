@@ -678,6 +678,9 @@ class Semantic_Analyzer:
                   # Create a new Semantic Analyzer instance for the function
                   new_analyzer = Semantic_Analyzer(parse_tree=function_statements, ui=self.ui, symbol_table=function_symbol_table)
                   for statement in function_statements: 
-                    
-                    self.symbol_table['IT'] = new_analyzer.process_statement(statement.children[0])
+                    result = new_analyzer.process_statement(statement.children[0])
+                    if result is not None:
+                      self.symbol_table['IT'] = result
+
+
                       
