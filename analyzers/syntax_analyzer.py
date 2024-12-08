@@ -431,6 +431,46 @@ class Syntax_Analyzer:
     return Node('Literal', children=children)
 
   # --------------------------------------------------------------------------------------------------
+  # <op_argument> ::= <literal> | <variable>
+  # An operation argument can either be a literal, variable, or expression
+  # --------------------------------------------------------------------------------------------------
+  def infinite_op_argument(self):
+    children = []
+
+    # Literals
+    if self.current_lexeme[1] in {'NUMBR Literal', 'NUMBAR Literal', 'TROOF Literal', 'TYPE Literal'}:
+        children.append(Node(self.current_lexeme[1], value = self.current_lexeme[0]))
+        self.check(self.current_lexeme[1])
+    elif self.current_lexeme[1] == 'String Delimiter':
+        children.append(Node('String Delimiter'))
+        self.check('String Delimiter')
+
+        if self.current_lexeme[1] == 'YARN Literal':
+            children.append(Node('YARN Literal', value=self.current_lexeme[0]))
+            self.check('YARN Literal')
+
+        self.check('String Delimiter')
+        children.append(Node('String Delimiter'))
+    # Variables
+    elif self.current_lexeme[1] == "Identifier":
+      children.append(self.identifier())
+    # Expressions
+    elif 'Expression' in self.current_lexeme[1]: 
+      children.append(self.infinite_expression())
+    # Implicit variable
+    elif self.current_lexeme[1] == 'Implicit Variable':
+      children.append(self.implicit_var())
+    # String concatenation
+    elif self.current_lexeme[1] == 'String Concatenation':
+      children.append(self.concatenation())
+
+    else: 
+      raise SyntaxError(f'Syntax Error: Expected Operation argument, but found {self.current_lexeme[1]}')
+
+    return Node("Infinite Op Argument", children=children)
+
+
+  # --------------------------------------------------------------------------------------------------
   # <boolean> ::= <fixed_boolean> | <infinite_boolean>
   # Booleans can either be a fixed boolean or an infinite boolean 
   # --------------------------------------------------------------------------------------------------
@@ -496,46 +536,6 @@ class Syntax_Analyzer:
         children.append(self.infinite_argument())
 
     # return Node("Infinite Argument", children=children)
-
-  # --------------------------------------------------------------------------------------------------
-  # <op_argument> ::= <literal> | <variable>
-  # An operation argument can either be a literal, variable, or expression
-  # --------------------------------------------------------------------------------------------------
-  def infinite_op_argument(self):
-    children = []
-
-    # Literals
-    if self.current_lexeme[1] in {'NUMBR Literal', 'NUMBAR Literal', 'TROOF Literal', 'TYPE Literal'}:
-        children.append(Node(self.current_lexeme[1], value = self.current_lexeme[0]))
-        self.check(self.current_lexeme[1])
-    elif self.current_lexeme[1] == 'String Delimiter':
-        children.append(Node('String Delimiter'))
-        self.check('String Delimiter')
-
-        if self.current_lexeme[1] == 'YARN Literal':
-            children.append(Node('YARN Literal', value=self.current_lexeme[0]))
-            self.check('YARN Literal')
-
-        self.check('String Delimiter')
-        children.append(Node('String Delimiter'))
-    # Variables
-    elif self.current_lexeme[1] == "Identifier":
-      children.append(self.identifier())
-    # Expressions
-    elif 'Expression' in self.current_lexeme[1]: 
-      children.append(self.infinite_expression())
-    # Implicit variable
-    elif self.current_lexeme[1] == 'Implicit Variable':
-      children.append(self.implicit_var())
-    # String concatenation
-    elif self.current_lexeme[1] == 'String Concatenation':
-      children.append(self.concatenation())
-
-    else: 
-      raise SyntaxError(f'Syntax Error: Expected Operation argument, but found {self.current_lexeme[1]}')
-
-    return Node("Infinite Op Argument", children=children)
-
 
   # --------------------------------------------------------------------------------------------------
   # <infinite_boolean> ::= ALL OF <infinite_argument> MKAY
