@@ -410,6 +410,8 @@ class Syntax_Analyzer:
     # Equality expression
     elif self.current_lexeme[1] in {'Equality Operator Expression', 'Inequality Operator Expression'}:
       children.append(self.comparison())
+    else: 
+      raise SyntaxError("Syntax error: can't nest infinite boolean expressions")
 
     return Node('Infinite Expression', children=children)
 
