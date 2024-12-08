@@ -631,7 +631,7 @@ class Syntax_Analyzer:
     
     if self.current_lexeme[1] == 'Equality Operator Expression':
       self.check('Equality Operator Expression')
-      children.append(Node('Equality Operator Expression'))
+      # children.append(Node('Equality Operator Expression'))
        
       children.append(self.op_argument())
       
@@ -645,7 +645,7 @@ class Syntax_Analyzer:
 
     elif self.current_lexeme[1] == 'Inequality Operator Expression':
       self.check('Inequality Operator Expression')
-      children.append(Node('Inequality Operator Expression'))
+      # children.append(Node('Inequality Operator Expression'))
 
       children.append(self.op_argument())
       self.check('Operation Delimiter')
