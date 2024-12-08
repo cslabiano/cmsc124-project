@@ -275,6 +275,8 @@ class Semantic_Analyzer:
       return True if value == "WIN" else False
     elif 'Expression' in classification:
       return self.expression(operand.children[0])
+    elif classification == "String Concatenation":
+      return self.smoosh(operand.children)
     else:
       raise TypeError(f"Unsupported operand classification: {classification}")
 
@@ -559,6 +561,7 @@ class Semantic_Analyzer:
     for child in op_arg:
       if child.classification == "Op Argument":
         result += self.concatenate_ops(child)
+    print(result)
     return result
 
   # --------------------------------------------------------------------------------------------------
