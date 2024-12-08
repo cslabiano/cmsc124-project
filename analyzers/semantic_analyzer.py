@@ -36,7 +36,8 @@ class Semantic_Analyzer:
     elif type == "Switch Case":
       self.switch_case(child.children)
     elif type == "Print Statement":
-      self.visible(child.children[1])
+      result = self.visible(child.children)
+      self.ui.print_in_console(result)
     elif type == "Input Keyword":
       self.gimmeh(child.children)
     elif type == "Loop":
@@ -138,20 +139,31 @@ class Semantic_Analyzer:
     classification = operand.classification
     value = operand.value
 
-    if classification == 'Identifier':
-      if value not in self.symbol_table:
-        raise NameError(f"Identifier '{value}' is not initialized.")
-      return self.symbol_table[value]
-    elif classification == 'NUMBR Literal':
-      return int(value)
-    elif classification == 'NUMBAR Literal':
-      return float(value)
-    elif classification == 'YARN Literal':
+    if classification == 'YARN Literal':
       if str(value).isdigit():  
         print("implicitly typecasted ", value, "into float")
         return float(value)
       else:
         return str(value)
+      
+    elif classification == 'Identifier':
+      if value not in self.symbol_table:
+        raise NameError(f"Identifier '{value}' is not initialized.")
+      
+      symbol_value = self.symbol_table[value]
+
+      if isinstance(symbol_value, str) and str(symbol_value).isdigit():
+        # typecast the value if it's a numeric string
+        if re.fullmatch(r"\-?\d+", symbol_value):  # for integer
+          return int(symbol_value)
+        elif re.fullmatch(r"\-?\d+\.\d+", symbol_value):  # for float
+          return float(symbol_value)
+      return symbol_value
+    
+    elif classification == 'NUMBR Literal':
+      return int(value)
+    elif classification == 'NUMBAR Literal':
+      return float(value)
     elif classification == 'TROOF Literal':
       return True if value == "WIN" else False
     elif classification == 'Expression':
@@ -368,23 +380,37 @@ class Semantic_Analyzer:
       self.symbol_table[var_name] = input_value
 
   # --------------------------------------------------------------------------------------------------
-  # passes the values to be printed to the ui in main.py
+  # function for printing in the console, supports concatenation
   # --------------------------------------------------------------------------------------------------
   def visible(self, op_arg):
+    result = ""
+    for child in op_arg:
+      print("child: ", child.classification)
+      if child.classification == "Op Argument":
+        result += self.visible_operation(child)
+      elif child.classification == "Print Multiple":
+        for term in child.children:
+          print("term: ", term.classification)
+          if term.classification == "Op Argument":
+            result += self.visible_operation(term)
+          elif term.classification == "Print Multiple":
+            result += self.visible(term.children)
+    return result
+
+  def visible_operation(self, op_arg):
     op_class = op_arg.children[0]
+    print("op class: ", op_class.classification)
     if op_class.classification == "Identifier":
       value = self.symbol_table[op_class.value]
-      if isinstance(value, str):
-        value = "\"" + value + "\""
-        self.ui.print_in_console(str(value))
-      else:
-        self.ui.print_in_console(str(value))
+      return str(value)
     elif op_class.classification == "String Delimiter":
-      value = "\"" + op_arg.children[1].value + "\""
-      self.ui.print_in_console(str(value))
+      value = op_arg.children[1].value
+      return str(value)
     elif op_class.classification == "Expression":
       value = self.expression(op_class.children[0])  
-      self.ui.print_in_console(str(value))
+      return str(value)
+    else:
+      return str(op_arg.children[0].value)
 
   # --------------------------------------------------------------------------------------------------
   # function for checking the equality for the loop conditions
