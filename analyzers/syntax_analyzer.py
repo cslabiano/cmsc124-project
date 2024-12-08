@@ -76,9 +76,16 @@ class Syntax_Analyzer:
   # For Identifiers
   # --------------------------------------------------------------------------------------------------
   def identifier(self):
+    children = []
+
     identifier_value = self.current_lexeme[0]
     self.check('Identifier')
-    return Node('Identifier', value=identifier_value)
+
+    if self.current_lexeme[1] == "Control Flow Delimiter Switch":
+      children.append(self.switch_case())
+    
+    
+    return Node('Identifier', value=identifier_value, children=children)
 
   # --------------------------------------------------------------------------------------------------
   # <variable> ::= I HAS A variable 
@@ -264,7 +271,12 @@ class Syntax_Analyzer:
       children.append(self.typecast())
     # could be a typecast or an assignment?
     elif currentLex == 'Identifier':
-      children.append(self.typecast())
+      # if the next lexeme is a switch-case, go immediately to identifier
+      next_lexeme = self.lexemes[1]
+      if next_lexeme[1] == "Control Flow Delimiter Switch":
+        children.append(self.identifier())
+      else:
+        children.append(self.typecast())
     # string concatenation
     elif currentLex == "String Concatenation":
       children.append(self.concatenation())

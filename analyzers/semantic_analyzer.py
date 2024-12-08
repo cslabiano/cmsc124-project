@@ -31,10 +31,14 @@ class Semantic_Analyzer:
         self.assignment(child.children[0])
       elif typecast_type == 'Explicit Typecast':
         self.typecast(child.children[0])
+    elif type == "Identifier":
+      # print(child.children[0].classification)
+      if child.children[0].classification == "Switch Case":
+        self.switch_case(child)
     elif type == 'If-Then':
       self.if_then(child.children)
-    elif type == "Switch Case":
-      self.switch_case(child.children)
+    # elif type == "Switch Case":
+    #   self.switch_case(child.children)
     elif type == "Print Statement":
       result = self.visible(child.children)
       self.ui.print_in_console(result)
@@ -352,11 +356,12 @@ class Semantic_Analyzer:
 
   def if_then(self, node):
 
+    print("are u here?")
     # takes the value of IT
     it_value = self.symbol_table["IT"]
     # check if IT is WIN or FAIL
     condition = self.is_true(it_value)
-
+    print(condition)
     for child in node[1:]:
 
       # END IF FOUND OIC
@@ -367,34 +372,36 @@ class Semantic_Analyzer:
       elif child.classification == "If Clause" and condition:
         if_clause = child
         for statement in if_clause.children[1:]:
-          print(statement.classification)
-          self.process_statement(statement)
+          for child_statement in statement.children:
+            self.process_statement(child_statement)
       
       # ELSE IF CLAUSE (checks the expression if true or false)
       elif child.classification == "Else-if Clause" and self.is_true(self.expression(child.children[1].children[0])):
         else_if_clause = child
         for statement in else_if_clause.children[2:]:
-          print(statement.classification)
-          self.process_statement(statement)
+          for child_statement in statement.children:
+            self.process_statement(child_statement)
 
       # ELSE CLAUSE (if none of the clauses is true)
       elif child.classification == "Else Clause":
         else_clause = child
         for statement in else_clause.children[1:]:
-          print(statement.classification)
-          self.process_statement(statement)
+          for child_statement in statement.children:
+            self.process_statement(child_statement)
   
   def switch_case(self, node):
 
-    it_value = self.symbol_table["IT"]
+    # it_value = self.symbol_table["IT"]
+    comp_value = self.symbol_table[node.value]
 
-    for child in node[1:]:
+    sw_case = node.children
+
+    for child in sw_case[0].children[1:]:
 
       if child.classification == "Control Flow Delimiter End":
         break
       
-      elif child.classification == "Case Block" and self.is_it_equal(it_value, child):
-        print(self.is_it_equal(it_value, child))
+      elif child.classification == "Case Block" and self.is_it_equal(comp_value, child):
         case_block = child
         start_idx = 2
         if case_block.children[start_idx].classification == "String Delimiter":
@@ -402,17 +409,15 @@ class Semantic_Analyzer:
         else:
           start_idx = 2
         for statement in case_block.children[start_idx:]:
-          # print(statement.classification)
-          # print("im also here")
-          self.process_statement(statement)
+          for child_statement in statement.children:
+            self.process_statement(child_statement)
         break
       
       elif child.classification == "Case Default Block":
         case_def_block = child
         for statement in case_def_block.children[1:]:
-          # print(statement.classification)
-          # print("im here")
-          self.process_statement(statement)
+          for child_statement in statement.children:
+            self.process_statement(child_statement)
         break
 
   # checks if an expression is true (used for if-clause)
@@ -433,19 +438,19 @@ class Semantic_Analyzer:
         # error checking
         raise ValueError(f"Unsupported type for truthiness check: {type(it_value)}")
 
-  def is_it_equal(self, it_value, literal):
+  def is_it_equal(self, comp_value, literal):
     # print("literal:", type(literal))
     # print("it_value:", type(it_value))
     # print("literal_class:", literal.classification)
     # print(it_value == literal)
 
     if literal.children[1].classification in {'NUMBR Literal', 'NUMBAR Literal', 'TROOF Literal', 'TYPE Literal'}:
-      if str(literal.children[1].value) == str(it_value):
+      if str(literal.children[1].value) == str(comp_value):
         return True
     
     elif literal.children[1].classification == "String Delimiter":
       if literal.children[2].classification == "YARN Literal":
-        if str(literal.children[2].value) == str(it_value):
+        if str(literal.children[2].value) == str(comp_value):
           return True
         
     else:
