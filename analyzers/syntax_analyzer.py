@@ -253,7 +253,12 @@ class Syntax_Analyzer:
 
     # expression
     if 'Expression' in currentLex:
-      children.append(self.expression())
+      next_lexeme = self.lexemes[4]
+      if next_lexeme[1] == "Control Flow Delimiter If-else":
+        children.append(self.expression())
+        children.append(self.if_then())
+      else:
+        children.append(self.expression())
     # loop
     elif currentLex == 'Loop Delimiter Start':
       children.append(self.loop())
@@ -295,6 +300,7 @@ class Syntax_Analyzer:
     # control flow if-else
     elif currentLex == "Control Flow Delimiter If-else":
       children.append(self.if_then())
+      # raise SyntaxError(f'Syntax Error: Expected Expression before If-Then')
     # control flow switch
     elif currentLex == "Control Flow Delimiter Switch":
       children.append(self.switch_case())

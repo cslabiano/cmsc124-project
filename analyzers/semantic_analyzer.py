@@ -396,12 +396,11 @@ class Semantic_Analyzer:
 
   def if_then(self, node):
 
-    print("are u here?")
     # takes the value of IT
     it_value = self.symbol_table["IT"]
     # check if IT is WIN or FAIL
     condition = self.is_true(it_value)
-    print(condition)
+
     for child in node[1:]:
 
       # END IF FOUND OIC
@@ -414,6 +413,7 @@ class Semantic_Analyzer:
         for statement in if_clause.children[1:]:
           for child_statement in statement.children:
             self.process_statement(child_statement)
+        break
       
       # ELSE IF CLAUSE (checks the expression if true or false)
       elif child.classification == "Else-if Clause" and self.is_true(self.expression(child.children[1].children[0])):
@@ -421,13 +421,15 @@ class Semantic_Analyzer:
         for statement in else_if_clause.children[2:]:
           for child_statement in statement.children:
             self.process_statement(child_statement)
+        break
 
       # ELSE CLAUSE (if none of the clauses is true)
-      elif child.classification == "Else Clause":
+      elif child.classification == "Else Clause" and not condition:
         else_clause = child
         for statement in else_clause.children[1:]:
           for child_statement in statement.children:
             self.process_statement(child_statement)
+        break
   
   def switch_case(self, node):
 
