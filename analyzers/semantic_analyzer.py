@@ -110,36 +110,6 @@ class Semantic_Analyzer:
       return operand1 if float(operand1) > float(operand2) else operand2
     elif op_type == 'Min Expression':
       return operand1 if float(operand1) < float(operand2) else operand2
-    
-  '''
-  Class: Equality Operator Expression, Value: None
-    Class: Op Argument, Value: None
-      Class: Identifier, Value: num2
-    Class: Operation Delimiter, Value: None
-    Class: Op Argument, Value: None
-      Class: Expression, Value: None
-        Class: Min Expression, Value: None
-          Class: Op Argument, Value: None
-            Class: Identifier, Value: num2
-          Class: Operation Delimiter, Value: None
-          Class: Op Argument, Value: None
-            Class: Identifier, Value: num1
-  '''
-  def equality(self, args):
-    op_args = args.children
-    op_type = op_args[0].classification
-
-    op1 = self.evaluate_operand(op_args[1].children[0])
-    op2 = self.evaluate_operand(op_args[3].children[0])
-
-    print(op_type, op1, op2)
-    if type(op1) != type(op2):
-      op1, op2 = float(op1), float(op2)
-
-    if op_type == 'Equality Operator Expression':
-      return True if op1 == op2 else False
-    elif op_type == 'Inequality Operator Expression':
-      return True if op1 != op2 else False
 
   ''' 
     Evaluates the operand 
@@ -417,8 +387,26 @@ class Semantic_Analyzer:
       self.ui.print_in_console(str(value))
 
   # --------------------------------------------------------------------------------------------------
+  # function for checking the equality for the loop conditions
+  # --------------------------------------------------------------------------------------------------
+  def equality(self, args):
+    op_args = args.children
+    op_type = op_args[0].classification
+
+    op1 = self.evaluate_operand(op_args[1].children[0])
+    op2 = self.evaluate_operand(op_args[3].children[0])
+
+    print(op_type, op1, op2)
+    if type(op1) != type(op2):
+      op1, op2 = float(op1), float(op2)
+
+    if op_type == 'Equality Operator Expression':
+      return True if op1 == op2 else False
+    elif op_type == 'Inequality Operator Expression':
+      return True if op1 != op2 else False
+
+  # --------------------------------------------------------------------------------------------------
   # implements the loop function
-  # TODO: implement loops with expressions as parameters
   # --------------------------------------------------------------------------------------------------
   def loop(self, loop_children):
     loop_cond = None
@@ -451,6 +439,6 @@ class Semantic_Analyzer:
       elif inc == "Loop Decrement":
         val -= 1
       self.symbol_table[var] = val
-      
+
       print("expr_bool: ", expr_bool) # print for debugging 
 
