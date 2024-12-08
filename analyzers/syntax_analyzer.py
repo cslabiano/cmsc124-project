@@ -1017,8 +1017,8 @@ class Syntax_Analyzer:
       self.check('Typecast Keyword')
       children.append(Node('Typecast Keyword'))
 
+      children.append(Node('TYPE Literal', value = self.current_lexeme[0]))
       self.check('TYPE Literal')
-      children.append(Node('TYPE Literal'))
 
     elif self.current_lexeme[1] == 'Assignment':
       self.check('Assignment')

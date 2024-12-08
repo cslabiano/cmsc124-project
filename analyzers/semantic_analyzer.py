@@ -26,7 +26,6 @@ class Semantic_Analyzer:
       for expr in child.children:
         self.symbol_table["IT"] = self.expression(expr)
     elif type == 'Typecast': # Could be a typecast or an assignment
-      print("typecast called")
       typecast_type = child.children[0].classification
       if typecast_type == 'Recasting':
         self.assignment(child.children[0])
@@ -296,13 +295,15 @@ class Semantic_Analyzer:
   '''
   def assignment(self, node):
     assignment_type = node.classification
-    
+    print("TYPE: ", node.children[2].classification)
     if assignment_type == 'Recasting':
       new_value = None
       identifier = node.children[0].value
       if node.children[2].classification == "Op Argument":
         new_value = self.evaluate_operand(node.children[2].children[0])
       elif node.children[2].classification == "Explicit Typecast":
+        new_value = self.typecast(node.children[2])
+      elif node.children[2].classification == "TYPE Literal":
         new_value = self.typecast(node.children[2])
 
       self.symbol_table[identifier] = new_value
@@ -327,7 +328,7 @@ class Semantic_Analyzer:
       identifier_value = self.symbol_table[identifier] # Value to be typecasted 
       it = None
 
-      print(identifier_value)
+      # print("type: ", type_to_typecast)
 
       # Takes the identifier value and converts it based on the type
       
@@ -346,11 +347,12 @@ class Semantic_Analyzer:
           it = None
       # TROOF
       elif type_to_typecast == 'TROOF':
-        if identifier_value == "" or identifier_value == 0:
+        if identifier_value == None or identifier_value == 0:
           it = False
         else:
           it = True
       elif type_to_typecast == 'NUMBAR':
+        print("print ", identifier_value, " to NUMBAR")
         # NUMBR TO NUMBAR
         if type(identifier_value) == int:
           it = float(identifier_value)
@@ -401,7 +403,7 @@ class Semantic_Analyzer:
         elif type(identifier_value) == str: 
           it = identifier_value
 
-      print(f"The value of it is {it}")
+      print(f"The value of IT is {it}")
       self.symbol_table["IT"] = it
 
   def if_then(self, node):

@@ -1,4 +1,4 @@
-num = "2"
+num = 10
 
-if num.isdigit():
-  print('digit')
+if type(num) == int:
+  print(float(num))

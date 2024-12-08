@@ -109,7 +109,6 @@ class UI(QMainWindow):
   # --------------------------------------------------------------------------------------------------
   def print_in_console(self, message):
     current_text = self.label_console.toPlainText()  # get the current text
-    print("message: ", message)
     if message == "None":
       message = "NOOB"
     elif message == "True":

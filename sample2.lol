@@ -1,15 +1,12 @@
 HAI
 
     WAZZUP
-        I HAS A x
-        I HAS A y
+        I HAS A x ITZ 12
+        I HAS A y ITZ 100
     BUHBYE
 
-    x R 12
-    x R 100	
-
-    y R 0
-    y R MAEK y A TROOF
+	y R 100
+    y IS NOW A NUMBAR
     VISIBLE y
 
 KTHXBYE
