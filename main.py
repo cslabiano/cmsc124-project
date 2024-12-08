@@ -40,6 +40,9 @@ class UI(QMainWindow):
     # shows the app
     self.show()
   
+  # --------------------------------------------------------------------------------------------------
+  # function for opening file, ensuring that only file with .lol are opened
+  # --------------------------------------------------------------------------------------------------
   def open_file(self):
     fname = QFileDialog.getOpenFileName(self, "Select File", "", "LOLCode Files (*.lol)")
     if not fname[0]:  # check if a file was selected
@@ -55,10 +58,10 @@ class UI(QMainWindow):
     # clear contents when execute is pressed
     self.clear_contents()
 
+  # --------------------------------------------------------------------------------------------------
+  # function that calls the lexical, syntactical, and semantical analyzers
+  # --------------------------------------------------------------------------------------------------
   def execute(self):
-    # clear contents when execute is pressed
-    self.clear_contents()
-
     # get the current content of the text editor after clicking the execute button
     content = self.text_editor.toPlainText()
 
@@ -98,11 +101,17 @@ class UI(QMainWindow):
         with open(self.file_path, "w") as f:
           f.write(content)
 
+  # --------------------------------------------------------------------------------------------------
+  # function to print in the console when VISIBLE is implemented
+  # --------------------------------------------------------------------------------------------------
   def print_in_console(self, message):
     current_text = self.label_console.toPlainText()  # get the current text
     new_text = current_text + "\n" + message if current_text else message  # append the new message
     self.label_console.setPlainText(new_text)  # update the console
 
+  # --------------------------------------------------------------------------------------------------
+  # function for populating the lexeme table, clearing the previous contents
+  # --------------------------------------------------------------------------------------------------
   def populate_lexeme_table(self, lexemes):
     self.lexeme_table.clearContents()   # clear previous contents of the table
     self.lexeme_table.setRowCount(len(lexemes))   # get the length of the lexemes and set it as the number of rows of the table widget
@@ -112,6 +121,9 @@ class UI(QMainWindow):
       self.lexeme_table.setItem(row, 0, QTableWidgetItem(lexeme))
       self.lexeme_table.setItem(row, 1, QTableWidgetItem(classification))
 
+  # --------------------------------------------------------------------------------------------------
+  # function for populating the symbol table, clearing the previous contents
+  # --------------------------------------------------------------------------------------------------
   def populate_symbol_table(self, symbols):
     self.symbol_table.clearContents()
     self.symbol_table.setRowCount(len(symbols))
@@ -125,6 +137,9 @@ class UI(QMainWindow):
       else:
         self.symbol_table.setItem(row, 1, QTableWidgetItem(str(value)))
 
+  # --------------------------------------------------------------------------------------------------
+  # function for clearing the contents in the lexeme table, symbol table, and console
+  # --------------------------------------------------------------------------------------------------
   def clear_contents(self):
     # clear tables and console when a new file is opened
     self.lexeme_table.clearContents()
