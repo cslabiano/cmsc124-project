@@ -12,8 +12,9 @@ This interpreter is able to analyze each line of the program lexically, syntacti
 
 ## Guidelines
 
+1. Change directory to the source code folder `cd source code`
 1. Install dependencies using the `pip install -r requirements.txt` or `pip install -r requirements` command.
-2. Run the application `python main.py`.
+1. Run the application `python main.py`.
 
 ## References
 
