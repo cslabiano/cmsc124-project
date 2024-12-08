@@ -51,13 +51,14 @@ class UI(QMainWindow):
     with open(self.file_path, "r") as f:
       content = f.read()  # read the entire file content
       self.text_editor.setText(content)  # display the content in the label
-    
-    # clear tables and console when a new file is opened
-    self.lexeme_table.clearContents()
-    self.symbol_table.clearContents()
-    self.label_console.clear()
+
+    # clear contents when execute is pressed
+    self.clear_contents()
 
   def execute(self):
+    # clear contents when execute is pressed
+    self.clear_contents()
+
     # get the current content of the text editor after clicking the execute button
     content = self.text_editor.toPlainText()
 
@@ -123,6 +124,12 @@ class UI(QMainWindow):
         self.symbol_table.setItem(row, 1, QTableWidgetItem(str_value))
       else:
         self.symbol_table.setItem(row, 1, QTableWidgetItem(str(value)))
+
+  def clear_contents(self):
+    # clear tables and console when a new file is opened
+    self.lexeme_table.clearContents()
+    self.symbol_table.clearContents()
+    self.label_console.clear()
         
 
 # initialize the app
