@@ -56,7 +56,7 @@ class Semantic_Analyzer:
       self.define_function(child.children)
     elif type == "Function Return":
       print('THERE IS A RETURN OMG')
-      return self.evaluate_operand(child.children[0])
+      return self.evaluate_operand(child.children[0].children[0])
     elif type == "Function Call":
       self.call_function(child)
 
@@ -647,6 +647,7 @@ class Semantic_Analyzer:
     # Get the actual parameters
     for arg in function_arguments:
       if arg.classification not in {'Operation Delimiter', 'Condition Delimiter'}:
+        print(self.evaluate_operand(arg.children[0]))
         actual_params.append(self.evaluate_operand(arg.children[0]))
 
     # Traverse tree and find function
