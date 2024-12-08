@@ -52,6 +52,8 @@ class Semantic_Analyzer:
       self.symbol_table["IT"] = value
     elif type == "Function Definition":
       self.define_function(child.children)
+    elif type == "Function Return":
+      pass
     elif type == "Function Call":
       self.call_function(child)
 
@@ -555,24 +557,6 @@ class Semantic_Analyzer:
     return result
 
   # --------------------------------------------------------------------------------------------------
-  # function for checking the equality for the loop conditions
-  # --------------------------------------------------------------------------------------------------
-  def equality(self, args):
-    op_args = args.children
-    op_type = op_args[0].classification
-
-    op1 = self.evaluate_operand(op_args[1].children[0])
-    op2 = self.evaluate_operand(op_args[3].children[0])
-
-    if type(op1) != type(op2):
-      op1, op2 = float(op1), float(op2)
-
-    if op_type == 'Equality Operator Expression':
-      return True if op1 == op2 else False
-    elif op_type == 'Inequality Operator Expression':
-      return True if op1 != op2 else False
-
-  # --------------------------------------------------------------------------------------------------
   # implements the loop function
   # --------------------------------------------------------------------------------------------------
   def loop(self, loop_children):
@@ -593,7 +577,7 @@ class Semantic_Analyzer:
 
     while True:
       expr = loop_children[5].children[1].children[0]
-      expr_bool = self.equality(expr)
+      expr_bool = self.expression(expr)
 
       if expr_bool is not loop_cond:
         break
@@ -608,8 +592,16 @@ class Semantic_Analyzer:
       self.symbol_table[var] = val
 
   def define_function(self, op_args):
-    func_id = op_args[1]
-    
+    func_id = op_args[1].value
+
+    for child in op_args:
+      if child.classification == "Function Arguments":
+        pass
+      elif child.classification == "Statement":
+        self.process_statement()
+
+      
+    self.stack.append
 
   def call_function(self, op_args):
     pass
