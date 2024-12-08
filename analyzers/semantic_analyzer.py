@@ -321,7 +321,8 @@ class Semantic_Analyzer:
       if node.children[2].classification == "Op Argument":
         new_value = self.evaluate_operand(node.children[2].children[0])
       elif node.children[2].classification == "Explicit Typecast":
-        new_value = self.typecast(node.children[2])
+        self.typecast(node.children[2])
+        new_value = self.symbol_table["IT"]
       elif node.children[2].classification == "TYPE Literal":
         new_value = self.typecast(node.children[2])
 
@@ -638,7 +639,6 @@ class Semantic_Analyzer:
       elif child.classification == "Statement":
         self.process_statement()
 
-      
     self.stack.append
 
   def call_function(self, op_args):
