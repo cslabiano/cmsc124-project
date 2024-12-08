@@ -1086,7 +1086,7 @@ class Syntax_Analyzer:
     children = []
     # HOW IZ I
     self.check('Function Delimiter Start')
-    children.append(Node('Function Delimiter Start'))
+    # children.append(Node('Function Delimiter Start'))
 
     # Function name
     children.append(self.identifier())
@@ -1101,7 +1101,7 @@ class Syntax_Analyzer:
     self.check('Function Delimiter End')
     children.append(Node('Function Delimiter End'))    
 
-    return Node('Function Definition', children=children)  
+    return Node('Function Delimiter Start', children=children)  
 
   # --------------------------------------------------------------------------------------------------
   # <program> ::== HAI <linebreak> <start_statement> <linebreak> KTHXBYE
