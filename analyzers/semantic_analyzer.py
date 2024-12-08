@@ -5,6 +5,7 @@ class Semantic_Analyzer:
   def __init__(self, parse_tree, ui):
     self.tree = parse_tree
     self.symbol_table = {"IT": None}
+    self.stack = []
     self.ui = ui
 
   def analyze(self):
@@ -49,6 +50,10 @@ class Semantic_Analyzer:
     elif type == "String Concatenation":
       value = self.smoosh(child.children)
       self.symbol_table["IT"] = value
+    elif type == "Function Definition":
+      self.define_function(child.children)
+    elif type == "Function Call":
+      self.call_function(child)
 
   def data_section(self, statement):
     # temporary variable to hold the identifier name
@@ -544,7 +549,6 @@ class Semantic_Analyzer:
   # --------------------------------------------------------------------------------------------------
   def smoosh(self, op_arg):
     result = ""
-    print(op_arg)
     for child in op_arg:
       if child.classification == "Op Argument":
         result += self.concatenate_ops(child)
@@ -560,7 +564,6 @@ class Semantic_Analyzer:
     op1 = self.evaluate_operand(op_args[1].children[0])
     op2 = self.evaluate_operand(op_args[3].children[0])
 
-    print(op_type, op1, op2)
     if type(op1) != type(op2):
       op1, op2 = float(op1), float(op2)
 
@@ -604,6 +607,9 @@ class Semantic_Analyzer:
         val -= 1
       self.symbol_table[var] = val
 
-      print("expr_bool: ", expr_bool) # print for debugging 
+  def define_function(self, op_args):
+    func_id = op_args[1]
+    
 
-  
+  def call_function(self, op_args):
+    pass
