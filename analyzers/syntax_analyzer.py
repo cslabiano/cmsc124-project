@@ -642,6 +642,7 @@ class Syntax_Analyzer:
         children.append(self.relational_operator())
       else:
         children.append(self.op_argument())
+      return Node('Equality Comparison Expression', children=children)
 
     elif self.current_lexeme[1] == 'Inequality Operator Expression':
       self.check('Inequality Operator Expression')
@@ -655,8 +656,7 @@ class Syntax_Analyzer:
         children.append(self.relational_operator())
       else:
         children.append(self.op_argument())
-    
-    return Node('Equality Comparison', children=children)
+      return Node('Inequality Comparison Expression', children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <if_then> ::= O RLY? <linebreak> <if_clause> <linebreak> <else_clause> <linebreak> OIC
