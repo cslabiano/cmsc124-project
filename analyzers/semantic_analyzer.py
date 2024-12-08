@@ -423,13 +423,11 @@ class Semantic_Analyzer:
   def loop(self, loop_children):
     loop_cond = None
     inc = loop_children[2].children[0].classification
-
     var = loop_children[4].value
 
     # check if the value needs typecasting
-    if isinstance(self.symbol_table[var], str):
-      if str(self.symbol_table[var]).isdigit():
-        self.symbol_table[var] = float(val)
+    if isinstance(self.symbol_table[var], str) and str(self.symbol_table[var]).isdigit():
+      self.symbol_table[var] = float(val)
     val = self.symbol_table[var]
   
     # check if the loop condition is WILE or TIL
@@ -438,25 +436,21 @@ class Semantic_Analyzer:
     elif loop_children[5].children[0].value == "TIL":
       loop_cond = False
 
-    expr = loop_children[5].children[1].children[0]
-    expr_bool = self.equality(expr)
-  
-    print("expr_bool: ", expr_bool) # print for debugging
-    while expr_bool is not loop_cond:
+    while True:
+      expr = loop_children[5].children[1].children[0]
+      expr_bool = self.equality(expr)
+
+      if expr_bool is not loop_cond:
+        break
 
       statement = loop_children[6].children[0]
       self.process_statement(statement)
 
       if inc == "Loop Increment":
         val += 1
-        self.symbol_table[var] = val
       elif inc == "Loop Decrement":
         val -= 1
-        self.symbol_table[var] = val
-
-      expr = loop_children[5].children[1].children[0]
-      expr_bool = self.equality(expr)
+      self.symbol_table[var] = val
+      
       print("expr_bool: ", expr_bool) # print for debugging 
 
-      if expr_bool == loop_cond:
-        break
