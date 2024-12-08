@@ -98,6 +98,7 @@ class Semantic_Analyzer:
     operand2 = self.evaluate_operand(op_args[2].children[0])
 
     if op_type == "Addition Expression":
+      print(operand1 + operand2)
       return operand1 + operand2
     elif op_type == 'Subtraction Expression':
       return operand1 - operand2
@@ -330,18 +331,28 @@ class Semantic_Analyzer:
 
       if child.classification == "Control Flow Delimiter End":
         break
-
-      elif child.classification == "Case Block" and self.is_it_equal(it_value, child.children[1]):
+      
+      elif child.classification == "Case Block" and self.is_it_equal(it_value, child):
+        print(self.is_it_equal(it_value, child))
         case_block = child
-        for statement in case_block.children[2:]:
-          print(statement.classification)
+        start_idx = 2
+        if case_block.children[start_idx].classification == "String Delimiter":
+          start_idx = 4
+        else:
+          start_idx = 2
+        for statement in case_block.children[start_idx:]:
+          # print(statement.classification)
+          # print("im also here")
           self.process_statement(statement)
+        break
       
       elif child.classification == "Case Default Block":
         case_def_block = child
         for statement in case_def_block.children[1:]:
-          print(statement.classification)
+          # print(statement.classification)
+          # print("im here")
           self.process_statement(statement)
+        break
 
   # checks if an expression is true (used for if-clause)
   def is_true(self, it_value):
@@ -362,9 +373,20 @@ class Semantic_Analyzer:
         raise ValueError(f"Unsupported type for truthiness check: {type(it_value)}")
 
   def is_it_equal(self, it_value, literal):
+    # print("literal:", type(literal))
+    # print("it_value:", type(it_value))
+    # print("literal_class:", literal.classification)
+    # print(it_value == literal)
 
-    if it_value == literal:
-      return True
+    if literal.children[1].classification in {'NUMBR Literal', 'NUMBAR Literal', 'TROOF Literal', 'TYPE Literal'}:
+      if str(literal.children[1].value) == str(it_value):
+        return True
+    
+    elif literal.children[1].classification == "String Delimiter":
+      if literal.children[2].classification == "YARN Literal":
+        if str(literal.children[2].value) == str(it_value):
+          return True
+        
     else:
       return False
 
