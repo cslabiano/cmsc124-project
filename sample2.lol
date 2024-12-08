@@ -1,12 +1,10 @@
 HAI
 
-    WAZZUP
-        I HAS A x ITZ 12
-        I HAS A y ITZ 100
-    BUHBYE
+WAZZUP
+I HAS A input
+BUHBYE
 
-	y R 100
-    y IS NOW A NUMBAR
-    VISIBLE y
+GIMMEH input
+VISIBLE "Tip: " PRODUKT OF input AN 0.1
 
 KTHXBYE
