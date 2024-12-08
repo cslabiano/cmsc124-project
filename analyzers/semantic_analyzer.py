@@ -92,10 +92,18 @@ class Semantic_Analyzer:
     op_type = operation.classification
     op_args = operation.children
 
+    # If its a boolean expression, extract child 
+    if op_type == 'Boolean':
+      op_type = operation.children[0].classification # Get {} Expression class
+      op_args = operation.children[0].children
+
     # Use value to access the value of the operand
     # Use classification to access if identifier or literal
     operand1 = self.evaluate_operand(op_args[0].children[0])
-    operand2 = self.evaluate_operand(op_args[2].children[0])
+
+    # A Not expression can only have one operand
+    if op_type != 'Not Expression':
+      operand2 = self.evaluate_operand(op_args[2].children[0])
 
     if op_type == "Addition Expression":
       print(operand1 + operand2)
@@ -112,6 +120,23 @@ class Semantic_Analyzer:
       return operand1 if float(operand1) > float(operand2) else operand2
     elif op_type == 'Min Expression':
       return operand1 if float(operand1) < float(operand2) else operand2
+    elif op_type == 'And Expression':
+      return self.to_troof(operand1) and self.to_troof(operand2)
+    elif op_type == 'Or Expression':
+      return self.to_troof(operand1) or self.to_troof(operand2)
+    elif op_type == 'Xor Expression':
+      return self.to_troof(operand1) ^ self.to_troof(operand2)
+    elif op_type == 'Not Expression':
+      return not self.to_troof(operand1)
+  '''
+  typecasts an operand to a troof
+  '''
+  def to_troof(self, operand):
+    if operand == "" or float(operand) == 0.0:
+      return False
+    else:
+      return True
+
 
   ''' 
     Evaluates the operand 
@@ -193,7 +218,6 @@ class Semantic_Analyzer:
 
   '''
   typecasts a variable and puts it in IT
-
 
   args: takes a node (list) in this format
     Class: Explicit Typecast, Value: None
