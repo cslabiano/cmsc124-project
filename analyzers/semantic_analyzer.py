@@ -55,7 +55,7 @@ class Semantic_Analyzer:
       self.define_function(child.children)
     elif type == "Function Return":
       print('THERE IS A RETURN OMG')
-      return self.evaluate_operand(child.children[0])
+      return self.evaluate_operand(child.children[0].children[0])
     elif type == "Function Call":
       self.call_function(child)
 
@@ -163,14 +163,33 @@ class Semantic_Analyzer:
                 elif relational_type == 'Min Expression':
                   less_than = True
     if op_type == "Addition Expression":
-      print(operand1 + operand2)
-      return operand1 + operand2
+      if type(operand1) == int and type(operand2) == int:
+        return int(operand1 + operand2)
+      elif type(operand1) == float or type(operand2) == float: 
+        return float(operand1 + operand2)
+      else: 
+        return operand1 + operand2
     elif op_type == 'Subtraction Expression':
-      return operand1 - operand2
+      if type(operand1) == int and type(operand2) == int:
+        return int(operand1 - operand2)
+      elif type(operand1) == float or type(operand2) == float: 
+        return float(operand1 - operand2)
+      else: 
+        return operand1 - operand2
     elif op_type == 'Multiplication Expression':
-      return operand1 * operand2
+      if type(operand1) == int and type(operand2) == int:
+        return int(operand1 * operand2)
+      elif type(operand1) == float or type(operand2) == float: 
+        return float(operand1 * operand2)
+      else: 
+        operand1 * operand2
     elif op_type == 'Division Expression':
-      return operand1 / operand2
+      if type(operand1) == int and type(operand2) == int:
+        return int(operand1 / operand2)
+      elif type(operand1) == float or type(operand2) == float: 
+        return float(operand1 / operand2)
+      else: 
+        return operand1 / operand2
     elif op_type == 'Modulo Expression':
       return operand1 % operand2
     elif op_type == 'Max Expression':
@@ -630,6 +649,7 @@ class Semantic_Analyzer:
     # Get the actual parameters
     for arg in function_arguments:
       if arg.classification not in {'Operation Delimiter', 'Condition Delimiter'}:
+        print(self.evaluate_operand(arg.children[0]))
         actual_params.append(self.evaluate_operand(arg.children[0]))
 
     # Traverse tree and find function
@@ -661,6 +681,9 @@ class Semantic_Analyzer:
                   # Create a new Semantic Analyzer instance for the function
                   new_analyzer = Semantic_Analyzer(parse_tree=function_statements, ui=self.ui, symbol_table=function_symbol_table)
                   for statement in function_statements: 
-                    
-                    self.symbol_table['IT'] = new_analyzer.process_statement(statement.children[0])
+                    result = new_analyzer.process_statement(statement.children[0])
+                    if result is not None:
+                      self.symbol_table['IT'] = result
+
+
                       
