@@ -385,12 +385,10 @@ class Semantic_Analyzer:
   def visible(self, op_arg):
     result = ""
     for child in op_arg:
-      print("child: ", child.classification)
       if child.classification == "Op Argument":
         result += self.visible_operation(child)
       elif child.classification == "Print Multiple":
         for term in child.children:
-          print("term: ", term.classification)
           if term.classification == "Op Argument":
             result += self.visible_operation(term)
           elif term.classification == "Print Multiple":
@@ -399,7 +397,6 @@ class Semantic_Analyzer:
 
   def visible_operation(self, op_arg):
     op_class = op_arg.children[0]
-    print("op class: ", op_class.classification)
     if op_class.classification == "Identifier":
       value = self.symbol_table[op_class.value]
       return str(value)
