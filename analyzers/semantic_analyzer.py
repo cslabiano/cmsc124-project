@@ -42,9 +42,6 @@ class Semantic_Analyzer:
       self.gimmeh(child.children)
     elif type == "Loop":
       self.loop(child.children)
-    elif type == "String Concatenation":
-      value = self.smoosh(child.children)
-      self.symbol_table["IT"] = value
 
   def data_section(self, statement):
     # temporary variable to hold the identifier name
@@ -100,13 +97,34 @@ class Semantic_Analyzer:
       op_type = operation.children[0].classification # Get {} Expression class
       op_args = operation.children[0].children
 
-    # Use value to access the value of the operand
-    # Use classification to access if identifier or literal
-    operand1 = self.evaluate_operand(op_args[0].children[0])
+      if op_type in {'Infinite And Expression', 'Infinite Or Expression'}:
+        print("ITS AN INFINITE EXPRESSION")
+        infinite_args = []
+        # For all operands of the infinite expression, push onto list
+        for arg in op_args:
+          if arg.classification != 'Operation Delimiter':
+            # If string delimiter encountered, pass next child
+            if arg.children[0].classification == 'String Delimiter':
+              infinite_args.append(self.to_troof(self.evaluate_operand(arg.children[1])))
+            else:
+              infinite_args.append(self.to_troof(self.evaluate_operand(arg.children[0])))
+        print(infinite_args)
 
-    # A Not expression can only have one operand
-    if op_type != 'Not Expression':
-      operand2 = self.evaluate_operand(op_args[2].children[0])
+    # Just a checker since infinite expressions follow a different format
+    if op_type not in {'Infinite And Expression', 'Infinite Or Expression'}:
+      # Use value to access the value of the operand
+      # Use classification to access if identifier or literal
+      if op_args[0].children[0].classification == 'String Delimiter':
+        operand1 = self.evaluate_operand(op_args[0].children[1])
+      else: 
+        operand1 = self.evaluate_operand(op_args[0].children[0])
+
+      # A Not expression can only have one operand
+      if op_type != 'Not Expression':
+        if op_args[2].children[0].classification == 'String Delimiter':
+          operand2 = self.evaluate_operand(op_args[2].children[1])
+        else:
+          operand2 = self.evaluate_operand(op_args[2].children[0])
 
     if op_type == "Addition Expression":
       print(operand1 + operand2)
@@ -131,14 +149,25 @@ class Semantic_Analyzer:
       return self.to_troof(operand1) ^ self.to_troof(operand2)
     elif op_type == 'Not Expression':
       return not self.to_troof(operand1)
+    elif op_type == 'Infinite Or Expression':
+      return any(infinite_args) # Returns true if one is True, false if all are false
+    elif op_type == 'Infinite And Expression':
+      return all(infinite_args)
+    
   '''
   typecasts an operand to a troof
   '''
   def to_troof(self, operand):
-    if operand == "" or float(operand) == 0.0:
-      return False
-    else:
-      return True
+    if operand == "":
+        return False
+    try:
+        if float(operand) == 0.0:
+            return False
+    except ValueError:
+        pass
+    if operand == False:
+        return False
+    return True
 
 
   ''' 
@@ -169,12 +198,14 @@ class Semantic_Analyzer:
     value = operand.value
 
     if classification == 'YARN Literal':
-      if str(value).isdigit():  
-        print("implicitly typecasted ", value, "into float")
-        return float(value)
-      else:
-        return str(value)
-      
+        if re.fullmatch(r"\-?\d+", value):  # for integer
+          return int(value)
+        elif re.fullmatch(r"\-?\d+\.\d+", value):  # for float
+          return float(value)
+        else:
+          print(value)
+          return str(value)
+      # return str(value)
     elif classification == 'Identifier':
       if value not in self.symbol_table:
         raise NameError(f"Identifier '{value}' is not initialized.")
@@ -434,21 +465,21 @@ class Semantic_Analyzer:
   def visible(self, op_arg):
     result = ""
     for child in op_arg:
+      print("child: ", child.classification)
       if child.classification == "Op Argument":
-        result += self.concatenate_ops(child)
+        result += self.visible_operation(child)
       elif child.classification == "Print Multiple":
         for term in child.children:
+          print("term: ", term.classification)
           if term.classification == "Op Argument":
-            result += self.concatenate_ops(term)
+            result += self.visible_operation(term)
           elif term.classification == "Print Multiple":
             result += self.visible(term.children)
     return result
 
-  # --------------------------------------------------------------------------------------------------
-  # function for returning the values needed for concatenation
-  # --------------------------------------------------------------------------------------------------
-  def concatenate_ops(self, op_arg):
+  def visible_operation(self, op_arg):
     op_class = op_arg.children[0]
+    print("op class: ", op_class.classification)
     if op_class.classification == "Identifier":
       value = self.symbol_table[op_class.value]
       return str(value)
@@ -459,24 +490,8 @@ class Semantic_Analyzer:
       value = self.expression(op_class.children[0])
       self.symbol_table["IT"] = value  
       return str(value)
-    elif op_class.classification == "String Concatenation":
-      value = self.smoosh(op_class.children)
-      self.symbol_table["IT"] = value  
-      return str(value)
     else:
       return str(op_arg.children[0].value)
-
-  # --------------------------------------------------------------------------------------------------
-  # function for smoosh
-  # parameter should be the list of children of String Concatenation node
-  # --------------------------------------------------------------------------------------------------
-  def smoosh(self, op_arg):
-    result = ""
-    print(op_arg)
-    for child in op_arg:
-      if child.classification == "Op Argument":
-        result += self.concatenate_ops(child)
-    return result
 
   # --------------------------------------------------------------------------------------------------
   # function for checking the equality for the loop conditions
@@ -533,3 +548,4 @@ class Semantic_Analyzer:
       self.symbol_table[var] = val
 
       print("expr_bool: ", expr_bool) # print for debugging 
+
