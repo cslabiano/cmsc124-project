@@ -30,7 +30,7 @@ class Semantic_Analyzer:
       if typecast_type == 'Recasting':
         self.assignment(child.children[0])
       elif typecast_type == 'Explicit Typecast':
-        self.typecast(child.children[0])
+        self.symbol_table["IT"] = self.typecast(child.children[0])
     elif type == "Identifier":
       # print(child.children[0].classification)
       if child.children[0].classification == "Switch Case":
@@ -326,8 +326,8 @@ class Semantic_Analyzer:
         self.symbol_table[identifier] = new_value
 
       elif node.children[2].classification == "Explicit Typecast":
-        self.typecast(node.children[2])
-        new_value = self.symbol_table["IT"]
+        new_value = self.typecast(node.children[2])
+        # new_value = self.symbol_table["IT"]
       elif node.children[2].classification == "TYPE Literal":
         type_to_assign = node.children[2].value 
         old_value = self.symbol_table[identifier]
@@ -363,7 +363,7 @@ class Semantic_Analyzer:
       type_to_typecast = node.children[3].children[0].value # Type to typecast to 
       identifier_value = self.symbol_table[identifier] # Value to be typecasted 
       it = None
-
+      typecasted_value = None
       # print("type: ", type_to_typecast)
 
       # Takes the identifier value and converts it based on the type
@@ -372,75 +372,75 @@ class Semantic_Analyzer:
       # TODO: Check if tama ba to
       if type_to_typecast == 'NOOB': 
         if type(identifier_value) == str: 
-          it = ""
+          return ""
         elif type(identifier_value) == int: 
-          it = 0
+          return 0
         elif type(identifier_value) == float: 
-          it = 0.0
+          return 0.0
         elif type(identifier_value) == bool: 
-          it = False
+          return False
         elif identifier_value == None: 
-          it = None
+          return None
       # TROOF
       elif type_to_typecast == 'TROOF':
         if identifier_value == None or identifier_value == 0 or identifier_value == False:
-          it = False
+          return False
         else:
-          it = True
+          return True
       elif type_to_typecast == 'NUMBAR':
         print("print ", identifier_value, " to NUMBAR")
         # NUMBR TO NUMBAR
         if type(identifier_value) == int:
-          it = float(identifier_value)
+          return float(identifier_value)
         # TROOF TO NUMBAR
         elif type(identifier_value) == bool: 
           if identifier_value == False:
-            it = 0.0
+            return 0.0
           if identifier_value == True: 
-            it = 1.0
+            return 1.0
         # YARN TO NUMBAR
         elif type(identifier_value) == str:
-          it = float(identifier_value)
+          return float(identifier_value)
         # NOOB TO NUMBAR
         elif identifier_value == None: 
-          it = 0.0
+          return 0.0
         elif type(identifier_value) == float: 
-          it = identifier_value
+          return identifier_value
       elif type_to_typecast == 'NUMBR':
         # NUMBAR TO NUMBR
         if type(identifier_value) == float:
-          it = int(identifier_value)
+          return int(identifier_value)
         # TROOF TO NUMBR
         elif type(identifier_value) == bool:
           if identifier_value == True: 
-            it = 1
+            return 1
           elif identifier_value == False: 
-            it = 0
+            return 0
         # YARN TO NUMBR
         elif type(identifier_value) == str: 
-          it = int(identifier_value)
+          return int(identifier_value)
         # NOOB TO NUMBR
         elif identifier_value == None: 
-          it = 0
+          return 0
         # NUMBR TO NUMBR
         elif type(identifier_value) == int: 
-          it = identifier_value
+          return identifier_value
       elif type_to_typecast == 'YARN':
         # NUMBR or NUMBAR to YARN
         if re.fullmatch(r"\-?[0-9]+\.[0-9]+\b", str(identifier_value)) or re.fullmatch(r"\-?[0-9]+\b", str(identifier_value)):
           if type(identifier_value) == int or type(identifier_value): 
-              it = str(identifier_value)
+              return str(identifier_value)
           else:
               # TODO: Show this error in console
               raise ValueError(f"Invalid value for conversion to YARN: {identifier_value}")
         # NOOB TO YARN
         elif identifier_value == None: 
-          it = ""
+          return ""
         elif type(identifier_value) == str: 
-          it = identifier_value
+          return identifier_value
 
-      print(f"The value of IT is {it}")
-      self.symbol_table["IT"] = it
+      # print(f"The value of IT is {it}")
+      # self.symbol_table["IT"] = it
 
   def if_then(self, node):
 
@@ -586,11 +586,11 @@ class Semantic_Analyzer:
       return str(value)
     elif op_class.classification == "Expression":
       value = self.expression(op_class.children[0])
-      self.symbol_table["IT"] = value  
+      # self.symbol_table["IT"] = value  
       return str(value)
     elif op_class.classification == "String Concatenation":
       value = self.smoosh(op_class.children)
-      self.symbol_table["IT"] = value  
+      # self.symbol_table["IT"] = value  
       return str(value)
     elif op_class.classification == "Implicit Variable":
       value = self.symbol_table["IT"]
