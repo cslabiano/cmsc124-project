@@ -62,6 +62,9 @@ class UI(QMainWindow):
   # function that calls the lexical, syntactical, and semantical analyzers
   # --------------------------------------------------------------------------------------------------
   def execute(self):
+    # clear contents in gui at every execute
+    self.clear_contents()
+
     # get the current content of the text editor after clicking the execute button
     content = self.text_editor.toPlainText()
 
@@ -113,7 +116,6 @@ class UI(QMainWindow):
   # function for populating the lexeme table, clearing the previous contents
   # --------------------------------------------------------------------------------------------------
   def populate_lexeme_table(self, lexemes):
-    self.lexeme_table.clearContents()   # clear previous contents of the table
     self.lexeme_table.setRowCount(len(lexemes))   # get the length of the lexemes and set it as the number of rows of the table widget
       
     # populate the table
@@ -125,7 +127,6 @@ class UI(QMainWindow):
   # function for populating the symbol table, clearing the previous contents
   # --------------------------------------------------------------------------------------------------
   def populate_symbol_table(self, symbols):
-    self.symbol_table.clearContents()
     self.symbol_table.setRowCount(len(symbols))
 
     # populate the table

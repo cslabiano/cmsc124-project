@@ -176,7 +176,6 @@ class Semantic_Analyzer:
         return False
     return True
 
-
   ''' 
     Evaluates the operand 
 
@@ -572,3 +571,5 @@ class Semantic_Analyzer:
       self.symbol_table[var] = val
 
       print("expr_bool: ", expr_bool) # print for debugging 
+
+  
