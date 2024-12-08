@@ -109,6 +109,10 @@ class UI(QMainWindow):
   # --------------------------------------------------------------------------------------------------
   def print_in_console(self, message):
     current_text = self.label_console.toPlainText()  # get the current text
+    print("message: ", message)
+    if message == "None":
+      message = "NOOB"
+
     new_text = current_text + "\n" + message if current_text else message  # append the new message
     self.label_console.setPlainText(new_text)  # update the console
 
@@ -135,6 +139,8 @@ class UI(QMainWindow):
       if isinstance(value, str):
         str_value = "\"" + str(value) + "\""
         self.symbol_table.setItem(row, 1, QTableWidgetItem(str_value))
+      elif value == None:
+        self.symbol_table.setItem(row, 1, QTableWidgetItem("NOOB"))
       else:
         self.symbol_table.setItem(row, 1, QTableWidgetItem(str(value)))
 
