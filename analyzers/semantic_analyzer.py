@@ -164,14 +164,33 @@ class Semantic_Analyzer:
                 elif relational_type == 'Min Expression':
                   less_than = True
     if op_type == "Addition Expression":
-      print(operand1 + operand2)
-      return operand1 + operand2
+      if type(operand1) == int and type(operand2) == int:
+        return int(operand1 + operand2)
+      elif type(operand1) == float or type(operand2) == float: 
+        return float(operand1 + operand2)
+      else: 
+        return operand1 + operand2
     elif op_type == 'Subtraction Expression':
-      return operand1 - operand2
+      if type(operand1) == int and type(operand2) == int:
+        return int(operand1 - operand2)
+      elif type(operand1) == float or type(operand2) == float: 
+        return float(operand1 - operand2)
+      else: 
+        return operand1 - operand2
     elif op_type == 'Multiplication Expression':
-      return operand1 * operand2
+      if type(operand1) == int and type(operand2) == int:
+        return int(operand1 * operand2)
+      elif type(operand1) == float or type(operand2) == float: 
+        return float(operand1 * operand2)
+      else: 
+        operand1 * operand2
     elif op_type == 'Division Expression':
-      return operand1 / operand2
+      if type(operand1) == int and type(operand2) == int:
+        return int(operand1 / operand2)
+      elif type(operand1) == float or type(operand2) == float: 
+        return float(operand1 / operand2)
+      else: 
+        return operand1 / operand2
     elif op_type == 'Modulo Expression':
       return operand1 % operand2
     elif op_type == 'Max Expression':
