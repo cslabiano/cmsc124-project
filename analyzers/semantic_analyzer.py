@@ -408,16 +408,19 @@ class Semantic_Analyzer:
     result = ""
     for child in op_arg:
       if child.classification == "Op Argument":
-        result += self.visible_operation(child)
+        result += self.concatenate_ops(child)
       elif child.classification == "Print Multiple":
         for term in child.children:
           if term.classification == "Op Argument":
-            result += self.visible_operation(term)
+            result += self.concatenate_ops(term)
           elif term.classification == "Print Multiple":
             result += self.visible(term.children)
     return result
 
-  def visible_operation(self, op_arg):
+  # --------------------------------------------------------------------------------------------------
+  # function for returning the values needed for concatenation
+  # --------------------------------------------------------------------------------------------------
+  def concatenate_ops(self, op_arg):
     op_class = op_arg.children[0]
     if op_class.classification == "Identifier":
       value = self.symbol_table[op_class.value]
@@ -429,8 +432,24 @@ class Semantic_Analyzer:
       value = self.expression(op_class.children[0])
       self.symbol_table["IT"] = value  
       return str(value)
+    elif op_class.classification == "String Concatenation":
+      value = self.smoosh(op_class.children)
+      self.symbol_table["IT"] = value  
+      return str(value)
     else:
       return str(op_arg.children[0].value)
+
+  # --------------------------------------------------------------------------------------------------
+  # function for smoosh
+  # parameter should be the list of children of String Concatenation node
+  # --------------------------------------------------------------------------------------------------
+  def smoosh(self, op_arg):
+    result = ""
+    print(op_arg)
+    for child in op_arg:
+      if child.classification == "Op Argument":
+        result += self.concatenate_ops(child)
+    return result
 
   # --------------------------------------------------------------------------------------------------
   # function for checking the equality for the loop conditions
@@ -487,4 +506,3 @@ class Semantic_Analyzer:
       self.symbol_table[var] = val
 
       print("expr_bool: ", expr_bool) # print for debugging 
-
