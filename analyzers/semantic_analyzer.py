@@ -98,6 +98,7 @@ class Semantic_Analyzer:
   def expression(self, operation):
     op_type = operation.classification
     op_args = operation.children
+    greater_equal = less_equal = greater_than = less_than = False
 
     # If its a boolean expression, extract child 
     if op_type == 'Boolean':
@@ -115,12 +116,10 @@ class Semantic_Analyzer:
               infinite_args.append(self.to_troof(self.evaluate_operand(arg.children[1])))
             else:
               infinite_args.append(self.to_troof(self.evaluate_operand(arg.children[0])))
-        print(infinite_args)
 
     # Just a checker since infinite expressions follow a different format
     if op_type not in {'Infinite And Expression', 'Infinite Or Expression'}:
-      # Use value to access the value of the operand
-      # Use classification to access if identifier or literal
+
       if op_args[0].children[0].classification == 'String Delimiter':
         operand1 = self.evaluate_operand(op_args[0].children[1])
       else: 
@@ -132,7 +131,28 @@ class Semantic_Analyzer:
           operand2 = self.evaluate_operand(op_args[2].children[1])
         else:
           operand2 = self.evaluate_operand(op_args[2].children[0])
-
+      
+      # Check if two x are equal in 
+      # BOTH SAEM x AN BIGGR OF x AN y
+      if op_type in {'Equality Comparison Expression', 'Inequality Expression'}:
+        if op_args[2].children[0].classification == 'Expression':
+          relational_type = op_args[2].children[0].children[0].classification 
+          if relational_type in {'Max Expression', 'Min Expression'}:
+            relational_op1 = self.evaluate_operand(op_args[2].children[0].children[0].children[0].children[0])
+            if operand1 != relational_op1:
+              raise TypeError(f'Relational Expression error: expected {operand1} but found {relational_op1}')
+            else: 
+              operand2 = self.evaluate_operand(op_args[2].children[0].children[0].children[2].children[0])
+              if op_type == 'Equality Comparison Expression':
+                if relational_type == 'Max Expression':
+                  greater_equal = True
+                elif relational_type == 'Min Expression':
+                  less_equal = True
+              elif op_type == 'Inequality Comparison Expression': 
+                if relational_type == 'Max Expression':
+                  greater_than = True
+                elif relational_type == 'Min Expression':
+                  less_than = True
     if op_type == "Addition Expression":
       print(operand1 + operand2)
       return operand1 + operand2
@@ -160,6 +180,20 @@ class Semantic_Analyzer:
       return any(infinite_args) # Returns true if one is True, false if all are false
     elif op_type == 'Infinite And Expression':
       return all(infinite_args)
+    elif op_type == 'Equality Comparison Expression':
+      if greater_equal: 
+        return True if operand1 >= operand2 else False
+      elif less_equal: 
+        return True if operand1 <= operand2 else False
+      else: 
+        return True if operand1 == operand2 else False
+    elif op_type == 'Inequality Comparison Expression':
+      if greater_than: 
+        return True if operand1 > operand2 else False
+      elif less_than: 
+        return True if operand1 < operand2 else False
+      else:
+        return True if operand1 != operand2 else False
     
   '''
   typecasts an operand to a troof
@@ -233,7 +267,7 @@ class Semantic_Analyzer:
       return float(value)
     elif classification == 'TROOF Literal':
       return True if value == "WIN" else False
-    elif classification == 'Expression':
+    elif 'Expression' in classification:
       return self.expression(operand.children[0])
     else:
       raise TypeError(f"Unsupported operand classification: {classification}")
