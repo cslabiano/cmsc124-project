@@ -162,7 +162,7 @@ class Syntax_Analyzer:
     self.check('Function Return')
     # children.append(Node('Function Return'))
 
-    children.append(self.expression())
+    children.append(self.op_argument())
 
     return Node('Function Return', children=children)
 
