@@ -55,7 +55,7 @@
 "^\+", "Print Concatenation"
 "^\-?[0-9]+\.[0-9]+\b", "NUMBAR Literal"
 "^\-?[0-9]+\b", "NUMBR Literal"
-^\"([^\"]|:\")*\", "YARN Literal"
+^\"([^\"]|:\")*\"$, "YARN Literal"
 "^(WIN|FAIL)\b", "TROOF Literal"
 "^(NOOB|YARN|TROOF|NUMBR|NUMBAR)\b", "TYPE Literal"
 "^[a-zA-Z][a-zA-Z0-9_]*\b", "Identifier"
