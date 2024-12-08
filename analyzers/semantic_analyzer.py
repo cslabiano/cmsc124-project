@@ -26,6 +26,7 @@ class Semantic_Analyzer:
       for expr in child.children:
         self.symbol_table["IT"] = self.expression(expr)
     elif type == 'Typecast': # Could be a typecast or an assignment
+      print("typecast called")
       typecast_type = child.children[0].classification
       if typecast_type == 'Recasting':
         self.assignment(child.children[0])
@@ -297,8 +298,13 @@ class Semantic_Analyzer:
     assignment_type = node.classification
     
     if assignment_type == 'Recasting':
+      new_value = None
       identifier = node.children[0].value
-      new_value = self.evaluate_operand(node.children[2].children[0])
+      if node.children[2].classification == "Op Argument":
+        new_value = self.evaluate_operand(node.children[2].children[0])
+      elif node.children[2].classification == "Explicit Typecast":
+        new_value = self.typecast(node.children[2])
+
       self.symbol_table[identifier] = new_value
 
   '''
