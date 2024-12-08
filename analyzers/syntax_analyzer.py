@@ -478,10 +478,10 @@ class Syntax_Analyzer:
   # --------------------------------------------------------------------------------------------------
   def fixed_boolean(self):
     children = []
+    boolean_type = self.current_lexeme[1]
 
-    if self.current_lexeme[1] in {'And Expression', 'Or Expression', 'Xor Expression'}:
-      self.check(self.current_lexeme[1])
-      children.append(Node(self.current_lexeme[1]))
+    if boolean_type in {'And Expression', 'Or Expression', 'Xor Expression'}:
+      self.check(boolean_type)
       
       children.append(self.op_argument())
 
@@ -491,12 +491,12 @@ class Syntax_Analyzer:
       children.append(self.op_argument())
     
     elif self.current_lexeme[1] == 'Not Expression':
-      self.check("Not Expression")
-      children.append(Node("Not Expression"))
+      self.check(boolean_type)
+      # children.append(Node("Not Expression"))
 
       children.append(self.op_argument())
 
-    return Node("Fixed Boolean", children=children)
+    return Node(boolean_type, children=children)
   
   # --------------------------------------------------------------------------------------------------
   # <infinite_argument> ::= <op_argument> AN <infinite_argument> | <op_argument>
