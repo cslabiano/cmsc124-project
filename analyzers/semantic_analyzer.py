@@ -24,7 +24,7 @@ class Semantic_Analyzer:
     if type == "Expression":
       # self.expression(child.children)
       for expr in child.children:
-        self.expression(expr)
+        self.symbol_table["IT"] = self.expression(expr)
     elif type == 'Typecast': # Could be a typecast or an assignment
       typecast_type = child.children[0].classification
       if typecast_type == 'Recasting':
@@ -407,7 +407,8 @@ class Semantic_Analyzer:
       value = op_arg.children[1].value
       return str(value)
     elif op_class.classification == "Expression":
-      value = self.expression(op_class.children[0])  
+      value = self.expression(op_class.children[0])
+      self.symbol_table["IT"] = value  
       return str(value)
     else:
       return str(op_arg.children[0].value)
