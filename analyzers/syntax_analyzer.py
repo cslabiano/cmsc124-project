@@ -755,8 +755,19 @@ class Syntax_Analyzer:
       children.append(Node("Switch-case Keyword"))
 
       if self.current_lexeme[1] in {'NUMBR Literal', 'NUMBAR Literal', 'TROOF Literal', 'TYPE Literal'}:
-        children.append(Node(self.current_lexeme[1]))
+        children.append(Node(self.current_lexeme[1], value = self.current_lexeme[0]))
         self.check(self.current_lexeme[1])
+      
+      elif self.current_lexeme[1] == 'String Delimiter':
+        children.append(Node('String Delimiter'))
+        self.check('String Delimiter')
+
+        if self.current_lexeme[1] == 'YARN Literal':
+            children.append(Node('YARN Literal', value=self.current_lexeme[0]))
+            self.check('YARN Literal')
+
+        self.check('String Delimiter')
+        children.append(Node('String Delimiter'))
 
       max_iter = len(self.lexemes)
       print(max_iter)
