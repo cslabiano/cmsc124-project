@@ -42,6 +42,9 @@ class Semantic_Analyzer:
       self.gimmeh(child.children)
     elif type == "Loop":
       self.loop(child.children)
+    elif type == "String Concatenation":
+      value = self.smoosh(child.children)
+      self.symbol_table["IT"] = value
 
   def data_section(self, statement):
     # temporary variable to hold the identifier name

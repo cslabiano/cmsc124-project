@@ -1,3 +1,3 @@
 HAI
-   VISIBLE SMOOSH 6 AN 5 AN "hello"
+   SMOOSH 6 AN 5 AN "hello"
 KTHXBYE
