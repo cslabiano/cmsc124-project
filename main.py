@@ -112,6 +112,10 @@ class UI(QMainWindow):
     print("message: ", message)
     if message == "None":
       message = "NOOB"
+    elif message == "True":
+      message = "WIN"
+    elif message == "False":
+      message = "FAIL"
 
     new_text = current_text + "\n" + message if current_text else message  # append the new message
     self.label_console.setPlainText(new_text)  # update the console
@@ -141,6 +145,10 @@ class UI(QMainWindow):
         self.symbol_table.setItem(row, 1, QTableWidgetItem(str_value))
       elif value == None:
         self.symbol_table.setItem(row, 1, QTableWidgetItem("NOOB"))
+      elif value == True:
+        self.symbol_table.setItem(row, 1, QTableWidgetItem("WIN"))
+      elif value == False:
+        self.symbol_table.setItem(row, 1, QTableWidgetItem("FAIL"))
       else:
         self.symbol_table.setItem(row, 1, QTableWidgetItem(str(value)))
 
